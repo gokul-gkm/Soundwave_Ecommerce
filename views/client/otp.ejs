@@ -1,0 +1,254 @@
+<%- include('../layout/header.ejs') -%>
+<link rel="stylesheet" href="css/mycss/otp.css">
+	</head>
+
+	<body>
+		<div class="page-wrapper">
+			<header class="header">
+
+
+				<div class="header-middle sticky-header">
+					<div class="container">
+						<div class="header-left">
+							<button class="mobile-menu-toggler">
+								<span class="sr-only">Toggle mobile menu</span>
+								<i class="icon-bars"></i>
+							</button>
+
+							<a href="/" class="logo">
+								<img src="images/soundwave/logoblack.png" alt="Molla Logo" width="105" height="25">
+							</a>
+
+							<nav class="main-nav">
+								<ul class="menu ">
+									<li class="megamenu-container active">
+										<a href="/" class="">Home</a>
+
+										<!-- End .megamenu -->
+									</li>
+									<li>
+										<a href="/products" class="">Products</a>
+
+										<!-- End .megamenu megamenu-md -->
+									</li>
+									<li>
+										<a class="sf-with-ul">Category</a>
+										<ul>
+											<li><a href="/products">Headphones</a></li>
+											<li><a href="/products">Earbuds</a></li>
+											<li><a href="/products">Speakers</a></li>
+											<li><a href="/products">Soundbars</a></li>
+										</ul>
+
+									</li>
+
+									<li>
+										<a href="/about">About</a>
+
+
+									</li>
+
+								</ul><!-- End .menu -->
+							</nav>
+						</div>
+
+						<!-- End .header-right -->
+					</div><!-- End .container -->
+				</div><!-- End .header-middle -->
+			</header><!-- End .header -->
+
+			<main class="main">
+				<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+					<div class="container">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/">Home</a></li>
+							<li class="breadcrumb-item"><a href="">login</a></li>
+							<li class="breadcrumb-item active" aria-current="page">otp</li>
+						</ol>
+					</div><!-- End .container -->
+				</nav><!-- End .breadcrumb-nav -->
+
+				<div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
+					style="background-image: url('images/backgrounds/login-bg.jpg')">
+					<div class="container">
+						<div class="form-box">
+							<div class="form-tab">
+
+								<ul class="nav nav-pills nav-fill" role="tablist">
+								
+									<li class="nav-item">
+										<a class="nav-link active" id="register-tab-2" data-toggle="tab"
+											href="#register-2" role="tab" aria-controls="register-2"
+											aria-selected="true">OTP</a>
+									</li>
+								</ul>
+								<div class="tab-content">
+								
+									<!-- sign-up part -->
+									<div class="tab-pane fade show active d-flex align-items-center justify-content-center flex-column  " id="register-2" role="tabpanel"
+										aria-labelledby="register-tab-2">
+										<form action="/otp" method="post">
+											<label for="otp">Check Your Email OTP is There </label>
+											
+											<div class="otp d-flex gap-5   align-items-center  justify-content-center ">
+												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
+												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
+												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
+												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
+											</div>
+										
+                                          <% if(locals.message || locals.resend) {%>
+											<% if(locals.message){ %>
+											<p class="text-danger text-center text-capitalize mb-3 fw-bold   ">otp is wrong</p>
+											<% } %>
+											<% if(locals.resend){ %>
+											<p class="text-success  text-center text-capitalize mb-3 fw-bold   ">their ressend the otp, check your email</p>
+											<% } %>
+											<%}  %>
+											<div class="form-footer d-flex justify-content-center ">
+												<button type="submit" class="btn btn-outline-primary-2">
+													<span>Submit</span>
+													<i class="icon-long-arrow-right"></i>
+												</button>
+
+                                               <a href="/resend" class="btn text-decoration-none resend btn-outline-primary-2">Resend</a>
+
+											</div><!-- End .form-footer -->
+										</form>
+
+										<div id="otp-timer"></div>
+
+									
+										<div class="form-choice">
+											<p class="text-black text-center text-black ">
+												<form action="/resubmit" method="post">
+												<button type="submit" class="btn resubmit">resubmit your Email</button>
+											</form>
+										</p>
+									<!-- End .row -->
+										</div><!-- End .form-choice -->
+									</div><!-- .End .tab-pane -->
+								</div><!-- End .tab-content -->
+							</div><!-- End .form-tab -->
+						</div><!-- End .form-box -->
+					</div><!-- End .container -->
+				</div><!-- End .login-page section-bg -->
+			</main><!-- End .main -->
+			<%- include('../layout/lyfooter.ejs') -%>
+
+		</div><!-- End .page-wrapper -->
+		<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+		<%- include('../layout/mobMenu.ejs') -%>
+
+
+<script>
+
+			// Function to start the OTP timer
+	function startOTPTimer() {
+		const otpTimerDuration = 300; // 5 minutes
+		let timeLeft = localStorage.getItem('otpTimer') || otpTimerDuration;
+
+		// Get the timer display element
+		const timerDisplay = document.getElementById('otp-timer');
+
+		// Function to update the timer display
+		function updateTimerDisplay(seconds) {
+			const minutes = Math.floor(seconds / 60);
+			const remainingSeconds = seconds % 60;
+			timerDisplay.textContent = `Time remaining: ${Math.max(0, minutes)}:${Math.max(0, remainingSeconds < 10 ? '0' : '')}${Math.max(0, remainingSeconds)}`;
+		}
+
+		// Update the timer display initially
+		updateTimerDisplay(timeLeft);
+
+		// Update the timer display every second
+		const timerInterval = setInterval(() => {
+			if (timeLeft > 0) {
+				timeLeft--;
+				updateTimerDisplay(timeLeft);
+
+				// Store the remaining time in localStorage
+				localStorage.setItem('otpTimer', timeLeft);
+			} else {
+				clearInterval(timerInterval);
+				// Set req.session.otp to undefined or trigger other actions when the timer expires
+				clearSessionOTP();
+			}
+		}, 1000);
+	}
+
+	// Function to set req.session.otp to undefined
+	function clearSessionOTP() {
+		// Send a request to the server to set req.session.otp to undefined
+		fetch('/clearSessionOTP', {
+			method: 'POST',
+			credentials: 'same-origin', // Include cookies
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ clearOTP: true })
+		})
+		.then(response => {
+			if (response.ok) {
+				// Session OTP cleared successfully
+				console.log("session otp cleared");
+			} else {
+				// Handle error
+				console.log("session otp clear error");
+			}
+		})
+		.catch(error => console.error('Error clearing session OTP:', error));
+	}
+
+	// Start the OTP timer when the page loads
+	startOTPTimer();
+
+</script>
+		
+
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.inp');
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', function(event) {
+            if (this.value && this.value.length >= parseInt(this.getAttribute('maxlength'))) {
+                // If the current input field is filled, move to the next input field
+                const nextInput = inputs[index + 1];
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        });
+
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Backspace' && !this.value) {
+                // If the backspace key is pressed and the current input field is empty, move to the previous input field
+                const previousInput = inputs[index - 1];
+                if (previousInput) {
+                    previousInput.focus();
+                }
+            }
+        });
+    });
+});
+
+</script>
+
+			<style>
+				*::-webkit-scrollbar {
+					width: 0;
+				}
+
+				input[type="number"]::-webkit-inner-spin-button,
+				input[type="number"]::-webkit-outer-spin-button {
+					-webkit-appearance: none !important;
+				}
+			</style>
+			<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+			<script src="js/demos/demo-6.js"></script>
+			<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+			<%- include('../layout/footer.ejs') -%>
+				<script src="js/base.js"></script>
