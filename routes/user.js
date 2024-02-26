@@ -136,10 +136,6 @@ router.get('/orderView/:id', userMidleware.userbloack, userMidleware.user, userC
 router.put('/editOrder', userController.editOrder)
 
 
-// Define the route handler to clear req.session.otp
-router.post('/clearSessionOTP', userController.clearOtpSession);
-
-
 
 //logout
 router.post('/logout',userController.logout)

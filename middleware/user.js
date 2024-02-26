@@ -15,7 +15,7 @@ const user=(req,res,next)=>{
 const loginTrue=(req,res,next)=>{
 try{
        if(req.session.login){
-        res.redirect('/profile')
+        return res.redirect('/profile')
        }
        next();
 }catch(err){

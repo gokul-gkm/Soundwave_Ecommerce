@@ -214,12 +214,19 @@ const getSignUp = async (req, res) => {
 //otp page rendering
 const otp = async (req, res) => {
   try {
+
     if (req.session.otp) {
+
       if (req.session.wrong) {
+
         res.render("client/otp", { message: req.session.wrong });
+
       } else if (req.session.resend) {
+
         res.render("client/otp", { resend: req.session.resend });
+
       } else {
+        
         res.render("client/otp");
       }
     } else {
@@ -230,28 +237,6 @@ const otp = async (req, res) => {
   }
 };
 
-// const otp = async (req, res) => {
-//   try {
-//       if (req.session.otp) {
-//           if (req.query.expired === 'true') {
-//               res.render("client/otp", { message: "Time's up, please resubmit your email." });
-//           } else if (req.session.wrong) {
-//               res.render("client/otp", { message: req.session.wrong });
-//           } else if (req.session.resend) {
-//               res.render("client/otp", { resend: req.session.resend });
-//           } else {
-//               res.render("client/otp");
-//           }
-//       } else {
-//           res.redirect("/login");
-//       }
-//   } catch (err) {
-//       console.log(err.message + "    otp");
-//   }
-// };
-
-
-// otp getting
 const gettingOtp = async (req, res) => {
   try {
     const otp = req.body.otp;
@@ -1242,10 +1227,7 @@ const logout = async (req, res) => {
   }
 };
 
-const clearOtpSession = async(req, res) => {
-  req.session.otp = undefined; // Set req.session.otp to undefined
-  res.status(200).send('Session OTP cleared successfully');
-}
+
 
 module.exports = {
     signUp,
@@ -1285,5 +1267,5 @@ module.exports = {
     orderView,
     orderDet,
     editOrder,
-    clearOtpSession
+  
 };

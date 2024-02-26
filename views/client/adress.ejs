@@ -65,7 +65,7 @@
                                 class="ri-close-line text-primary  "></i></h5>
                           </div>
                           <div class="mb-3">
-                            <label class="form-label"> name:-&nbsp;<%= e.name %></label>
+                            <label class="form-label">Address :-&nbsp;<%= e.name %></label>
 
                           </div>
 
@@ -128,8 +128,8 @@
 
                     <form id='myForm${id}' action="/adress?id=${id}" method="post">
                         <div class="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label"> Name </label>
-                            <input type="text" id='inp${id}' class="form-control" name="name"  placeholder=" name"  oninput="exists(this,'${id}')" required>
+                            <label for="exampleFormControlInput1" class="form-label">Address  </label>
+                            <input type="text" id='inp${id}' class="form-control" name="name"  placeholder="address "  oninput="exists(this,'${id}')" required>
                             <p class='text-danger' id='p${id}'></p>
                           </div>
                         <div class="mb-3">
