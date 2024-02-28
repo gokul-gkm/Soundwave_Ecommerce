@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const userModal=require('../models/userSchema')
-const adminController=require('../controller/adminController')
+const adminController = require('../controller/adminController');
+const adminCategoryController = require('../controller/adminCategoryController');
+const adminProductController = require('../controller/adminProductController');
+const adminUserController = require('../controller/adminUserController');
+const adminOrderController = require('../controller/adminOrderController');
 const adminMidleware=require('../middleware/admin');
 const path = require('path');
 const multer=require('multer');
@@ -25,65 +29,65 @@ const upload = multer({
 //admin dashborad page rendering
 router.get('/',adminMidleware.adminRoute,adminController.adminPage)
 
-//product dets page rendering
-router.get('/product',adminMidleware.adminRoute,adminController.productDets)
-
-//product add route
-router.get('/productAdd',adminMidleware.adminRoute,adminController.productAdd);
-
 // user list showing 
-router.get('/users', adminMidleware.adminRoute, adminController.users)
+router.get('/users', adminMidleware.adminRoute, adminUserController.users)
 
 // remove category
-router.get('/userRemove',adminMidleware.adminRoute,adminController.userdlt);
+router.get('/userRemove',adminMidleware.adminRoute,adminUserController.userdlt);
 
 //fetching the data
-router.post('/user',adminController.blockFetch)
+router.post('/user',adminUserController.blockFetch)
 
 // catagory page rendering
-router.get('/catagory',adminMidleware.adminRoute,adminController.category)
+router.get('/catagory',adminMidleware.adminRoute,adminCategoryController.category)
 
 // /categoryFetch 
-router.post('/categoryFetch',adminMidleware.adminRoute,adminController.categoryFetch)
+router.post('/categoryFetch',adminMidleware.adminRoute,adminCategoryController.categoryFetch)
 
 // catgory add page rendering
-router.get('/catagoryAdd',adminMidleware.adminRoute,adminController.catgoryAdd)
+router.get('/catagoryAdd',adminMidleware.adminRoute,adminCategoryController.catgoryAdd)
 
 // getting category dets
-router.post('/catgoryAdd',adminMidleware.adminRoute,adminController.getcatgoryAdd);
+router.post('/catgoryAdd',adminMidleware.adminRoute,adminCategoryController.getcatgoryAdd);
 
 // remove category
-router.get('/Catremove',adminMidleware.adminRoute,adminController.categorydlt);
+router.get('/Catremove',adminMidleware.adminRoute,adminCategoryController.categorydlt);
 
 //  category active or not fecting
-router.post('/activeOrnot',adminController.catgoryActive);
+router.post('/activeOrnot', adminCategoryController.catgoryActive);
+
+//product dets page rendering
+router.get('/product',adminMidleware.adminRoute,adminProductController.productDets)
+
+//product add route
+router.get('/productAdd',adminMidleware.adminRoute,adminProductController.productAdd);
 
 //getting product
-router.post('/productAdd',upload.array('images', 3),adminController.getproduct)
+router.post('/productAdd',upload.array('images', 3),adminProductController.getproduct)
 
 // edi route
-router.post('/edit',upload.fields([{ name: 'images0', maxCount: 1 },{ name: 'images1', maxCount: 1 },{ name: 'images2', maxCount: 1 }]),adminController.editProduct)
+router.post('/edit',upload.fields([{ name: 'images0', maxCount: 1 },{ name: 'images1', maxCount: 1 },{ name: 'images2', maxCount: 1 }]),adminProductController.editProduct)
 
 //dlt product
-router.get('/dltProduct', adminController.dltPro);
+router.get('/dltProduct', adminProductController.dltPro);
 
 //list product
-router.post('/listedOrnot',adminController.productListed)
+router.post('/listedOrnot',adminProductController.productListed)
 
 //order list 
-router.get('/orders', adminMidleware.adminRoute, adminController.order)
+router.get('/orders', adminMidleware.adminRoute, adminOrderController.order)
 
 //order status changing
-router.put('/orderStatus',adminController.orderProstatus);
+router.put('/orderStatus',adminOrderController.orderProstatus);
 
 //remove order product
-router.put('/removeorder',adminController.removeorder)
+router.put('/removeorder',adminOrderController.removeorder)
 
 //remove order full
-router.patch('/removeorder',adminController.removeordeFull)
+router.patch('/removeorder',adminOrderController.removeordeFull)
 
 //order view
-router.get('/ordersView/:id',adminMidleware.adminRoute,adminController.orderView)
+router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orderView)
 
 
 module.exports=router;

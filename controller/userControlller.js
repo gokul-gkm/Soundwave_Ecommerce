@@ -155,7 +155,6 @@ const emailExist = async (req, res) => {
 const getSignUp = async (req, res) => {
 
   try {
-    // Define validation rules
     const validationRules = [
       check("registerName", "name must be greater than 3+ characters")
         .trim()
@@ -226,7 +225,7 @@ const otp = async (req, res) => {
         res.render("client/otp", { resend: req.session.resend });
 
       } else {
-        
+
         res.render("client/otp");
       }
     } else {
@@ -437,8 +436,8 @@ const products = async (req, res) => {
   const limit = 4;
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
-  const searchQuery = req.query.product_search; // Get the search query from request
-  const sortOption = req.query.sortby || 'newArrivals'; // Get the sorting option from request
+  const searchQuery = req.query.product_search; 
+  const sortOption = req.query.sortby || 'newArrivals'; 
 
   try {
       const category = await categoryModal.find({
@@ -527,71 +526,6 @@ const products = async (req, res) => {
 };
 
 
-// const products = async (req, res) => {
-//   const limit = 4;
-//   const page = parseInt(req.query.page) || 1;
-//   const skip = (page - 1) * limit;
-//   const searchQuery = req.query.product_search; // Get the search query from request
-
-//   try {
-//       const category = await categoryModal.find({
-//           isDeleted: false,
-//           listed: true,
-//       });
-    
-//       const categoryIds = category.map((category) => category._id);
-
-//       let query = {
-//           stock: { $gt: 0 },
-//           listed: true,
-//           isDeleted: false,
-//           category: { $in: categoryIds },
-//       };
-
-//       if (searchQuery) {
-//           query.name = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
-//       }
-
-//       const totalProductsCount = await productModal.countDocuments(query);
-
-//       const totalPages = Math.ceil(totalProductsCount / limit);
-
-      
-
-//       const Allproduct = await productModal
-//           .find(query)
-//           .populate('category')
-//           .skip(skip)
-//           .limit(limit);
-
-//       if (req.session.login) {
-//           res.render('client/shop', {
-//               login: req.session.login,
-//               Allproduct,
-//               category,
-//               currentPage: page,
-//               totalPages,
-//               totalProductsCount,
-//               limit,
-//           });
-//       } else {
-//           res.render('client/shop', {
-//               Allproduct,
-//               category,
-//               currentPage: page,
-//               totalPages,
-//               totalProductsCount,
-//               limit,
-//           });
-//       }
-//   } catch (err) {
-//       console.log(err.message + '        shop route');
-//   }
-// };
-
-
-// Route to handle category
-
 const category = async (req, res) => {
   try {
     const catName = req.query.catName;
@@ -650,7 +584,7 @@ const category = async (req, res) => {
   }
 };
 
-//profile
+//profile get method
 const profile = async (req, res) => {
   try {
     if (req.query.passwordChanged === 'true') {
@@ -676,7 +610,7 @@ const profile = async (req, res) => {
   }
 };
 
-//product dets get method
+//product details get method
 const productDets = async (req, res) => {
   try {
     if (req.query.proId) {
@@ -707,499 +641,7 @@ const productDets = async (req, res) => {
   }
 };
 
-//adress
-const adress = async (req, res) => {
-    try {
-      const user = await userSchema.findOne({ _id: req.session.login });
-      const category = await categoryModal.find({});
-  
-      if (user.is_admin === 0) {
-        const adress = await addressModal.findOne({ userId: req.session.login });
-        if (adress) {
-        }
-  
-        res.render("client/adress", {
-          user,
-          login: req.session.login,
-          adress,
-          category,
-        });
-      } else {
-        req.session.admin = user;
-        res.redirect("/admin");
-      }
-    } catch (err) {
-      console.log(err.message + "   adress route");
-    }
-  };
-  
-  //get address
-  const getadress = async (req, res) => {
-    try {
-      const exits = await addressModal.findOne({
-        userId: req.query.id,
-        address: { $elemMatch: { name: req.body.name } },
-      });
-      if (!exits) {
-        const update = {
-          $set: { userId: req.query.id },
-          $addToSet: {
-            address: {
-              name: req.body.name,
-              city: req.body.city,
-              state: req.body.state,
-              pincode: req.body.pincode,
-            },
-          },
-        };
-        const options = {
-          upsert: true,
-          new: true,
-        };
-  
-        const newAdress = await addressModal.findOneAndUpdate(
-          { userId: req.query.id },
-          update,
-          options
-        );
-        if (newAdress) {
-          res.redirect("/adress");
-        } else {
-          res.send("address didnt find");
-        }
-      } else {
-      }
-    } catch (err) {
-      console.log(err.message + "    get addresss route");
-    }
-  };
-  
-  // patchaddress
-  const patchaddress = async (req, res) => {
-    try {
-      const exists = await addressModal.findOne({
-        userId: req.body.id,
-        address: { $elemMatch: { name: req.body.val } },
-      });
-      if (exists) {
-        res.send({ exists });
-      } else {
-        res.send({ note: "note" });
-      }
-    } catch (err) {
-      console.log(err.message + "    gpatch addresss route");
-    }
-  };
-  
-  //remove address
-  const removeadress = async (req, res) => {
-    try {
-      const remove = await addressModal.updateOne(
-        { userId: req.body.uid },
-        { $pull: { address: { _id: req.body.id } } }
-      );
-  
-      if (remove.modifiedCount === 0) {
-        console.log("address not removed");
-      } else {
-        res.send({ remove });
-      }
-    } catch (err) {
-      console.log(err.message + "   remove addresss");
-    }
-  };
-  
-  // changing deafualt addres in user schema in in fetching
-  const Defaddress = async (req, res) => {
-    try {
-      const added = await userSchema.findOneAndUpdate(
-        { _id: req.body.uid },
-        { $set: { addressId: req.body.id } },
-        { new: true }
-      );
-      if (added) {
-        res.send({ done: added });
-      } else {
-        res.send({ done: "not added" });
-      }
-    } catch (err) {
-      console.log(err.message + "        Defaddress route ");
-    }
-  };
-
-//cart
-const cart = async (req, res) => {
-  try {
-    const cart = await cartModal
-      .findOne({ userId: req.session.login })
-      .populate("products.productId");
-
-    console.log(cart);
-    if (cart) {
-      const total = cart.products.reduce(
-        (acc, product) => acc + product.price,
-        0
-      );
-      const options = {
-        upsert: true,
-        new: true,
-      };
-      const totalPriceAdding = await cartModal
-        .findOneAndUpdate(
-          { userId: req.session.login },
-          { $set: { TotalPrice: total } },
-          options
-        )
-        .exec();
-      const category = await categoryModal.find({});
-      res.render("client/cart", {
-        login: req.session.login,
-        cart,
-        totalprice: totalPriceAdding.TotalPrice,
-        category,
-      });
-    } else {
-      const category = await categoryModal.find({});
-      res.render("client/cart", {
-        login: req.session.login,
-        totalprice: 0,
-        category,
-      });
-    }
-  } catch (err) {
-    console.log(err.message + "      cart page route");
-  }
-};
-
-// add cart fetching
-const addcart = async (req, res) => {
-  try {
-    const product = await productModal.findOne({ _id: req.body.id });
-    const result = await cartModal
-      .findOne({
-        userId: req.body.user,
-        products: {
-          $elemMatch: {
-            productId: req.body.id,
-          },
-        },
-      })
-      .exec();
-    if (!result) {
-      const tp = product.price * req.body.q;
-
-      const filter = { userId: req.body.user };
-      const update = {
-        $set: {
-          userId: req.body.user,
-        },
-        $addToSet: {
-          products: { productId: req.body.id, price: tp },
-        },
-      };
-      const options = {
-        upsert: true,
-        new: true,
-      };
-
-      const cartSuccess = await cartModal
-        .findOneAndUpdate(filter, update, options)
-        .exec();
-
-      if (cartSuccess) {
-        res.send({ success: "succes" });
-      }
-    } else {
-      res.send({ exist: "it is already exist" });
-    }
-  } catch (err) {
-    console.log(err.message + "      addCart put fecth routre");
-  }
-};
-
-// add cart on post requiset
-const addcartPost = async (req, res) => {
-  try {
-    if (req.query.user) {
-      const product = await productModal.findOne({ _id: req.query.id });
-      const result = await cartModal
-        .findOne({
-          userId: req.query.user,
-          products: {
-            $elemMatch: {
-              productId: req.query.id,
-            },
-          },
-        })
-        .exec();
-     
-      if (!result) {
-        
-        const tp = product.price * req.body.q;
-
-        const filter = { userId: req.query.user };
-        const update = {
-          $set: {
-            userId: req.query.user,
-          },
-          $addToSet: {
-            products: {
-              productId: req.query.id,
-              price: tp,
-              quantity: req.body.q,
-            },
-          },
-        };
-        const options = {
-          upsert: true,
-          new: true,
-        };
-
-        const cartSuccess = await cartModal
-          .findOneAndUpdate(filter, update, options)
-          .exec();
-
-        if (cartSuccess) {
-          res.redirect(`/cart?id=${req.query.user}`);
-        }
-      } else {
-        const tp = product.price * req.body.q;
-        const updatedCart = await cartModal.findOneAndUpdate(
-          { userId: req.query.user, "products.productId": req.query.id },
-          {
-            $set: {
-              "products.$.price": tp,
-              "products.$.quantity": req.body.q,
-            },
-          },
-          { new: true }
-        );
-        if (updatedCart) {
-          res.redirect(`/cart?id=${req.query.user}`);
-        } else {
-          res.send("somthing issues");
-        }
-      }
-    } else {
-      res.redirect("/login");
-    }
-  } catch (err) {
-    console.log(err.message + "    addcartpost route");
-  }
-};
-
-//edit cart fetch
-const cartEdit = async (req, res) => {
-  try {
-    const product = await productModal.findOne({ _id: req.body.i });
-    const newval = product.price * req.body.quantity;
-
-    const updatedCart = await cartModal.findOneAndUpdate(
-      { _id: req.body.id, "products.productId": req.body.i },
-      {
-        $set: {
-          "products.$.price": newval,
-          "products.$.quantity": req.body.quantity,
-        },
-      },
-      { new: true }
-    );
-
-    const total = updatedCart.products.reduce(
-      (acc, product) => acc + product.price,
-      0
-    );
-
-    await cartModal.findOneAndUpdate(
-      { _id: req.body.id },
-      { $set: { TotalPrice: total } }
-    );
-
-    res.send({ su: total });
-  } catch (err) {
-    console.log(err.message + "   cart edit ");
-  }
-};
-
-//cart remove
-const cartree = async (req, res) => {
-  try {
-    console.log(req.body.tot);
-    const remove = await cartModal.updateOne(
-      { _id: req.body.id },
-      {
-        $set: { TotalPrice: req.body.tot },
-        $pull: { products: { productId: req.body.proid } },
-      }
-    );
-    if (remove.modifiedCount === 0) {
-    } else {
-      const rdata = await cartModal.findOne({ _id: req.body.id });
-      console.log(rdata);
-      res.send({ rdata });
-    }
-  } catch (err) {
-    console.log(err.message + "   catrreeee");
-  }
-};
-
-// checkoutPage page rendering
-const checkoutPage = async (req, res) => {
-  try {
-    const category = await categoryModal.find({});
-    const user = await userSchema.findOne({ _id: req.session.login });
-    const cart = await cartModal
-      .findOne({ userId: req.session.login })
-      .populate("products.productId");
-
-    let add;
-    const adress = await addressModal.findOne({ userId: req.session.login });
-    if (adress) {
-      adress.address.forEach((e) => {
-        if (e._id + "hh" == user.addressId + "hh") {
-          add = e;
-        } else {
-        }
-      });
-      res.render("client/checkout", {
-        login: req.session.login,
-        add,
-        cart,
-        category,
-      });
-    } else {
-      res.render("client/checkout", {
-        login: req.session.login,
-        cart,
-        category,
-      });
-    }
-  } catch (err) {
-    console.log(err.message + "     checkoutPage page rendiering route");
-  }
-};
-
-//succes msg rendering
-const success = async (req, res) => {
-  try {
-    const category = await categoryModal.find({ isDeleted: false });
-    if (req.session.succes) {
-      delete req.session.succes;
-
-      res.render("client/succes", { login: req.session.login, category });
-    } else {
-      res.redirect("/order");
-    }
-  } catch (err) {
-    console.log(err.message + "   succes page rendering");
-  }
-};
-
-
-//postSucces
-const postSucces = async (req, res) => {
-  try {
-    const user = await userSchema.findOne({ _id: req.session.login });
-    const cart = await cartModal.findOne({ userId: req.session.login });
-    const orderSet = await orderModal.create({
-      userId: req.session.login,
-      orderAmount: cart.TotalPrice,
-      deliveryAdress: user.addressId,
-      peyment: req.body.peyment,
-      deliveryAdress: {
-        name: req.body.name,
-        city: req.body.city,
-        state: req.body.state,
-        pincode: req.body.pincode,
-      },
-      orderDate: new Date(),
-      OrderedItems: cart.products.map((e) => ({
-        productId: e.productId,
-        quantity: e.quantity,
-        price: e.price,
-      })),
-    });
-
-    if (orderSet) {
-      orderSet.OrderedItems.forEach(async (e) => {
-        let product = await productModal.findOne({ _id: e.productId });
-        let newstock = product.stock - e.quantity;
-        let pr = await productModal.findOneAndUpdate(
-          { _id: e.productId },
-          { $set: { stock: newstock } }
-        );
-      });
-
-      const removeCart = await cartModal.updateOne(
-        { userId: req.session.login },
-        { $unset: { products: 1 } }
-      );
-      if (removeCart) {
-        req.session.succes = true;
-        res.redirect("/success");
-      } else {
-      }
-    } else {
-      res.send("irs note");
-    }
-  } catch (err) {
-    console.log(err.message + "    postSucces");
-  }
-};
-
-//order det page rendering
-const orderDet = async (req, res) => {
-    try {
-        const category = await categoryModal.find({ isDeleted: false });
-        const order = await orderModal.find({ userId: req.session.login });
-        if (order) {
-            res.render('client/orderDet', { login: req.session.login, order ,category})
-        } else {
-            res.render('client/orderDet', { login: req.session.login , category})
-        }
-
-
-    } catch (err) {
-        console.log(err.message + '     order det pag erendering ')
-    }
-}
-
-// order view details page 
-const orderView = async (req, res) => {
-    try {
-        const category = await categoryModal.find({ isDeleted: false });
-        const order = await orderModal.findOne({ _id: req.params.id }).populate('OrderedItems.productId')
-       
-        res.render('client/order', { login: req.session.login, order , category})
-    } catch (err) {
-        console.log(err.message + '      ORDER VIEW PAGE RENDERING ')
-    }
-}
-
-//editOrder
-const editOrder = async (req, res) => {
-    try {
-        const newOne = await orderModal.findOneAndUpdate({ userId: req.body.user, 'OrderedItems.productId': req.body.id },
-            {
-                $set: {
-                'OrderedItems.$.canceled':true,
-                'OrderedItems.$.orderProStatus':'canceled'
-                }
-            }
-        )
-        if(newOne){
-            res.send({set:true})
-        }else{
-            res.send({issue:true})
-
-        }
-    } catch (err) {
-        console.log(err.message + ' /editOrder')
-    }
-}
-
-
-//wishlist
+//wishlist get method
 const wishlist = async (req, res) => {
   try {
     const category = await categoryModal.find({});
@@ -1208,8 +650,6 @@ const wishlist = async (req, res) => {
     console.log(err.message + "      wishList page route");
   }
 };
-
-
 
 //logout
 const logout = async (req, res) => {
@@ -1226,7 +666,6 @@ const logout = async (req, res) => {
     console.log(err.message + "         logout route");
   }
 };
-
 
 
 module.exports = {
@@ -1250,22 +689,5 @@ module.exports = {
     getNewPass,
     logout,
     productDets,
-    cart,
     wishlist,
-    adress,
-    getadress,
-    patchaddress,
-    removeadress,
-    Defaddress,
-    addcart,
-    cartEdit,
-    cartree,
-    addcartPost,
-    checkoutPage,
-    postSucces,
-    success,
-    orderView,
-    orderDet,
-    editOrder,
-  
 };

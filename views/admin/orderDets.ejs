@@ -57,13 +57,13 @@
                               </td>
                          
                               <td> $<%= elem.orderAmount %> </td>
-                              <td>Cod</td>
+                              <td><%= elem.peyment %></td>
                               <td><%=elem.orderDate.toString().split(' ').slice(0,4).join('  ') %></td>
                               <!-- <td>
                                 <div class="badge badge-outline-success">Approved</div>
                               </td> -->
                               <td>
-                                <div style="cursor: pointer;" id="b<%=elem._id  %>" onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')" class="badge  <%= elem.orderStatus ? 'badge-outline-success' : 'badge-outline-danger' %>"><%= elem.orderStatus %></div>
+                                <div style="cursor: pointer;" id="b<%=elem._id  %>" onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')" class="badge  <%= elem.orderStatus === 'canceled' ? 'badge-outline-danger' : 'badge-outline-success' %>"><%= elem.orderStatus %></div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >

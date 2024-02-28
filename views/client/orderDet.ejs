@@ -69,7 +69,7 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th>Name</th>
+                    <th>Order ID</th>
                     <th>order Status</th>
                     <th>Items</th>
                     <th>Total price</th>
@@ -82,8 +82,7 @@
                   <tr>
                     <td><%= index+1 %></td>
                     <td class="">
-                      <%= e.orderDate.toString().split(' ').slice(0,4).join(' ')
-                      %> order
+                      <%= e._id %>
 
                       <!-- End .product -->
                     </td>

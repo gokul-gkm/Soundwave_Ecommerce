@@ -4,6 +4,16 @@ const addressModal = require("../models/adress");
 const cartModal = require("../models/cart");
 const productModal = require("../models/products");
 const orderModal = require("../models/orders");
+const Razorpay = require('razorpay');
+const { order } = require("./adminOrderController");
+
+require('dotenv').config();
+const { RAZORPAY_IDKEY, RAZORPAY_SECRET_KEY } = process.env;
+
+var instance = new Razorpay({
+  key_id: RAZORPAY_IDKEY,
+  key_secret: RAZORPAY_SECRET_KEY
+})
 
 
 // checkoutPage page rendering
@@ -114,7 +124,7 @@ const checkoutPage = async (req, res) => {
   const orderDet = async (req, res) => {
       try {
           const category = await categoryModal.find({ isDeleted: false });
-          const order = await orderModal.find({ userId: req.session.login });
+          const order = await orderModal.find({ userId: req.session.login }).sort({ orderDate: -1 });
           if (order) {
               res.render('client/orderDet', { login: req.session.login, order ,category})
           } else {
@@ -159,7 +169,37 @@ const checkoutPage = async (req, res) => {
       } catch (err) {
           console.log(err.message + ' /editOrder')
       }
+}
+  
+const razor = async (req, res) => {
+  try {
+    const user = await userSchema.findOne({ _id: req.body.userId })
+    const amount = req.body.amount * 100;
+    const options = {
+      amount : amount,
+      currency: 'INR',
+      receipt: process.env.RAZORPAY_EMAIL
+    }
+    instance.orders.create(options, (err, order) => {
+      if (!err) {
+        res.send({
+          succes: true,
+          msg: 'ORDER created!',
+          order_id: order.id,
+          amount: amount,
+          key_id: RAZORPAY_IDKEY,
+          name: user.name,
+          email: user.email
+        })
+      } else {
+        console.log(err);
+      }
+    })
+    
+  } catch (err) {
+    console.log(err.message + '    razorpay route');
   }
+}
 
   
   module.exports = {
@@ -169,4 +209,5 @@ const checkoutPage = async (req, res) => {
     orderView,
     orderDet,
     editOrder, 
+    razor
 };

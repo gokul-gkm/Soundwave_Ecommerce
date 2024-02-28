@@ -159,7 +159,16 @@
                                                         </h2>
                                                     </div>
                                                     <br>
+            
                                                     <!-- End .card-header -->
+                                                    <div class="card-header" id="heading-1">
+                                                        <h2 class="card-title">
+
+                                                            <input type="radio" name="peyment" id="online"
+                                                                value="online peyment" class="bg-primary ">
+                                                            <label for="">online pey ment</label>
+                                                        </h2>
+                                                    </div><!-- End .card-header -->
                                                     
                                                 </div><!-- End .card -->
 
@@ -206,8 +215,45 @@
 
                     var formData = new FormData(document.getElementById('myForm'));
 
+                    const Radio = document.querySelector('input[name="peyment"]:checked');
+                    if(Radio.value == 'online peyment'){
+                        fetch('/razor',{
+                            method: 'POST',
+                            headers: { 'Content-type': 'application/json'},
+                            body: JSON.stringify({userId, amount})
+                        })
+                        .then(res=> res.json())
+                        .then(data=>{
+                            if(data.succes){
+                                let options = {
+                                    "key": `${data.key_id}`,
+                                    "amount": `${data.amount}`,
+                                    "currency": "INR",
+                                    "name": "Soundwave",
+                                    "order_id": `${data.order_id}`,
+                                    "handler": function(response){
+                                        form.submit();
+                                    },
+                                    "profile": {
+                                        "name": `${data.name}`,
+                                        "email": `${data.email}`
+                                    }
+                                }
+                                console.log(data);
+
+                                let razorpayObject = new Razorpay(options);
+                                razorpayObject.on('payment.failed',(response)=>{
+                                    alert('payment failed');
+                                });
+                                razorpayObject.open();
+                            }
+                        })
+                    } else{
+
+                        form.submit();
+                    }
+
                     
-                    form.submit();
                     
 
                 }

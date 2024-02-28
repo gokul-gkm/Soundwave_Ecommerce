@@ -11,7 +11,7 @@ const order = new mongoose.Schema({
      },
      peyment:{type:String},
     orderDate: { type: Date, required: true, default:  Date.now },
-    orderStatus: { type: String,enum: ['pending', 'shipped', 'delivered'], default: 'pending'},
+    orderStatus: { type: String,enum: ['pending', 'shipped', 'delivered','canceled'], default: 'pending'},
     OrderedItems: [{
         productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: {
@@ -28,6 +28,22 @@ const order = new mongoose.Schema({
     }],
 
 })
+
+// order.pre('save', function(next) {
+//     const allProStatus = this.OrderedItems.map(item => item.orderProStatus);
+
+//     if (allProStatus.every(status => status === 'delivered')) {
+//         this.orderStatus = 'delivered';
+//     } else if (allProStatus.every(status => status === 'shipped')) {
+//         this.orderStatus = 'shipped';
+//     } else if (allProStatus.every(status => status === 'cancelled')) {
+//         this.orderStatus = 'cancelled';
+//     } else {
+//         this.orderStatus = 'pending';
+//     }
+
+//     next();
+// });
 
 module.exports = mongoose.model('orders', order)
 

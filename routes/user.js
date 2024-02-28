@@ -1,30 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const userController=require('../controller/userControlller')
-const userMidleware = require('../middleware/user')
+const userController = require('../controller/userControlller');
+const userAddressController = require('../controller/userAddressController');
+const userCartController = require('../controller/userCartController');
+const userOrderController = require('../controller/userOrderController');
+const userMidleware = require('../middleware/user');
 const { check, validationResult } = require('express-validator');
 // const { validateSignup, checkValidation } = require('../middleware/validation.js');
 
-const validateSignup = [
-    check('registerName', 'name must be greater  than 3+ charaters')
-        .trim()
-        .exists()
-        .isLength({ min: 3 }),
-    check('registerEmail', 'enter a valid email')
-        .trim()
-        .isEmail(),
-    check('registerPassword', 'password must be 3+ characters')
-        .trim()
-        .isLength({ min: 3 }),
-    check('registerConfirmPassword', 'password do not match')
-        .trim()
-        .custom((value, { req }) => {
-            if (value == !req.body.registerPassword) {
-                throw new Error('Password do not match')
-            }
-            return true;
-        })   
-]
 
 // get home page
 router.get('/',userMidleware.userbloack,userController.home);
@@ -81,64 +64,72 @@ router.get('/category',userMidleware.userbloack,userController.category)
 router.get('/profile',userMidleware.userbloack,userMidleware.user,userController.profile);
 
 //profile route
-router.get('/productDets',userMidleware.userbloack,userController.productDets);
+router.get('/productDets', userMidleware.userbloack, userController.productDets);
+
+/***************Cart***************/
 
 //CART PAGE RENDERING route
-router.get('/cart',userMidleware.userbloack,userMidleware.user,userController.cart);
+router.get('/cart',userMidleware.userbloack,userMidleware.user,userCartController.cart);
+
+// add cart fetching
+router.put('/addcart',userCartController.addcart)
+
+//ad cart on post requuser
+router.post('/addcart',userCartController.addcartPost)
+
+//cart stock increasing fetching 
+router.put('/cartUpdate', userCartController.cartEdit)
+
+//deleate cart 
+router.delete('/cartremove',userCartController.cartree)
 
 //wishlist PAGE RENDERING route
 router.get('/wishlist',userMidleware.userbloack,userMidleware.user,userController.wishlist);
 
-// add cart fetching
-router.put('/addcart',userController.addcart)
-
-//ad cart on post requuser
-router.post('/addcart',userController.addcartPost)
-
-//cart stock increasing fetching 
-router.put('/cartUpdate', userController.cartEdit)
-
-//deleate cart 
-router.delete('/cartremove',userController.cartree)
-
-router.get('/checkoutPage', userMidleware.userbloack, userMidleware.user, userController.checkoutPage);
-
-
-
-// succes msg rendering
-router.get('/success',userMidleware.userbloack,userMidleware.user,userController.success)
-
-//succes post route
-router.post('/success', userController.postSucces)
+/***************Address***************/
 
 //adress route
-router.get('/adress',userMidleware.userbloack,userMidleware.user,userController.adress);
+router.get('/adress',userMidleware.userbloack,userMidleware.user,userAddressController.adress);
 
 // getting addresss
-router.post('/adress',userController.getadress)
+router.post('/adress', userAddressController.getadress);
 
 //fetching adress exists or note 
-router.put('/address',userController.patchaddress)
+router.put('/address', userAddressController.patchaddress);
 
 //remove address
-router.delete('/address',userController.removeadress)
+router.delete('/address', userAddressController.removeadress);
 
 // defulat address fetching
-router.put('/Defaddress', userController.Defaddress)
+router.put('/Defaddress', userAddressController.Defaddress);
+
+
+/***************Order***************/
+
+
+router.get('/checkoutPage', userMidleware.userbloack, userMidleware.user, userOrderController.checkoutPage);
 
 //  order det page rendering
-router.get('/order',userMidleware.userbloack,userMidleware.user,userController.orderDet)
+router.get('/order',userMidleware.userbloack,userMidleware.user,userOrderController.orderDet)
 
 //  order det page rendering
-router.get('/orderView/:id', userMidleware.userbloack, userMidleware.user, userController.orderView);
+router.get('/orderView/:id', userMidleware.userbloack, userMidleware.user, userOrderController.orderView);
 
 //order canceling 
-router.put('/editOrder', userController.editOrder)
+router.put('/editOrder', userOrderController.editOrder);
 
+// succes msg rendering
+router.get('/success', userMidleware.userbloack, userMidleware.user, userOrderController.success);
+
+//succes post route
+router.post('/success', userOrderController.postSucces);
+
+//razorpay
+router.post('/razor', userOrderController.razor);
 
 
 //logout
-router.post('/logout',userController.logout)
+router.post('/logout', userController.logout);
 
 
 module.exports = router;

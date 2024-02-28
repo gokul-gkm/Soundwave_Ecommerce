@@ -1,7 +1,7 @@
 const adminRoute=(req,res,next)=>{
     try{
        if(!req.session.admin){
-        res.redirect('/')
+        return res.redirect('/')
        }
        next();
     }catch(err){
