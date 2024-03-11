@@ -2,14 +2,15 @@ const userSchema = require("../models/userSchema");
 const categoryModal = require("../models/catagory");
 const addressModal = require("../models/adress");
 const cartModal = require("../models/cart");
+const wishlistModal = require("../models/wishlist");
 const productModal = require("../models/products");
 const orderModal = require("../models/orders");
 const nodemailer = require("nodemailer");
 const bycrypt = require("bcrypt");
 require("dotenv").config();
 
-const e = require("express");
 
+const e = require("express");
 const { check, validationResult } = require("express-validator");
 
 
@@ -59,7 +60,7 @@ const securePassword = async (pass) => {
 
 // date setup
 const options = { day: "2-digit", month: "short", year: "numeric" };
-//end
+
 
 // routing controllers
 
@@ -160,6 +161,7 @@ const getSignUp = async (req, res) => {
         .trim()
         .isLength({ min: 3 }),
       check("registerEmail", "enter a valid email").trim().isEmail(),
+      check("signupPhone", "enter a valid phone number").trim().isMobilePhone(),
       check("registerPassword", "password must be 3+ characters")
         .trim()
         .isLength({ min: 3 }),
@@ -185,11 +187,14 @@ const getSignUp = async (req, res) => {
     }
 
     const sp = await securePassword(req.body.registerPassword);
+
     const userData = new userSchema({
       name: req.body.registerName,
       email: req.body.registerEmail,
       password: sp,
+      phone: req.body.signupPhone
     });
+    
     const noUser = await userSchema.findOne({ email: req.body.registerEmail });
 
     if (noUser) {
@@ -197,6 +202,7 @@ const getSignUp = async (req, res) => {
     } else {
       req.session.userData = userData;
       req.session.otp = generateOTP();
+        console.log(req.session.otp);
 
       verifyemail(
         req.body.registerName,
@@ -254,14 +260,14 @@ const gettingOtp = async (req, res) => {
       if (Number(otp.join("")) === req.session.otp) {
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString("en-US", options);
-
+      
         const userData = new userSchema({
           name: req.session.userData.name,
           email: req.session.userData.email,
           password: req.session.userData.password,
           date: formattedDate,
+          phone: req.session.userData.phone
         });
-
         const userSave = await userData.save();
 
         if (userSave) {
@@ -432,6 +438,123 @@ const getLogin = async (req, res) => {
   }
 };
 
+
+
+const product = async (req, res) => {
+  const limit = 4;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
+  const searchQuery = req.query.product_search; 
+  const sortOption = req.query.sortby || 'newArrivals'; 
+  let selectedCategories = req.query.categories || [];
+
+  try {
+      const category = await categoryModal.find({
+          isDeleted: false,
+          listed: true,
+      });
+
+      const categoryIds = category.map((category) => category._id);
+
+      let query = {
+          stock: { $gt: 0 },
+          listed: true,
+          isDeleted: false,
+          category: { $in: categoryIds },
+      };
+    
+      if (!Array.isArray(selectedCategories)) {
+        selectedCategories = [selectedCategories];
+      }
+    console.log("hi");
+    console.log(selectedCategories);
+
+    if (selectedCategories.length > 0) {
+        query.category = { $in: selectedCategories }; // Apply category filter
+    }
+
+    console.log(query);
+
+      if (searchQuery) {
+          query.name = { $regex: new RegExp(searchQuery, 'i') }; 
+      }
+
+      const totalProductsCount = await productModal.countDocuments(query);
+
+      const totalPages = Math.ceil(totalProductsCount / limit);
+
+      let sortCriteria = {};
+
+      switch (sortOption) {
+          case 'priceLowToHigh':
+              sortCriteria = { price: 1 };
+              break;
+          case 'priceHighToLow':
+              sortCriteria = { price: -1 };
+              break;
+          case 'averageRating':
+              sortCriteria = { averageRating: -1 };
+              break;
+          case 'featured':
+              sortCriteria = { featured: -1 };
+              break;
+          case 'popularity':
+              sortCriteria = { popularity: -1 };
+              break;
+          case 'aToZ':
+              sortCriteria = { name: 1 };
+              break;
+          case 'zToA':
+              sortCriteria = { name: -1 };
+              break;
+          default:
+              sortCriteria = { createdAt: -1 }; 
+              break;
+      }
+
+      const Allproduct = await productModal
+          .find(query)
+          .populate('category')
+          .sort(sortCriteria)
+          .skip(skip)
+        .limit(limit);
+    
+    console.log("filter");
+    
+    console.log(Allproduct);
+
+      if (req.session.login) {
+          res.render('client/shop', {
+              login: req.session.login,
+              Allproduct,
+              category,
+              currentPage: page,
+              totalPages,
+              totalProductsCount,
+              limit,
+            sortby: sortOption,
+            selectedCategories
+        });
+       
+        
+      } else {
+        res.render('client/shop', {
+          Allproduct,
+          category,
+          currentPage: page,
+          totalPages,
+          totalProductsCount,
+          limit,
+        sortby: sortOption,
+        selectedCategories
+        });
+        
+      }
+  } catch (err) {
+      console.log(err.message + '        shop route');
+  }
+};
+
 const products = async (req, res) => {
   const limit = 4;
   const page = parseInt(req.query.page) || 1;
@@ -533,7 +656,7 @@ const category = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const category = await categoryModal.find({});
+    const category = await categoryModal.find({isDeleted: false, listed: true,});
 
     const categoryObj = await categoryModal.findOne({ name: catName });
 
@@ -610,7 +733,30 @@ const profile = async (req, res) => {
   }
 };
 
-//product details get method
+const editProfile = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+
+    const { name, phone } = req.body;
+   
+    const updatedUser = await userSchema.findOneAndUpdate(
+        { _id: userId },
+        { $set: { name, phone } },
+        { new: true } 
+    );
+
+    if (updatedUser) {
+      res.redirect('/profile');
+        // res.status(200).json({ success: true, message: 'Profile updated successfully' });
+    } else {
+        res.status(404).json({ success: false, message: 'User not found' });
+    }
+} catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+}
+}
+
 const productDets = async (req, res) => {
   try {
     if (req.query.proId) {
@@ -642,12 +788,99 @@ const productDets = async (req, res) => {
 };
 
 //wishlist get method
+
+
 const wishlist = async (req, res) => {
   try {
-    const category = await categoryModal.find({});
-    res.render("client/wishlist", { login: req.session.login, category });
+    const wishlist = await wishlistModal
+      .findOne({ userId: req.session.login })
+      .populate("products.productId");
+
+    console.log(wishlist);
+    if (wishlist) {
+      
+     
+      const category = await categoryModal.find({});
+      res.render("client/wishlist", {
+        login: req.session.login,
+        wishlist,
+        category,
+      });
+    } else {
+      const category = await categoryModal.find({});
+      res.render("client/wishlist", {
+        login: req.session.login,
+        category,
+      });
+    }
   } catch (err) {
-    console.log(err.message + "      wishList page route");
+    console.log(err.message + "      cart page route");
+  }
+}
+
+const addToWishlist = async (req, res) => {
+  try {
+    const product = await productModal.findOne({ _id: req.body.id });
+    const result = await wishlistModal
+      .findOne({
+        userId: req.body.user,
+        products: {
+          $elemMatch: {
+            productId: req.body.id,
+          },
+        },
+      })
+      .exec();
+    if (!result) {
+      const tp = product.price * req.body.q;
+
+      const filter = { userId: req.body.user };
+      const update = {
+        $set: {
+          userId: req.body.user,
+        },
+        $addToSet: {
+          products: { productId: req.body.id, price: tp },
+        },
+      };
+      const options = {
+        upsert: true,
+        new: true,
+      };
+
+      const wishlistSuccess = await wishlistModal
+        .findOneAndUpdate(filter, update, options)
+        .exec();
+
+      if (wishlistSuccess) {
+        res.send({ success: "success" });
+      }
+    } else {
+      res.send({ exist: "it is already exist" });
+    }
+  } catch (err) {
+    console.log(err.message + "      wishlist put fecth routre");
+  }
+}
+
+const wishlistRemove = async (req, res) => {
+  try {
+
+    const remove = await wishlistModal.updateOne(
+      { _id: req.body.id },
+      {
+        $pull: { products: { productId: req.body.proid } },
+      }
+    );
+    if (remove.modifiedCount === 0) {
+      res.send({ failure: "can't remove" });
+    } else {
+      const rdata = await wishlistModal.findOne({ _id: req.body.id });
+      console.log(rdata);
+      res.send({ rdata , success: "success" });
+    }
+  } catch (err) {
+    console.log(err.message + "   wishlistremove");
   }
 };
 
@@ -668,26 +901,31 @@ const logout = async (req, res) => {
 };
 
 
+
 module.exports = {
-    signUp,
-    getSignUp,
-    home,
-    otp,
-    gettingOtp,
-    products,
-    category,
-    emailExist,
-    getLogin,
-    profile,
-    about,
-    resubmit,
-    resend,
-    forgetPassword,
-    forgetemailExist,
-    forget,
-    newPass,
-    getNewPass,
-    logout,
-    productDets,
-    wishlist,
+  signUp,
+  getSignUp,
+  home,
+  otp,
+  gettingOtp,
+  products,
+  product,
+  category,
+  emailExist,
+  getLogin,
+  profile,
+  about,
+  resubmit,
+  resend,
+  forgetPassword,
+  forgetemailExist,
+  forget,
+  newPass,
+  getNewPass,
+  logout,
+  productDets,
+  wishlist,
+  addToWishlist,
+  wishlistRemove,
+  editProfile,
 };

@@ -8,7 +8,8 @@ const adminRouter = require('./routes/admin');
 const nocache = require('nocache');
 const dotEnv = require('dotenv');
 const app = express();
-const fs=require('fs')
+const fs = require('fs')
+const createError = require('http-errors');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL);
@@ -31,30 +32,22 @@ app.use('/', userRouter);
 app.use('/admin', adminRouter)
 
 
+app.get('/test-error', (req, res, next) => {
+  const err = createError(500, 'This is a test error');
+  next(err);
+});
+
 // error handler
 app.use(function (err, req, res, next) {
   
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  console.log("Hi"+res.locals.error);
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
 
-// app.get('/error', (req, res, next) => {
-//   const err = new Error('This is a simulated error');
-//   err.status = 500; // Set the status code of the error
-//   next(err); // Pass the error to the next middleware
-// });
-
-app.listen(process.env.PORT, () => { console.log('http://localhost:3001') })
-
-
-
-
+const port = process.env.PORT || 3001
+app.listen(port, () => { console.log('http://localhost:3001') })
 
 module.exports = app;

@@ -29,21 +29,7 @@ const order = new mongoose.Schema({
 
 })
 
-// order.pre('save', function(next) {
-//     const allProStatus = this.OrderedItems.map(item => item.orderProStatus);
 
-//     if (allProStatus.every(status => status === 'delivered')) {
-//         this.orderStatus = 'delivered';
-//     } else if (allProStatus.every(status => status === 'shipped')) {
-//         this.orderStatus = 'shipped';
-//     } else if (allProStatus.every(status => status === 'cancelled')) {
-//         this.orderStatus = 'cancelled';
-//     } else {
-//         this.orderStatus = 'pending';
-//     }
-
-//     next();
-// });
 
 module.exports = mongoose.model('orders', order)
 

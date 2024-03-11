@@ -3,14 +3,10 @@ const orderModal = require('../models/orders');
 //order 
 const order = async (req, res) => {
     try {
-
         const limit = 5;
         const page = parseInt(req.query.page) || 1; 
         const skip = (page - 1) * limit;
         const totalOrderCount = await orderModal.countDocuments({});
-
-
-      
         const totalPages = Math.ceil(totalOrderCount / limit);
 
         const orderList = await orderModal.find({})
@@ -41,7 +37,6 @@ const orderView = async (req, res) => {
     }
 }
 
-
 //remove order product
 const removeorder = async (req, res) => {
     try {
@@ -53,6 +48,7 @@ const removeorder = async (req, res) => {
         console.log(err.message + '    removeorder')
     }
 }
+
 //remove order 
 const removeordeFull = async (req, res) => {
     try {
@@ -66,24 +62,14 @@ const removeordeFull = async (req, res) => {
     }
 }
 
-//orderProstatus
-// const orderProstatus = async (req, res) => {
-//     try {
-//         await orderModal.findOneAndUpdate({ _id: req.body.id, 'OrderedItems.productId': req.body.proId }, { $set: { 'OrderedItems.$.orderProStatus': req.body.val } })
-//     } catch (err) {
-//         console.log(err.message + ' orderProstatus')
-//     }
-// }
 
 const orderProstatus = async (req, res) => {
     try {
-        // Update the orderProStatus
+        
         await orderModal.findOneAndUpdate(
             { _id: req.body.id, 'OrderedItems.productId': req.body.proId },
             { $set: { 'OrderedItems.$.orderProStatus': req.body.val } }
         );
-
-        // Trigger the logic to update the orderStatus
         updateOrderStatus(req.body.id);
         
         res.json({ success: true });
@@ -97,11 +83,8 @@ const orderProstatus = async (req, res) => {
 const updateOrderStatus = async (orderId) => {
     try {
         const order = await orderModal.findById(orderId);
-
-        // Get the orderProStatus values of all products
         const orderProStatusValues = order.OrderedItems.map(item => item.orderProStatus);
 
-        // Determine the orderStatus based on the orderProStatus values
         let newOrderStatus;
         if (orderProStatusValues.every(status => status === 'delivered')) {
             newOrderStatus = 'delivered';
@@ -113,7 +96,6 @@ const updateOrderStatus = async (orderId) => {
             newOrderStatus = 'pending';
         }
 
-        // Update the orderStatus
         order.orderStatus = newOrderStatus;
         await order.save();
     } catch (err) {

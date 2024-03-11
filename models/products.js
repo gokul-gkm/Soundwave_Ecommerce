@@ -12,7 +12,9 @@ const product= new mongoose.Schema({
     listed: { type: Boolean, default: true },
     color: { type: String },
     tags: [{ type: String }],
-    isDeleted: {type: Boolean, default : false}
+    isDeleted: { type: Boolean, default: false },
+    offer: { type: mongoose.Schema.Types.ObjectId, ref: 'offer' },
+    actualPrice: {type: Number}
 })
 
 

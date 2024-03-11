@@ -15,7 +15,6 @@ var instance = new Razorpay({
   key_secret: RAZORPAY_SECRET_KEY
 })
 
-
 // checkoutPage page rendering
 const checkoutPage = async (req, res) => {
     try {
@@ -67,7 +66,6 @@ const checkoutPage = async (req, res) => {
       console.log(err.message + "   succes page rendering");
     }
   };
-  
   
   //postSucces
   const postSucces = async (req, res) => {
@@ -141,8 +139,7 @@ const checkoutPage = async (req, res) => {
   const orderView = async (req, res) => {
       try {
           const category = await categoryModal.find({ isDeleted: false });
-          const order = await orderModal.findOne({ _id: req.params.id }).populate('OrderedItems.productId')
-         
+          const order = await orderModal.findOne({ _id: req.params.id }).populate('OrderedItems.productId');
           res.render('client/order', { login: req.session.login, order , category})
       } catch (err) {
           console.log(err.message + '      ORDER VIEW PAGE RENDERING ')

@@ -134,8 +134,13 @@
                                                                 cart</span></button>
                                                     </form>
                                                         <div class="details-action-wrapper">
-                                                            <a href="#" class="btn-product btn-wishlist"
-                                                                title="Wishlist"><span>Add to Wishlist</span></a>
+                                                            
+
+                                                                <a
+                                                                href="#" onclick="addwishlist('<%= productDet._id %>','<%=locals.login?locals.login:false  %>',1)"
+                                                                class="btn-product btn-wishlist "
+                                                                ><span>add to wishlist</span></a
+                                                              >                                                               
 
                                                         </div><!-- End .details-action-wrapper -->
                                                     </div><!-- End .product-details-action -->
@@ -330,6 +335,8 @@
                                         </div><!-- .End .tab-pane -->
                                     </div><!-- End .tab-content -->
                                 </div><!-- End .product-details-tab -->
+
+
 
                                 <h2 class="title text-center mb-4">You May Also Like</h2><!-- End .title text-center -->
 
@@ -577,6 +584,9 @@
             <br>
 
             <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+            <!-- sticky-bar -->
+
             <div class="sticky-bar">
                 <div class="container">
                     <div class="row">
@@ -604,8 +614,11 @@
 
                             <div class="product-details-action">
                                 <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
-                                        Wishlist</span></a>
+                                <a
+                                    href="#" onclick="addwishlist('<%= productDet._id %>','<%=locals.login?locals.login:false  %>',1)"
+                                    class="btn-product btn-wishlist "
+                                    ><span>add to wishlist</span></a
+                                  >
                             </div><!-- End .product-details-action -->
                         </div><!-- End .col-6 -->
                     </div><!-- End .row -->
@@ -645,8 +658,14 @@
 
                         <div class="product-details-action">
                             <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                            <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
-                                    Wishlist</span></a>
+                            <!-- <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
+                                    Wishlist</span></a> -->
+
+                                    <a
+                                    href="#" onclick="addwishlist('<%= productDet._id %>','<%=locals.login?locals.login:false  %>',1)"
+                                    class="btn-product btn-wishlist"
+                                    ><span>add to wishlist</span></a
+                                  >
                         </div><!-- End .product-details-action -->
                     </div><!-- End .col-6 -->
                 </div><!-- End .row -->
@@ -656,49 +675,52 @@
         <!-- Mobile Menu -->
         <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
 
-
-        <!-- <script >
-            const modal = document.getElementById('exampleModal')
-            function addCart(id, user, q) {
-                if (user === "false") {
-                    console.log('hello');
-                    window.location.href = '/login'
-                } else {
-
-                    fetch('/addcart', {
-                        method: 'put',
-                        headers: { 'Content-type': 'application/json' },
-                        body: JSON.stringify({ id, user, q })
-                    }).then(res => res.json()).then(data => {
-                        if (data.success) {
-                            toast("success","cart added")
-                        }
-                        if(data.exist){
-                            toast('warning','product already there')
-                        }
-                    })
-                }
-
+        <script>
+            function addwishlist(id, user, q) {
+      if (user === "false") {
+        window.location.href = "/login";
+      } else {
+        fetch("/addToWishlist", {
+          method: "post",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ id, user, q }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.success) {
+              toast("success", "Added to wishlist");
             }
-            function toast(icon,title) {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
-                Toast.fire({
-                    icon: icon,
-                    title: title
-                });
+            if (data.exist) {
+              toast("warning", "product already there");
             }
-        </script> -->
+          });
+      }
+    }
 
+    function toast(icon, title) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        },
+      });
+      Toast.fire({
+        icon: icon,
+        title: title,
+      });
+    }
+        </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
+
+        
         <script>
             let color = document.querySelector('.colorbox');
             color.style.width = "20px";

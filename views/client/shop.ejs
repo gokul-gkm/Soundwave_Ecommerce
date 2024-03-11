@@ -191,7 +191,7 @@
 
                     <div class="product-action-vertical">
                       <a
-                        href="#"
+                        href="#" onclick="addwishlist('<%=e._id  %>','<%=locals.login?locals.login:false  %>',1)"
                         class="btn-product-icon btn-wishlist btn-expandable"
                         ><span>add to wishlist</span></a
                       >
@@ -276,25 +276,37 @@
 
   <%- include('../layout/mobMenu.ejs') -%>
 
+  <!-- Add the script here -->
+
+ 
+
+
+
+
+ 
+  <!-- script for search -->
+
   <script>
     // Add an event listener to the form for the "keypress" event
     document
       .getElementById("searchForm")
       .addEventListener("keypress", function (event) {
-        // Check if the Enter key is pressed (keyCode 13)
+        
         if (event.keyCode === 13) {
-          event.preventDefault(); // Prevent the default form submission behavior
+          event.preventDefault(); 
 
           const searchQuery = document
             .getElementById("product_search")
             .value.trim();
           if (searchQuery !== "") {
-            // If the search query is not empty, submit the form
+            
             this.submit();
           }
         }
       });
   </script>
+
+<!-- script for add to cart -->
   <script>
     const modal = document.getElementById("exampleModal");
     function addCart(id, user, q) {
@@ -318,6 +330,28 @@
           });
       }
     }
+
+    function addwishlist(id, user, q) {
+      if (user === "false") {
+        window.location.href = "/login";
+      } else {
+        fetch("/addToWishlist", {
+          method: "post",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ id, user, q }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              toast("success", "wishlist added");
+            }
+            if (data.exist) {
+              toast("warning", "product already there");
+            }
+          });
+      }
+    }
+
     function toast(icon, title) {
       const Toast = Swal.mixin({
         toast: true,

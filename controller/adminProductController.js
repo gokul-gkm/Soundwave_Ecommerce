@@ -5,7 +5,6 @@ const path = require('path');
 const options = { day: '2-digit', month: 'short', year: 'numeric' };
 
 
-
 const productListed = async (req, res) => {
     try {
         const listedornot = await productModal.findOne({ _id: req.body.payload })
@@ -75,7 +74,8 @@ const getproduct = async (req, res) => {
             stock: req.body.stock,
             images: imgeArray,
             color: req.body.color,
-            tags: tags 
+            tags: tags,
+            actualPrice:req.body.price
         });
 
         res.redirect('/admin/product');

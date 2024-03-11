@@ -56,12 +56,17 @@ router.post('/sign-in',userController.getLogin)
 
 //products route 
 router.get('/products', userMidleware.userbloack, userController.products)
+//products route 
+router.get('/product', userMidleware.userbloack, userController.product)
 
 //category route 
 router.get('/category',userMidleware.userbloack,userController.category)
 
 //profile route
-router.get('/profile',userMidleware.userbloack,userMidleware.user,userController.profile);
+router.get('/profile', userMidleware.userbloack, userMidleware.user, userController.profile);
+
+//Edit profile post
+router.post('/editProfile',userController.editProfile);
 
 //profile route
 router.get('/productDets', userMidleware.userbloack, userController.productDets);
@@ -74,7 +79,7 @@ router.get('/cart',userMidleware.userbloack,userMidleware.user,userCartControlle
 // add cart fetching
 router.put('/addcart',userCartController.addcart)
 
-//ad cart on post requuser
+//add cart on post requuser
 router.post('/addcart',userCartController.addcartPost)
 
 //cart stock increasing fetching 
@@ -85,6 +90,13 @@ router.delete('/cartremove',userCartController.cartree)
 
 //wishlist PAGE RENDERING route
 router.get('/wishlist',userMidleware.userbloack,userMidleware.user,userController.wishlist);
+
+router.post('/addToWishList', userController.addToWishlist)
+//wishlist post
+
+// router.post('/addToWishList', userController.wishListPost);
+
+router.delete('/wishlistremove',userController.wishlistRemove)
 
 /***************Address***************/
 
@@ -126,6 +138,7 @@ router.post('/success', userOrderController.postSucces);
 
 //razorpay
 router.post('/razor', userOrderController.razor);
+
 
 
 //logout

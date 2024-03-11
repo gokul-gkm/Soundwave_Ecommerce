@@ -1,0 +1,214 @@
+<%- include('../layout/adminlayout.ejs') -%>
+  <div class="container-scroller">
+
+    <%- include('../layout/adminnav.ejs') -%>
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+
+          <div class="row ">
+            <div class="circle position-absolute " style="background-color: rebeccapurple;
+            filter: blur(136px);
+            width: 13rem;
+            height: 10rem;
+            border-radius: 50%;
+            transform: translate(57rem, 23rem);"></div>
+            <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589);
+            filter: blur(136px);
+            width: 13rem;
+            height: 10rem;
+            border-radius: 50%;
+         "></div>
+            <div class="col-12 grid-margin">
+              <div class="card " style="height: 80vh; border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
+                <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between ">
+                      <h4 class="card-title">offers</h4>
+                      <a href="/admin/addOffer" class="btn btn-primary text-white "
+                        style="outline: 0; border:0; margin-top: -1rem;">Add offer</a>
+                    </div>
+                    <div class="table-responsive">
+                      <form action="/admin/offer" method="post">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>
+                                No
+                              </th>
+                              <th> Name </th>
+                              <th> offer </th>
+                              <th> products </th>
+                              <th> options </th>
+
+
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <%locals.offer.forEach((e,i)=>{%>
+                              <tr>
+                                <td>
+                                  <%=i+1 %>
+                                </td>
+                                <td>
+                                  <%=e.name %>
+                                </td>
+                                <td>
+                                  <%=e.offer %>%
+                                </td>
+                                <td> <a href="/admin/offerProduct/<%=e._id  %>" class=" ">add product</a> </td>
+                                <td>
+                                  <div class="d-flex justify-content-start  align-items-center  " style="gap: 1rem;">
+                                    <h4><a href="/admin/offeredit/<%=e._id  %>" class="text-white text-decoration-none "><i
+                                          class="ri-edit-circle-fill" style="cursor: pointer;"></i></a></h4>
+                                          <h4><a onclick="gg('<%=e._id%>')" class="text-white text-decoration-none "><i class="ri-delete-bin-line" style="cursor: pointer;"></i></a></h4>
+                                  </div>
+                                </td>
+                              </tr>
+                              <% }) %>
+                          </tbody>
+                        </table>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+  <script src="sweetalert2/dist/sweetalert2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function gg(id){
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed){
+
+          window.location.href=`/admin/offerRemove/${id}`;
+        }})
+    }
+  </script>
+  
+  <script src="/vendors/js/vendor.bundle.base.js"></script>
+
+  <script src="/vendors/chart.js/Chart.min.js"></script>
+  <script src="/vendors/progressbar.js/progressbar.min.js"></script>
+  <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+  <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+  <script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+
+  <script src="/js/off-canvas.js"></script>
+  <script src="/js/hoverable-collapse.js"></script>
+  <script src="/js/misc.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/todolist.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <style>
+    div:where(.swal2-container).swal2-top,
+    div:where(.swal2-container).swal2-center,
+    div:where(.swal2-container).swal2-bottom {
+      overflow-y: auto;
+      background-color: #000000d9;
+      backdrop-filter: blur(5px);
+      transition: all ease 0.3s;
+    }
+
+    .swal2-show {
+      backdrop-filter: blur(21px) !important;
+      background-color: #0f1116 !important;
+    }
+
+    .swal2-icon {
+      margin-bottom: 0px !important;
+    }
+
+    div:where(.swal2-icon).swal2-success .swal2-success-fix {
+      background-color: #0f1116 !important;
+    }
+
+    div:where(.swal2-icon).swal2-success [class^=swal2-success-circular-line][class$=left] {
+      background-color: #0f1116 !important;
+    }
+
+    div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right {
+      background-color: #0f1116 !important;
+    }
+
+    @media (max-width:900px) {
+      .aa {
+        width: 100% !important;
+      }
+    }
+
+
+
+    .aa {
+      width: 50%;
+    }
+
+    body::-webkit-scrollbar {
+      width: 0;
+    }
+
+    body {
+      overflow: hidden !important;
+    }
+
+    .container-scroller {
+      overflow: hidden;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none !important;
+    }
+
+    #imageL3,
+    #imageL1,
+    #imageL2,
+    #imageL0 {
+      display: none;
+      opacity: 0;
+   
+    }
+
+    #msgP {
+      letter-spacing: .1rem;
+      text-transform: uppercase;
+   
+    }
+
+    .hh label {
+      opacity: .8 !important;
+      font-size: .8rem;
+    }
+
+    .l:hover #imageL3,
+    .l:hover #imageL1,
+    .l:hover #imageL2,
+    .l:hover #imageL0 {
+      opacity: 1;
+    }
+  </style>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
+
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+
+  <script src="/js/base.js"></script>
+
+  </body>
+
+  </html>

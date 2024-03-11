@@ -6,6 +6,10 @@ const adminCategoryController = require('../controller/adminCategoryController')
 const adminProductController = require('../controller/adminProductController');
 const adminUserController = require('../controller/adminUserController');
 const adminOrderController = require('../controller/adminOrderController');
+const adminCoupenController = require('../controller/adminCoupenController');
+const adminOfferController = require('../controller/adminOfferController');
+const adminReportController = require('../controller/adminReportController');
+
 const adminMidleware=require('../middleware/admin');
 const path = require('path');
 const multer=require('multer');
@@ -89,5 +93,57 @@ router.patch('/removeorder',adminOrderController.removeordeFull)
 //order view
 router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orderView)
 
+
+//peyment chart fetching
+router.put('/peyment',adminController.peyment)
+
+//yaer fetching
+router.put('/year', adminController.year);
+
+//coupen get
+router.get('/coupen',adminMidleware.adminRoute, adminCoupenController.coupenPage);
+
+//add coupen post
+router.post('/coupen', upload.array('images'), adminCoupenController.addCoupen);
+
+// coupen remove
+router.delete('/coupenRemove/:id', adminCoupenController.coupenRemove);
+
+//coupen edit 
+router.post('/coupenEdit/:id', upload.array('images'), adminCoupenController.coupenEdit);
+
+/************offers************/
+
+//offer page get
+router.get('/offer', adminMidleware.adminRoute, adminOfferController.offerPage);
+
+//add offer get
+router.get('/addOffer', adminMidleware.adminRoute, adminOfferController.addOfferPage);
+
+//offer creating post
+router.post('/offer', adminOfferController.offerCreating);
+
+router.put('/offer/:id', adminOfferController.offerProductAdd)
+
+router.get('/offerProduct/:id', adminMidleware.adminRoute, adminOfferController.offerProduct);
+
+//offer edit get
+router.get('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.offerEdit);
+
+//offeredit post
+router.post('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.getOfferEdit);
+
+//offerRemove
+router.get('/offerRemove/:id', adminMidleware.adminRoute, adminOfferController.offerRemove);
+
+
+//sales report in yearly and monthly and weekly
+router.get('/report/:id',adminMidleware.adminRoute,adminReportController.report)
+
+//sales report in yearly and monthly and weekly
+router.post('/report/download/:id',adminReportController.reportdownload)
+
+//report custom
+router.put('/report',adminReportController.customreport)
 
 module.exports=router;

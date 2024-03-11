@@ -5,7 +5,8 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          
+          <% let sale=0; locals.orderList.forEach(e=>{sale+=e.totalAmount}); %>
+          <% let Totorder=locals.orderList.reduce((acc,val)=>acc+val.totalCount,0);  %>
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
@@ -13,7 +14,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$0
+                          <h3 class="mb-0">$<%=sale %>
                           </h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
@@ -24,7 +25,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Sales Amount</h6>
+                    <h6 class="text-muted font-weight-normal">Total Sales </h6>
                   </div>
                 </div>
               </div>
@@ -35,34 +36,15 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0">
-                            <%= locals.count %>
+                            
+                            $<%=locals.daily[0]?locals.daily[0].totalAmount:0  %>
                           </h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p>
+                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p> -->
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="icon icon-box-success">
                           <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Orders</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$12.34</h3>
-                          <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-danger">
-                          <span class="mdi mdi-arrow-bottom-left icon-item"></span>
                         </div>
                       </div>
                     </div>
@@ -76,8 +58,28 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$31.53</h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
+                          <h3 class="mb-0">$<%=locals.monthSale  %></h3>
+                          <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="icon icon-box-success">
+                          <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="text-muted font-weight-normal">Monthly Sales </h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0">$<%=locals.yearly[0]?locals.yearly[0].totalAmount:0  %></h3>
+                          <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -86,7 +88,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Expense current</h6>
+                    <h6 class="text-muted font-weight-normal">Yearly revenue</h6>
                   </div>
                 </div>
               </div>
@@ -100,21 +102,21 @@
                     <div
                       class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
                       <div class="text-md-center text-xl-left">
-                        <h6 class="mb-1">Transfer to online payment</h6>
-                        <p class="text-muted mb-0" id="op_time"></p>
+                        <h6 class="mb-1">Transfer to online peyment</h6>
+                        <p class="text-muted mb-0" id="op_time"><%= op[0]?op[0].orderDate.toString().split(' ').slice(0,5).join('  '):''%></p>
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="online-peyment"></h6>
+                        <h6 class="font-weight-bold mb-0" id="online-peyment">$<%=op[0]?op[0].orderAmount:''  %></h6>
                       </div>
                     </div>
                     <div
                       class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
                       <div class="text-md-center text-xl-left">
                         <h6 class="mb-1">Cash on delivery</h6>
-                        <p class="text-muted mb-0" id="cod_time"></p>
+                        <p class="text-muted mb-0" id="cod_time"><%=cod[0]?cod[0].orderDate.toString().split(' ').slice(0,5).join('  '):''   %></p>
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="cod">$</h6>
+                        <h6 class="font-weight-bold mb-0" id="cod">$<%=cod[0]?cod[0].orderAmount:''  %></h6>
                       </div>
                     </div>
                   </div>
@@ -130,7 +132,26 @@
                     <div class="row">
                       <div class="col-12">
                         <div class="preview-list">
-                                         
+                          <% most.forEach(e=>{  %>
+                          <div class="preview-item border-bottom">
+                            <div class="preview-thumbnail">
+                              <div class="preview-icon bg-primary">
+                                <img style="width: 100%; height: 100%; object-fit: cover; "
+                                src='/productImage/<%=e.productData[0].images[0] %>' alt="">
+                              </div>
+                            </div>
+                            <div class="preview-item-content d-sm-flex flex-grow">
+                              <div class="flex-grow">
+                                <h6 class="preview-subject"><%=e.productData[0].name  %></h6>
+                                <p class="text-muted mb-0">product price:- $<%=e.productData[0].price  %></p>
+                              </div>
+                              <div class="mr-auto text-sm-right pt-2 pt-sm-0">
+                                <p class="text-muted"><%=e.totalCount  %>  products</p>
+                                <p class="text-muted mb-0"><%=e.orderDates[e.orderDates.length-1].toString().split(' ').slice(0,4).join('  ')  %></p>
+                              </div>
+                            </div>
+                          </div>
+                     <% }) %>
                         </div>
                       </div>
                     </div>
@@ -142,14 +163,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Revenue</h5>
+                    <h5>Total Order</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$32123</h2>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
+                          <h2 class="mb-0">Count: <%= Totorder  %></h2>
+                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
                         </div>
-                        <h6 class="text-muted font-weight-normal">11.38% Since last month</h6>
+                        <!-- <h6 class="text-muted font-weight-normal">11.38% Since last month</h6> -->
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-codepen text-primary ml-auto"></i>
@@ -161,14 +182,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Sales</h5>
+                    <h5>User Count</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$45850</h2>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p>
+                          <h2 class="mb-0">Count: <%=locals.userCount.length  %></h2>
+                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p> -->
                         </div>
-                        <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6>
+                        <!-- <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6> -->
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-wallet-travel text-danger ml-auto"></i>
@@ -180,14 +201,14 @@
               <div class="col-sm-4 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h5>Purchase</h5>
+                    <h5>Product Count</h5>
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">$2039</h2>
-                          <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p>
+                          <h2 class="mb-0">Count: <%= locals.productCount.length  %> </h2>
+                          <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p> -->
                         </div>
-                        <h6 class="text-muted font-weight-normal">2.27% Since last month</h6>
+                        <!-- <h6 class="text-muted font-weight-normal">2.27% Since last month</h6> -->
                       </div>
                       <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
                         <i class="icon-lg mdi mdi-monitor text-success ml-auto"></i>
@@ -198,7 +219,178 @@
               </div>
             </div>
             <!-- order -->
+            <div class="row ">
+              <a href="/admin/orders" class="text-decoration-none  col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Order Status</h4>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>
+                             No
+                            </th>
+                            <th> Client Name </th>
+                          
+                            <th> order Amount </th>
+                            
+                            <th> Payment Mode </th>
+                            <th> Start Date </th>
+                            <!-- <th> Payment Status </th> -->
+                            <th> order Status </th>
+                            <th> options </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         
+                          <% locals.orderList1.forEach((elem,i)=>{ %>
+                            
+                          <tr id="c<%=elem._id  %>">
+                            <td>
+                              <div class="form-check form-check-muted m-0">
+                                <%= i+1  %>
+                              </div>
+                            </td>
+                            <td>
+                              
+                              <span class="pl-2"> <%= elem.userId.name %>
+                              </span>
+                            </td>
+                       
+                            <td> $<%= elem.orderAmount %> </td>
+                            <td>Cod</td>
+                            <td><%=elem.orderDate.toString().split(' ').slice(0,4).join('  ') %></td>
+                            <!-- <td>
+                              <div class="badge badge-outline-success">Approved</div>
+                            </td> -->
+                            <td>
+                              <div style="cursor: pointer;" id="b<%=elem._id  %>" onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')" class="badge  <%= elem.orderStatus ? 'badge-outline-success' : 'badge-outline-danger' %>"><%= elem.orderStatus %></div>
+                          </td>
+                          <td>
+                              <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >
+                             <a href="/admin/ordersView/<%=elem._id  %>" class="btn bg-primary ">Details</a>
 
+                              
+                          </div>
+                            </td>
+                          </tr>
+                     
+                          <% }) %>  
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </a href="/admin/order">
+            </div>
+            <div class="row">
+              <div class="col-lg-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Yearly Sales</h4>
+                    <canvas id="areaChart" style="height:250px"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-row justify-content-between">
+                      <h4 class="card-title mb-1">recently add users</h4>
+                      <p><a href="/admin/users" class="text-muted mb-1 " style="text-align: end;">view all </a ></p>
+                    </div>
+                    <div class="preview-list">
+                      <% locals.recentUser.forEach(e=>{%>
+                      <div class="preview-item border-bottom">
+                        <div class="preview-item-content d-flex flex-grow">
+                          <div class="flex-grow">
+                            <div class="d-flex d-md-block d-xl-flex justify-content-between">
+                              <h6 class="preview-subject"><%=e.name  %></h6>
+                              
+                              <p class="text-muted text-small"><%= e.date  %></p>
+                            </div>
+                            <p class="text-muted"><%= e.email  %>.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <% }) %>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Visitors by Countries</h4>
+                    <div class="row">
+                      <div class="col-md-5">
+                        <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-us"></i>
+                                </td>
+                                <td>USA</td>
+                                <td class="text-right"> 1500 </td>
+                                <td class="text-right font-weight-medium"> 56.35% </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-de"></i>
+                                </td>
+                                <td>Germany</td>
+                                <td class="text-right"> 800 </td>
+                                <td class="text-right font-weight-medium"> 33.25% </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-au"></i>
+                                </td>
+                                <td>Australia</td>
+                                <td class="text-right"> 760 </td>
+                                <td class="text-right font-weight-medium"> 15.45% </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-gb"></i>
+                                </td>
+                                <td>United Kingdom</td>
+                                <td class="text-right"> 450 </td>
+                                <td class="text-right font-weight-medium"> 25.00% </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-ro"></i>
+                                </td>
+                                <td>Romania</td>
+                                <td class="text-right"> 620 </td>
+                                <td class="text-right font-weight-medium"> 10.25% </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <i class="flag-icon flag-icon-br"></i>
+                                </td>
+                                <td>Brasil</td>
+                                <td class="text-right"> 230 </td>
+                                <td class="text-right font-weight-medium"> 75.00% </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="col-md-7">
+                        <div id="audience-map" class="vector-map"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+        </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
 
@@ -210,6 +402,7 @@
   </div>
   <!-- container-scroller -->
   <!-- plugins:js -->
+  <script src="/js/chart.js"></script>
   <script src="/vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->
@@ -244,7 +437,190 @@
   <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
   <script src="js/base.js"></script>
- 
+  <script>
+
+    
+    const op = document.getElementById('online-peyment')
+    const cod = document.getElementById('cod')
+    const opTime = document.getElementById('op_time')
+    const codTime = document.getElementById('cod_time')
+    fetch('/admin/peyment', {
+      method: 'put',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    }).then(res => res.json()).then(data => {
+      let amoount = 0;
+      data.orderList.forEach(e => {
+        amoount += e.totalAmount;
+      })
+const cod=data.orderList[0]?data.orderList[0]._id:'cod';      
+const online=data.orderList[1]?data.orderList[1]._id:'online peyment';      
+const codC=data.orderList[0]?data.orderList[0].totalCount:0;
+const peymentC=data.orderList[1]?data.orderList[1].totalCount:0;
+
+      if ($("#transaction-history").length) {
+        var areaData = {
+          labels: [cod, online],
+          datasets: [{
+            data: [codC
+              , peymentC],
+            backgroundColor: [
+              "#00d25b", "#ffab00"
+            ]
+          }
+          ]
+        };
+        var areaOptions = {
+          responsive: true,
+          maintainAspectRatio: true,
+          segmentShowStroke: false,
+          cutoutPercentage: 70,
+          elements: {
+            arc: {
+              borderWidth: 0
+            }
+          },
+          legend: {
+            display: false
+          },
+          tooltips: {
+            enabled: true
+          }
+        }
+        var transactionhistoryChartPlugins = {
+          beforeDraw: function (chart) {
+            var width = chart.chart.width,
+              height = chart.chart.height,
+              ctx = chart.chart.ctx;
+
+            ctx.restore();
+            var fontSize = 1;
+            ctx.font = fontSize + "rem sans-serif";
+            ctx.textAlign = 'left';
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "#ffffff";
+
+            var text = `$${amoount}`,
+              textX = Math.round((width - ctx.measureText(text).width) / 2),
+              textY = height / 2.4;
+
+            ctx.fillText(text, textX, textY);
+
+            ctx.restore();
+            var fontSize = 0.75;
+            ctx.font = fontSize + "rem sans-serif";
+            ctx.textAlign = 'left';
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "#6c7293";
+
+            var texts = "Total",
+              textsX = Math.round((width - ctx.measureText(text).width) / 1.93),
+              textsY = height / 1.7;
+
+            ctx.fillText(texts, textsX, textsY);
+            ctx.save();
+          }
+        }
+        var transactionhistoryChartCanvas = $("#transaction-history").get(0).getContext("2d");
+        var transactionhistoryChart = new Chart(transactionhistoryChartCanvas, {
+          type: 'doughnut',
+          data: areaData,
+          options: areaOptions,
+          plugins: transactionhistoryChartPlugins
+        });
+      }
+
+    })
+    
+     //month chart
+     const currentYear = new Date().getFullYear();
+     const next5Years = Array.from({ length: 6 }, (_, index) => (currentYear+3) - index);
+     const previeYear = next5Years.reverse();
+     var d = [];
+
+
+fetch('/admin/year', {
+    method: 'put',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({})
+})
+    .then(res => res.json())
+    .then(data => {
+        const ryear = data.year.reverse();
+        previeYear.forEach((e, i) => {
+            let yearFound = false;
+
+            data.year.forEach((year, ind) => {
+                if (e === year._id) {
+                    d[i] = year.totalAmount;
+                    yearFound = true;
+                }
+            });
+
+            if (!yearFound) {
+                d[i] = 0;
+            }
+        });
+        if ($("#areaChart").length) {
+      var areaData = {
+      labels: previeYear,
+      datasets: [{
+        label: 'sales',
+        data: d,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1,
+        fill: true, // 3: no fill
+      }]
+    }; 
+    var areaOptions = {
+      plugins: {
+        filler: {
+          propagate: true
+        }
+      },
+      scales: {
+        yAxes: [{
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+        }]
+      }
+    }
+      var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
+      var areaChart = new Chart(areaChartCanvas, {
+        type: 'line',
+        data: areaData,
+        options: areaOptions
+      });
+    }
+
+        
+    console.log(d);
+      })
+   
+
+
+  </script>
   <!-- End custom js for this page -->
   </body>
 

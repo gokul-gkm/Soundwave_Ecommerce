@@ -102,13 +102,12 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    // Show a success toaster message or any other feedback
+                if (data.success) {                  
                     alert('Category removed successfully');
-                    // Reload the page or update the UI as needed
+              
                     location.reload();
                 } else {
-                    // Show an error toaster message or any other feedback
+                    
                     alert('Failed to remove Category: ' + data.message);
                 }
             })

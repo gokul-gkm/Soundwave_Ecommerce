@@ -15,24 +15,30 @@
 
             <div class="collapse show" id="widget-1">
                 <div class="widget-body">
+                    <!-- <form action="/products" method="GET"> -->
                     <div class="filter-items filter-items-count">
                         <% category.forEach(e=>{ %>
                         <div class="filter-item">
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input"
-                                id="<%= e._id %>" name="category" value="<%= e._id %>">
+                                <input type="checkbox" class="custom-control-input category-checkbox"
+                                id="cb<%= e._id %>" name="category" value="<%= e._id %>" onchange="filterProducts()">
+                                
                                 <label class="custom-control-label"
-                                    for="cat-1"><%= e.name %></label>
+                                    for="cb<%= e._id %>"><%= e.name %></label>
+
                             </div><!-- End .custom-checkbox -->
                             <span class="item-count">3</span>
                         </div><!-- End .filter-item -->
                         <% }) %>
 
                     </div><!-- End .filter-items -->
+                    <!-- <button type="submit" class="btn btn-primary">Apply Filters</button> -->
+                <!-- </form> -->
                 </div><!-- End .widget-body -->
             </div><!-- End .collapse -->
         </div><!-- End .widget -->
 
+        <!-- Filter Colour -->
 
         <div class="widget widget-collapsible">
             <h3 class="widget-title">

@@ -169,7 +169,6 @@
     inputs.forEach((input, index) => {
         input.addEventListener('input', function(event) {
             if (this.value && this.value.length >= parseInt(this.getAttribute('maxlength'))) {
-                // If the current input field is filled, move to the next input field
                 const nextInput = inputs[index + 1];
                 if (nextInput) {
                     nextInput.focus();
