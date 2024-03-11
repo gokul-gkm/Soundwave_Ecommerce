@@ -49,11 +49,8 @@
             <li class="nav-item">
               <a
                 class="nav-link"
-                id="tab-account-link"
-                data-toggle="tab"
-                href="#tab-account"
-                role="tab"
-                aria-controls="tab-account"
+                id="tab-account-link"         
+                href="/coupen"
                 aria-selected="false"
                 >Coupens</a
               >
@@ -177,10 +174,12 @@
                   <div class="mb-3">
                       <label for="userName" class="col-form-label">Name</label>
                       <input type="text" class="form-control" name="name" id="userName" value="<%= user.name %>">
+                      <div class="error text-danger " id="nameError"></div>
                   </div>
                   <div class="mb-3">
                       <label for="userPhone" class="col-form-label">Contact</label>
                       <input type="text" class="form-control" name="phone" id="userPhone" value="<%= user.phone %>">
+                      <div class="error text-danger" id="phoneError"></div>
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
@@ -233,6 +232,59 @@
             confirmButtonText: 'Okay'
         });
     }
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const nameInput = document.getElementById('userName');
+      const phoneInput = document.getElementById('userPhone');
+      const nameError = document.getElementById('nameError');
+      const phoneError = document.getElementById('phoneError');
+      const saveButton = document.getElementById('saveButton');
+
+      function validateInputs() {
+
+          const nameValue = nameInput.value.trim();
+          const phoneValue = phoneInput.value.trim();
+
+          let nameValid = true;
+          let phoneValid = true;
+
+          if (nameValue === '') {
+
+                nameValid = false;
+                nameError.textContent = 'Name cannot be empty';
+
+            } else if (/[^a-zA-Z\s]/.test(nameValue)) {
+
+                nameValid = false;
+                nameError.textContent = 'This is can not be validate , eg : joseph ';
+
+            } else {
+
+              nameError.textContent = '';
+
+            }
+
+          if (!/^\d{10}$/.test(phoneValue)) {
+
+              phoneValid = false;
+              phoneError.textContent = 'Phone number must be 10 digits';
+              
+          } else {
+
+              phoneError.textContent = '';
+
+          }
+
+          saveButton.disabled = !(nameValid && phoneValid);
+      }
+
+      nameInput.addEventListener('input', validateInputs);
+      phoneInput.addEventListener('input', validateInputs);
+
+  });
+
 </script>
 
 

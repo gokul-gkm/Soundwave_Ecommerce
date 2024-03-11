@@ -139,7 +139,11 @@ router.post('/success', userOrderController.postSucces);
 //razorpay
 router.post('/razor', userOrderController.razor);
 
+//coupen code posting
+router.post('/coupenCode/:id',userController.coupenCode);
 
+//  order det page rendering
+router.get('/coupen',userMidleware.userbloack,userMidleware.user,userController.coupenView)
 
 //logout
 router.post('/logout', userController.logout);

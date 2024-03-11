@@ -99,33 +99,6 @@ const adminPage = async (req, res) => {
     }
 }
 
-//year chart fetching
-const year = async (req, res) => {
-    try {
-        const currentYear = new Date().getFullYear();
-
-
-        const year = await orderModal.aggregate([
-            {
-                $match: {
-                    orderDate: { $gte: new Date(`${currentYear - 5}-01-01`), $lte: new Date(`${currentYear}-12-31`) }
-                }
-            },
-            {
-                $group: {
-                    _id: { $year: '$orderDate' },
-                    totalAmount: { $sum: '$orderAmount' }
-                }
-            },
-            {
-                $sort: { _id: 1 }
-            }
-        ])
-        res.send({ year })
-    } catch (err) {
-        console.log(err.message + '    year fetching ')
-    }
-}
 
 //peyment chart fetching 
 const peyment = async (req, res) => {
@@ -153,5 +126,4 @@ const peyment = async (req, res) => {
 module.exports = {
     adminPage,
     peyment,
-    year,
 }

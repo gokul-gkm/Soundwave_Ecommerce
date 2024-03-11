@@ -209,6 +209,12 @@ const getSignUp = async (req, res) => {
         req.body.registerEmail,
         req.session.otp
       );
+      
+      setTimeout(() => {
+        req.session.otp = undefined;
+        console.log('OTP has been cleared after 5 minutes.');
+      }, 5 * 60 * 1000); 
+
       return res.redirect("/otp");
     }
   } catch (error) {
@@ -360,6 +366,10 @@ const forget = async (req, res) => {
     req.session.otp = generateOTP();
     const user = await userSchema.findOne({ email: req.session.forget });
     verifyemail(user.name, user.email, req.session.otp);
+    setTimeout(() => {
+      req.session.otp = undefined;
+      console.log('OTP has been cleared after 5 minutes.');
+    }, 5 * 60 * 1000); 
     res.redirect("/otp");
   } catch (err) {
     console.log(err.message + "       forget gatting route");
@@ -901,6 +911,45 @@ const logout = async (req, res) => {
 };
 
 
+//coupenView
+const coupenView = async (req, res) => {
+  try {
+      const category = await categoryModal.find({})
+      const coupen = await userSchema.findOne({ _id: req.session.login }).populate('coupens.coupenId')
+      console.log(coupen);
+      res.render('client/coupen', { login: req.session.login, coupen: coupen.coupens, category })
+  } catch (err) {
+      console.log(err.message + '     coupenView')
+  }
+}
+
+//coupenCode
+const coupenCode = async (req, res) => {
+  try {
+      const hh = req.body.id.trim()
+      const id = String(hh)
+      const dataExist = await userSchema.findOne({ _id: req.params.id, 'coupens.ID': id }).populate("coupens.coupenId");
+      req.session.coupenId = id
+      let offer;
+      dataExist.coupens.forEach((e) => {
+          if (e.ID == id) {
+              offer = e.coupenId.offer
+          }
+      })
+      req.session.offer = offer
+      if (dataExist) {
+          res.redirect('/checkoutPage')
+      } else {
+          req.flash('msg', "coupen did'nt exist")
+          res.redirect('/cart')
+      }
+  } catch (err) {
+      console.log(err.message + ' coupenCode')
+  }
+}
+
+
+
 
 module.exports = {
   signUp,
@@ -928,4 +977,7 @@ module.exports = {
   addToWishlist,
   wishlistRemove,
   editProfile,
+  coupenView,
+  coupenCode,
+
 };

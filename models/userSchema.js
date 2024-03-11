@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
   coupens:[{
     ID:{type:String},
-    coupenId: { type: mongoose.SchemaTypes.ObjectId,  ref:'coupen' },
+    coupenId: { type: mongoose.Schema.Types.ObjectId,  ref:'coupen' },
   }]
 });
 
