@@ -97,8 +97,7 @@ router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orde
 //peyment chart fetching
 router.put('/peyment',adminController.peyment)
 
-//yaer fetching
-router.put('/year', adminController.year);
+
 
 //coupen get
 router.get('/coupen',adminMidleware.adminRoute, adminCoupenController.coupenPage);
