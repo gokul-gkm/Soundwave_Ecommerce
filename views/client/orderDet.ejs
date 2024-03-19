@@ -62,6 +62,9 @@
             </li>
           </ul>
         </aside>
+
+
+        
         <aside class="col col-xl-9 col-lg-8 col-md-6 col-sm-6 mb-4 mb-lg-0">
           <div class="row w-100" style="gap: 2rem">
             <div class="container">
@@ -92,7 +95,7 @@
                       <%=e.orderStatus %>
                     </td>
                     <td class=""><%=e.OrderedItems.length %></td>
-
+                    
                     <td class="price-col">$<%=e.orderAmount %></td>
                     <td>
                       <a
@@ -132,12 +135,24 @@
             </div>
           </div>
         </aside>
+
       </div>
     </div>
   </section>
 
+  <!-- <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background-color: blue;">
+    <div class="d-flex">
+      <div class="toast-body">
+        Payment failed! Please try again.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div> -->
+
   <%- include('../layout/mobMenu.ejs') -%> <%- include('../layout/lyfooter') -%>
 
+
+  
   <style>
     *::-webkit-scrollbar {
       width: 0;

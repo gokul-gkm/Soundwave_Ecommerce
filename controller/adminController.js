@@ -5,7 +5,7 @@ const orderModal = require('../models/orders')
 //admin page rendering
 const adminPage = async (req, res) => {
     try {
-        const orderList1 = await orderModal.find({}).sort({ _id: -1 }).populate('userId');
+        const orderList1 = await orderModal.find({}).sort({ _id: -1 }).populate('userId').limit(10);
         
         const productCount = await productModal.find({})
         const userCount = await userSchema.find({}).sort({ date: -1 });
@@ -92,8 +92,73 @@ const adminPage = async (req, res) => {
                 $sort: { _id: -1 }
             }
         ])
+      
+        const topTenCategory = await orderModal.aggregate([
+            {
+                $unwind: '$OrderedItems'
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'OrderedItems.productId',
+                    foreignField: '_id',
+                    as: 'productData'
+                }
+            },
+            {
+                $unwind: '$productData'
+            },
+            {
+                $lookup: {
+                    from: 'catgories',
+                    localField: 'productData.category',
+                    foreignField: '_id',
+                    as: 'categoryData'
+                }
+            },
+            {
+                $unwind: '$categoryData'
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'OrderedItems.productId',
+                    foreignField: '_id',
+                    as: 'orderedProduct'
+                }
+            },
+            {
+                $unwind: '$orderedProduct'
+            },
+            {
+                $group: {
+                    _id: {
+                        categoryId: '$productData.category',
+                        categoryName: '$categoryData.name',
+                        productId: '$orderedProduct._id',
+                        productName: '$orderedProduct.name'
+                    },
+                    totalProducts: { $sum: '$OrderedItems.quantity' }
+                }
+            },
+            {
+                $sort: { totalProducts: -1 }
+            },
+            {
+                $group: {
+                    _id: '$_id.categoryId',
+                    categoryName: { $first: '$_id.categoryName' },
+                    topProduct: { $first: '$_id.productId' },
+                    topProductName: { $first: '$_id.productName' },
+                    totalProducts: { $first: '$totalProducts' }
+                }
+            },
+            {
+                $limit: 10 
+            }
+        ]);
 
-        res.render('admin/dashboard', { admin: req.session.admin, home: 'home', most, orderList, count, op, cod, monthSale, daily, yearly, userCount, productCount, orderList1, recentUser })
+        res.render('admin/dashboard', { admin: req.session.admin, home: 'home', most, orderList, count, op, cod, monthSale, daily, yearly, userCount, productCount, orderList1, recentUser , topTenCategory})
     } catch (err) {
         console.log(err.message + '     admin first route');
     }

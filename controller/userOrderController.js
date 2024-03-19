@@ -4,8 +4,15 @@ const addressModal = require("../models/adress");
 const cartModal = require("../models/cart");
 const productModal = require("../models/products");
 const orderModal = require("../models/orders");
+const wallet = require("../models/wallet");
+const reviews = require("../models/reviews");
 const Razorpay = require('razorpay');
 const { order } = require("./adminOrderController");
+
+const { v4: uuid } = require('uuid');
+const fs = require('fs');
+const path = require("path");
+const invoiceConfig = require('../config/invoice');
 
 require('dotenv').config();
 const { RAZORPAY_IDKEY, RAZORPAY_SECRET_KEY } = process.env;
@@ -18,32 +25,54 @@ var instance = new Razorpay({
 // checkoutPage page rendering
 const checkoutPage = async (req, res) => {
     try {
-      const category = await categoryModal.find({});
+      const category = await categoryModal.find({listed: true, isDeleted: false});
+      const coupenOffer = req.session.offer || 0;
       const user = await userSchema.findOne({ _id: req.session.login });
       const cart = await cartModal
         .findOne({ userId: req.session.login })
         .populate("products.productId");
-  
+      
+      const nonBlockedProduct = cart.products.filter((e) => e.productId.listed)
+      
+      const BlockedProduct = cart.products.filter((e) => !e.productId.listed)
+      for (const el of BlockedProduct) {
+        if (!el.productId.listed) {
+
+            const doc = await cartModal.findOneAndUpdate({ userId: req.session.login }, { $pull: { products: { productId: el.productId._id } } }, { new: true });
+        }
+      }
+      
+      const total1 = nonBlockedProduct.reduce((acc, product) => acc + product.price, 0);
+      const total = Number(total1.toFixed(1))
+      const wallet1 = await wallet.findOne({ userId: req.session.login })
+        const walletAmount = wallet1?.amount || 0;
       let add;
       const adress = await addressModal.findOne({ userId: req.session.login });
+      const totalPriceAdding = await cartModal.findOneAndUpdate({ userId: req.session.login }, { $set: { TotalPrice: total } }, { new: true }).populate('products.productId').exec()
       if (adress) {
-        adress.address.forEach((e) => {
-          if (e._id + "hh" == user.addressId + "hh") {
-            add = e;
-          } else {
-          }
-        });
+        const add = adress?.address.find(e => e._id + 'hh' == user.addressId + 'hh');
+
+        // adress.address.forEach((e) => {
+        //   if (e._id + "hh" == user.addressId + "hh") {
+        //     add = e;
+        //   } else {
+        //   }
+        // });
         res.render("client/checkout", {
           login: req.session.login,
           add,
-          cart,
+          cart: totalPriceAdding,
           category,
+          coupenOffer,
+          walletAmount
         });
       } else {
         res.render("client/checkout", {
           login: req.session.login,
-          cart,
+          cart: totalPriceAdding,
           category,
+          coupenOffer,
+          walletAmount
         });
       }
     } catch (err) {
@@ -70,11 +99,15 @@ const checkoutPage = async (req, res) => {
   //postSucces
   const postSucces = async (req, res) => {
     try {
+      console.log(req.body.peyment);
+      const offer = req.session.offer || 0;
       const user = await userSchema.findOne({ _id: req.session.login });
       const cart = await cartModal.findOne({ userId: req.session.login });
+      const subtotal = cart.TotalPrice / 100 * (100 - offer)
+      const orderAmount = subtotal.toFixed(1)
       const orderSet = await orderModal.create({
         userId: req.session.login,
-        orderAmount: cart.TotalPrice,
+        orderAmount: orderAmount,
         deliveryAdress: user.addressId,
         peyment: req.body.peyment,
         deliveryAdress: {
@@ -90,6 +123,20 @@ const checkoutPage = async (req, res) => {
           price: e.price,
         })),
       });
+
+      if (req.session.offer && req.session.coupenId) {
+
+        const hh = req.session.coupenId.trim()
+        const id = String(hh)
+        const coupenRemove = await userSchema.findOneAndUpdate({ _id: user._id }, { $pull: { coupens: { ID: id } } })
+
+    }
+
+      if (req.body.peyment == 'wallet') {
+        const ne = 0 - subtotal.toFixed(1)
+        const debitAMount = ne * (-1)
+        await wallet.findOneAndUpdate({ userId: req.session.login }, { $inc: { amount: ne }, $push: { transaction: { amount: debitAMount, creditOrDebit: 'debit' } } })
+    }
   
       if (orderSet) {
         orderSet.OrderedItems.forEach(async (e) => {
@@ -109,6 +156,9 @@ const checkoutPage = async (req, res) => {
           req.session.succes = true;
           res.redirect("/success");
         } else {
+          // await orderModal.updateOne({ $set: { orderStatus: 'payment pending' } });
+          // res.redirect("/order?paymentFailed=true");
+          // res.send("Payment failed. Please try again later.")
         }
       } else {
         res.send("irs note");
@@ -122,7 +172,9 @@ const checkoutPage = async (req, res) => {
   const orderDet = async (req, res) => {
       try {
           const category = await categoryModal.find({ isDeleted: false });
-          const order = await orderModal.find({ userId: req.session.login }).sort({ orderDate: -1 });
+        const order = await orderModal.find({ userId: req.session.login }).sort({ orderDate: -1 });
+        
+       
           if (order) {
               res.render('client/orderDet', { login: req.session.login, order ,category})
           } else {
@@ -148,7 +200,11 @@ const checkoutPage = async (req, res) => {
   
   //editOrder
   const editOrder = async (req, res) => {
-      try {
+    try {
+      
+      const demo = await orderModal.findOne({ userId: req.body.user, 'OrderedItems.productId': req.body.id });
+
+      
           const newOne = await orderModal.findOneAndUpdate({ userId: req.body.user, 'OrderedItems.productId': req.body.id },
               {
                   $set: {
@@ -156,8 +212,34 @@ const checkoutPage = async (req, res) => {
                   'OrderedItems.$.orderProStatus':'canceled'
                   }
               }
-          )
-          if(newOne){
+        )
+        
+       
+        if (newOne) {
+
+          if (newOne.OrderedItems.length == 1) {
+            const k = await orderModal.findOneAndUpdate({ _id: newOne._id }, { $set: { orderStatus: 'canceled' } })
+            
+
+        } else {
+            let flag = newOne.OrderedItems.filter(e => e.orderProStatus === 'canceled').length;
+
+            if (flag === newOne.OrderedItems.length) {
+                const k = await orderModal.findOneAndUpdate({ _id: newOne._id }, { $set: { orderStatus: 'canceled' } })
+              
+            }
+          }
+
+          
+         
+          if (newOne.peyment != 'cod') {
+          
+            await wallet.findOneAndUpdate({ userId: req.body.user }, { $inc: { amount: req.body.price }, $push: { transaction: { amount: req.body.price, creditOrDebit: 'credit' } } }, { new: true, upsert: true });
+           
+          }
+          
+
+            
               res.send({set:true})
           }else{
               res.send({issue:true})
@@ -198,6 +280,83 @@ const razor = async (req, res) => {
   }
 }
 
+
+//invoice
+const invoice = async (req, res) => {
+  try {
+      if (req.params.id) {
+          const uuidb = uuid()
+          const orderDta = await orderModal.findOne({ _id: req.params.id }).populate('OrderedItems.productId userId');
+          
+          const inv = invoiceConfig(orderDta)         
+          const result = await easyinvoice.createInvoice(inv);        
+          const filePath = path.join(__dirname, '../public/files', `invoice_${uuidb}.pdf`);
+          await fs.writeFileSync(filePath, result.pdf, 'base64');
+      
+          res.download(filePath, `invoice_${uuidb}.pdf`, (err) => {
+              console.log("invoice download");
+              if (!err) {
+                  fs.unlinkSync(filePath);
+
+              } else {
+                  console.error(err);
+              }
+          });
+      } else {
+          res.status(404).send('Invoice ID not provided');
+      }
+
+  } catch (err) {    
+      console.log(err.message + "invoice" )   
+  }
+}
+
+const walletHistory = async (req, res) => {
+  try {
+      const perPage = 5;
+      const page = req.query.page || 1;
+      const walletOld = await wallet.find({ userId: req.session.login }).skip((perPage * page) - perPage)
+          .limit(perPage);;
+
+      const le = await wallet.find({ userId: req.session.login });
+      const totalPages = Math.ceil(le.length / 5)
+      if (walletOld.length != 0 && totalPages < page) {
+          
+          res.redirect(`/walletHistory`)
+      }
+      const category = await categoryModal.find({isDeleted: false, listed: true})
+      const walletData = await wallet.findOne({ userId: req.session.login }) || []
+      res.render('client/walletHistory', { login: req.session.login, category, wallet: walletData, le: le.length, totalPages, currentPage: page })
+  } catch (err) {
+      console.log(err.message + 'wallet history')
+      res.status(400).send({ err: err.message })
+  }
+}
+
+const reviewPost = async (req, res) => {
+  try {
+    const { rating, review } = req.body;
+    
+    const product = await productModal.findOne({_id: req.params.proId})
+
+    const user = await userSchema.findOne({_id: req.session.login})
+  const newReview = await reviews.create({
+    reviews: review,
+    ratings: rating,
+    userId: user._id,
+    productId: product._id
+  })
+
+  if (newReview) {
+    res.redirect('/order')
+  } else {
+    res.status(404).send("review not added")
+  }
+  } catch (err) {
+    console.log(err.message+ " reviews post");
+  }
+  
+}
   
   module.exports = {
     checkoutPage,
@@ -206,5 +365,8 @@ const razor = async (req, res) => {
     orderView,
     orderDet,
     editOrder, 
-    razor
+    razor,
+    invoice,
+    walletHistory,
+    reviewPost
 };

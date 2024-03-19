@@ -22,11 +22,7 @@
                 <div class="checkout">
                     <div class="container">
                         <div class="checkout-discount">
-                            <form action="/coupenCode/id">
-                                <input type="text" class="form-control" required id="checkout-discount-input">
-                                <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click
-                                        here to enter your code</span></label>
-                            </form>
+                            <a href="/cart">have coupen?</a> 
                         </div><!-- End .checkout-discount -->
                         <%let b=cart.products.map(e=> e.productId._id).join(','); %>
                             <form action="/success?p=<%=cart._id  %> %>" id="myForm" method="post">
@@ -101,11 +97,6 @@
                                         </div><!-- End .row -->
 
 
-
-
-
-
-
                                     </div><!-- End .col-lg-9 -->
                                     <aside class="col-lg-3">
                                         <div class="summary">
@@ -131,20 +122,26 @@
                                                         </tr>
                                                         <% }) %>
 
-                                                            <tr class="summary-subtotal">
-                                                                <td>Subtotal:</td>
-                                                                <td>$<%= cart.TotalPrice %>
-                                                                </td>
-                                                            </tr><!-- End .summary-subtotal -->
+                                                        <tr>
+                                                            <td>coupen offer:</td>
+                                                            <td><%=locals.coupenOffer  %>%</td>
+                                                        </tr>
+
+                                                        <tr class="summary-subtotal">
+                                                            <td>Subtotal:</td>
+                                                            <td>$<%= cart.TotalPrice/100*(100-locals.coupenOffer) %>
+                                                            </td>
+                                                        </tr><!-- End .summary-subtotal -->
+
                                                             <tr>
                                                                 <td>Shipping:</td>
                                                                 <td>Free shipping</td>
                                                             </tr>
                                                             <tr class="summary-total">
                                                                 <td>Total:</td>
-                                                                <td>$<%= cart.TotalPrice %>
+                                                                <td>$<%= cart.TotalPrice/100*(100-locals.coupenOffer) %>
                                                                 </td>
-                                                            </tr><!-- End .summary-total -->
+                                                            </tr>
                                                 </tbody>
                                             </table><!-- End .table table-summary -->
 
@@ -152,21 +149,54 @@
                                                 <div class="card">
                                                     <div class="card-header" id="heading-1">
                                                         <h2 class="card-title">
-
-                                                            <input type="radio" name="peyment" value="cod" checked
+                                                            <% if (cart.TotalPrice >= 1000) { %>
+                                                                <input type="radio" name="peyment" value="cod" disabled
+                                                                    class="bg-primary ">
+                                                                    <label for="" class="" style="color: lightgray;">Cash on delivery</label>
+                                                            <% } else { %>
+                                                                <input type="radio" name="peyment" value="cod" checked
                                                                 class="bg-primary ">
-                                                            <label for="">Cash on delivery</label>
+                                                                <label for="">Cash on delivery</label>
+                                                            <% } %>
+                                                            
                                                         </h2>
                                                     </div>
+                                                    <br>
+                                                    <input type="text" name="" id="" onclick="submit()" hidden >
+                                                    <!-- End .card-header -->
+                                                    <%  if(walletAmount>=cart.TotalPrice/100*(100-locals.coupenOffer)){%>
+                                                    <div class="card-header" id="heading-1">
+                                                        <h2 class="card-title">
+
+                                                            <input type="radio" name="peyment" id="wallet"
+                                                                value="wallet" class="bg-primary  " >
+                                                            <label for="wallet">wallet</label>
+                                                        </h2>
+                                                    </div>
+                                                <% }else{ %>
+                                                    <div class="card-header" id="heading-1">
+                                                        <h2 class="card-title">
+
+                                                            <input type="radio" name="peyment" id="wallet"
+                                                                value="wallet" disabled class="bg-primary opacity-50 " >
+                                                            <label for="wallet" class="" style="text-decoration: line-through;">wallet</label>
+                                                        </h2>
+                                                    </div>
+                                                    <% } %>
+
                                                     <br>
             
                                                     <!-- End .card-header -->
                                                     <div class="card-header" id="heading-1">
                                                         <h2 class="card-title">
-
-                                                            <input type="radio" name="peyment" id="online"
-                                                                value="online peyment" class="bg-primary ">
-                                                            <label for="">online pey ment</label>
+                                                            <% if (cart.TotalPrice >= 1000) { %>
+                                                                <input type="radio" name="peyment" id="online"
+                                                                value="online peyment" class="bg-primary " checked>
+                                                            <% } else { %>
+                                                                <input type="radio" name="peyment" id="online"
+                                                                    value="online peyment" class="bg-primary ">  
+                                                             <% } %> 
+                                                            <label for="">online payment</label>
                                                         </h2>
                                                     </div><!-- End .card-header -->
                                                     
@@ -255,6 +285,8 @@
 
                 }
             </script>
+
+            
 
             <%- include('../layout/mobMenu.ejs') -%>
                 <%- include('../layout/lyfooter') -%>

@@ -16,7 +16,7 @@ const cart = async (req, res) => {
         const total = cart.products.reduce(
           (acc, product) => acc + product.price,
           0
-        );
+        );  
         const options = {
           upsert: true,
           new: true,
@@ -181,6 +181,7 @@ const cart = async (req, res) => {
         },
         { new: true }
       );
+      console.log(updatedCart);
   
       const total = updatedCart.products.reduce(
         (acc, product) => acc + product.price,

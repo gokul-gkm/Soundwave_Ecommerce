@@ -99,7 +99,7 @@ const offerProductAdd = async (req, res) => {
         await offerSchema.findOne({ _id: req.params.id });
         if (req.body.add) {
             const data = await productModal.findOne({ _id: req.body.id });
-            const offerPrice = data.price / 100 * (100 - req.body.offer);
+            const offerPrice = (data.price / 100 * (100 - req.body.offer)).toFixed(2);
             await productModal.findOneAndUpdate({ _id: req.body.id }, { $set: { offer: req.params.id, price: offerPrice } });
         } else {
             const data = await productModal.findOne({ _id: req.body.id });

@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
   coupens:[{
     ID:{type:String},
     coupenId: { type: mongoose.Schema.Types.ObjectId,  ref:'coupen' },
-  }]
+  }],
+  
 });
 
 module.exports = mongoose.model('user', userSchema)

@@ -86,7 +86,10 @@
                 />
                 <h5><%= user.name %></h5>
 
-                
+                <div class="d-flex gap-5">
+                  <p>Wallet :$<%= locals.walletAmount  %></p>
+                  <a class="text-white" style="margin-left: 1rem;" href="/walletHistory"><i class=" ri-history-line"></i></a>
+                </div>
                
               </div>
               <div class="col-md-8">

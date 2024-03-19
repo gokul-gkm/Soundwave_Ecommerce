@@ -6,10 +6,10 @@
 
 
                 <main class="main">
-                    <div class="page-header text-center"
-                        style="background-image: url('assets/images/page-header-bg.jpg')">
+                    <div class=" text-center"
+                        >
                         <div class="container">
-                            <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+                            <h3 class="page-title">Shopping Cart</h3>
                         </div><!-- End .container -->
                     </div><!-- End .page-header -->
                     <nav aria-label="breadcrumb" class="breadcrumb-nav">
@@ -84,22 +84,24 @@
 
                                         <div class="cart-bottom">
                                             <div class="cart-discount">
-                                                <form action="#">
+                                                <form action="/coupenCode/<%=locals.login  %>" method="post">
                                                     <div class="input-group">
-                                                        <input type="text" class="form-control" required
-                                                            placeholder="coupon code">
-                                                        <div class="input-group-append">
+                                                        <input type="text" name="id"  class="form-control" required
+                                                            placeholder="coupon code" oninput="check(this)">
+                                                          
+                                                        <div  id="codeSubmit" class="input-group-append">
                                                             <button class="btn btn-outline-primary-2" type="submit"><i
                                                                     class="icon-long-arrow-right"></i></button>
                                                         </div><!-- .End .input-group-append -->
-                                                    </div><!-- End .input-group -->
+                                                    </div>
+                                                    <p id="msg" class="text-danger "><%=locals.msg || ''  %></p><!-- End .input-group -->
                                                 </form>
-                                            </div><!-- End .cart-discount -->
+                                            </div>
 
                                             <a href="/cart?id=<%=login%>" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i
                                                     class="icon-refresh"></i></a>
-                                        </div><!-- End .cart-bottom -->
-                                    </div><!-- End .col-lg-9 -->
+                                        </div>
+                                    </div>
                                     <aside class="col-lg-3">
                                         <div class="summary summary-cart">
                                             <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
@@ -167,6 +169,17 @@
         <%- include('../layout/mobMenu.ejs') -%>
 
             <script>
+                const codeSubmit=document.getElementById('codeSubmit')
+                function check(e){
+                    if(e.value.trim()==''){
+                        codeSubmit.style.opacity=.6;
+                        codeSubmit.style.pointerEvents='none'
+                    }else{
+                        codeSubmit.style.opacity=1;
+                        codeSubmit.style.pointerEvents='all'
+                    }
+                }
+
                 function stock(e,price,i,id){
                     const Tprice= document.getElementById(`price${i}`)
                     const Total= document.getElementById(`total`)

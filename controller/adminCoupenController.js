@@ -1,4 +1,5 @@
 const coupenSchema = require('../models/coupen');
+const userSchema = require('../models/userSchema');
 const coupenId = require('../config/coupenId');
 const path = require('path');
 const fs = require('fs');
@@ -30,6 +31,20 @@ const addCoupen = async (req, res) => {
             ID: id,
             image: req.files[0].filename
         });
+
+        console.log(coupen1);
+
+        const coupenSet = await userSchema.updateMany(
+            { },
+            {
+                $push: {
+                    coupens: {
+                        ID: id,
+                        coupenId: coupen1._id
+                    }
+                }
+            }
+        );
 
         if (coupen1) {
             res.redirect('/admin/coupen');

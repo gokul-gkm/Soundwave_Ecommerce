@@ -9,6 +9,7 @@ const adminOrderController = require('../controller/adminOrderController');
 const adminCoupenController = require('../controller/adminCoupenController');
 const adminOfferController = require('../controller/adminOfferController');
 const adminReportController = require('../controller/adminReportController');
+const adminChartController = require('../controller/adminChartController');
 
 const adminMidleware=require('../middleware/admin');
 const path = require('path');
@@ -135,6 +136,7 @@ router.post('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.ge
 //offerRemove
 router.get('/offerRemove/:id', adminMidleware.adminRoute, adminOfferController.offerRemove);
 
+/************Report************/
 
 //sales report in yearly and monthly and weekly
 router.get('/report/:id',adminMidleware.adminRoute,adminReportController.report)
@@ -143,6 +145,12 @@ router.get('/report/:id',adminMidleware.adminRoute,adminReportController.report)
 router.post('/report/download/:id',adminReportController.reportdownload)
 
 //report custom
-router.put('/report',adminReportController.customreport)
+router.put('/report', adminReportController.customreport)
+
+//yearly chart
+router.put('/year', adminChartController.year)
+
+//monthly chart
+router.put('/monthly', adminChartController.monthlySales)
 
 module.exports=router;

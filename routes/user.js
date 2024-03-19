@@ -4,6 +4,8 @@ const userController = require('../controller/userControlller');
 const userAddressController = require('../controller/userAddressController');
 const userCartController = require('../controller/userCartController');
 const userOrderController = require('../controller/userOrderController');
+const userCoupenController = require('../controller/userCoupenController');
+const userWishlistController = require('../controller/userWishlistController');
 const userMidleware = require('../middleware/user');
 const { check, validationResult } = require('express-validator');
 // const { validateSignup, checkValidation } = require('../middleware/validation.js');
@@ -86,17 +88,18 @@ router.post('/addcart',userCartController.addcartPost)
 router.put('/cartUpdate', userCartController.cartEdit)
 
 //deleate cart 
-router.delete('/cartremove',userCartController.cartree)
+router.delete('/cartremove', userCartController.cartree)
 
-//wishlist PAGE RENDERING route
-router.get('/wishlist',userMidleware.userbloack,userMidleware.user,userController.wishlist);
+/***************Cart***************/
 
-router.post('/addToWishList', userController.addToWishlist)
-//wishlist post
+//wishlist page rendering route
+router.get('/wishlist',userMidleware.userbloack,userMidleware.user,userWishlistController.wishlist);
 
-// router.post('/addToWishList', userController.wishListPost);
+//add to wishlist post
+router.post('/addToWishList', userWishlistController.addToWishlist)
 
-router.delete('/wishlistremove',userController.wishlistRemove)
+//remove from wishlist 
+router.delete('/wishlistremove',userWishlistController.wishlistRemove)
 
 /***************Address***************/
 
@@ -136,14 +139,26 @@ router.get('/success', userMidleware.userbloack, userMidleware.user, userOrderCo
 //succes post route
 router.post('/success', userOrderController.postSucces);
 
+
+
 //razorpay
 router.post('/razor', userOrderController.razor);
 
-//coupen code posting
-router.post('/coupenCode/:id',userController.coupenCode);
+router.get('/walletHistory',userMidleware.userbloack,userMidleware.user,userOrderController.walletHistory)
+
+//invoice download
+router.get('/invoice/:id', userOrderController.invoice)
+
+//review
+router.post('/submit-review/:proId', userOrderController.reviewPost);
+
+/*****************Coupens***************** */ 
 
 //  order det page rendering
-router.get('/coupen',userMidleware.userbloack,userMidleware.user,userController.coupenView)
+router.get('/coupen', userMidleware.userbloack, userMidleware.user, userCoupenController.coupenView)
+
+//coupen code posting
+router.post('/coupenCode/:id',userCoupenController.coupenCode);
 
 //logout
 router.post('/logout', userController.logout);

@@ -5,13 +5,17 @@ const cartModal = require("../models/cart");
 const wishlistModal = require("../models/wishlist");
 const productModal = require("../models/products");
 const orderModal = require("../models/orders");
+const wallet = require("../models/wallet");
+
 const nodemailer = require("nodemailer");
 const bycrypt = require("bcrypt");
 require("dotenv").config();
 
 
+
 const e = require("express");
 const { check, validationResult } = require("express-validator");
+const reviews = require("../models/reviews");
 
 
 // functions
@@ -476,14 +480,13 @@ const product = async (req, res) => {
       if (!Array.isArray(selectedCategories)) {
         selectedCategories = [selectedCategories];
       }
-    console.log("hi");
-    console.log(selectedCategories);
+    
 
     if (selectedCategories.length > 0) {
         query.category = { $in: selectedCategories }; // Apply category filter
     }
 
-    console.log(query);
+   
 
       if (searchQuery) {
           query.name = { $regex: new RegExp(searchQuery, 'i') }; 
@@ -529,9 +532,7 @@ const product = async (req, res) => {
           .skip(skip)
         .limit(limit);
     
-    console.log("filter");
-    
-    console.log(Allproduct);
+  
 
       if (req.session.login) {
           res.render('client/shop', {
@@ -728,11 +729,15 @@ const profile = async (req, res) => {
 
     const user = await userSchema.findOne({ _id: req.session.login });
 
+    const wallet1 = await wallet.findOne({ userId: req.session.login })
+    const walletAmount = wallet1?.amount || 0;
+
     if (user.is_admin === 0) {
       res.render("client/profile", {
         user,
         login: req.session.login,
         category,
+        walletAmount
       });
     } else {
       req.session.admin = user;
@@ -770,7 +775,11 @@ const editProfile = async (req, res) => {
 const productDets = async (req, res) => {
   try {
     if (req.query.proId) {
-      const category = await categoryModal.find({});
+      const category = await categoryModal.find({ isDeleted: false, listed: true });
+      
+      const review = await reviews.find({ productId: req.query.proId }).populate("userId").populate("productId");
+
+      
 
       if (req.session.login) {
         const productDet = await productModal
@@ -781,13 +790,14 @@ const productDets = async (req, res) => {
           login: req.session.login,
           productDet,
           category,
+          review
         });
       } else {
         const productDet = await productModal
           .findOne({ _id: req.query.proId })
           .populate("category");
 
-        res.render("client/productDet", { productDet, category });
+        res.render("client/productDet", { productDet, category ,review});
       }
     } else {
       res.redirect("/products");
@@ -797,102 +807,7 @@ const productDets = async (req, res) => {
   }
 };
 
-//wishlist get method
 
-
-const wishlist = async (req, res) => {
-  try {
-    const wishlist = await wishlistModal
-      .findOne({ userId: req.session.login })
-      .populate("products.productId");
-
-    console.log(wishlist);
-    if (wishlist) {
-      
-     
-      const category = await categoryModal.find({});
-      res.render("client/wishlist", {
-        login: req.session.login,
-        wishlist,
-        category,
-      });
-    } else {
-      const category = await categoryModal.find({});
-      res.render("client/wishlist", {
-        login: req.session.login,
-        category,
-      });
-    }
-  } catch (err) {
-    console.log(err.message + "      cart page route");
-  }
-}
-
-const addToWishlist = async (req, res) => {
-  try {
-    const product = await productModal.findOne({ _id: req.body.id });
-    const result = await wishlistModal
-      .findOne({
-        userId: req.body.user,
-        products: {
-          $elemMatch: {
-            productId: req.body.id,
-          },
-        },
-      })
-      .exec();
-    if (!result) {
-      const tp = product.price * req.body.q;
-
-      const filter = { userId: req.body.user };
-      const update = {
-        $set: {
-          userId: req.body.user,
-        },
-        $addToSet: {
-          products: { productId: req.body.id, price: tp },
-        },
-      };
-      const options = {
-        upsert: true,
-        new: true,
-      };
-
-      const wishlistSuccess = await wishlistModal
-        .findOneAndUpdate(filter, update, options)
-        .exec();
-
-      if (wishlistSuccess) {
-        res.send({ success: "success" });
-      }
-    } else {
-      res.send({ exist: "it is already exist" });
-    }
-  } catch (err) {
-    console.log(err.message + "      wishlist put fecth routre");
-  }
-}
-
-const wishlistRemove = async (req, res) => {
-  try {
-
-    const remove = await wishlistModal.updateOne(
-      { _id: req.body.id },
-      {
-        $pull: { products: { productId: req.body.proid } },
-      }
-    );
-    if (remove.modifiedCount === 0) {
-      res.send({ failure: "can't remove" });
-    } else {
-      const rdata = await wishlistModal.findOne({ _id: req.body.id });
-      console.log(rdata);
-      res.send({ rdata , success: "success" });
-    }
-  } catch (err) {
-    console.log(err.message + "   wishlistremove");
-  }
-};
 
 //logout
 const logout = async (req, res) => {
@@ -916,7 +831,7 @@ const coupenView = async (req, res) => {
   try {
       const category = await categoryModal.find({})
       const coupen = await userSchema.findOne({ _id: req.session.login }).populate('coupens.coupenId')
-      console.log(coupen);
+      
       res.render('client/coupen', { login: req.session.login, coupen: coupen.coupens, category })
   } catch (err) {
       console.log(err.message + '     coupenView')
@@ -950,7 +865,6 @@ const coupenCode = async (req, res) => {
 
 
 
-
 module.exports = {
   signUp,
   getSignUp,
@@ -973,11 +887,5 @@ module.exports = {
   getNewPass,
   logout,
   productDets,
-  wishlist,
-  addToWishlist,
-  wishlistRemove,
   editProfile,
-  coupenView,
-  coupenCode,
-
 };

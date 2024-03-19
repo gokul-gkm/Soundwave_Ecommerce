@@ -122,6 +122,9 @@
                   </div>
                 </div>
               </div>
+
+              <!-- most buyed products -->
+
               <div class="col-md-8 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -158,7 +161,9 @@
                   </div>
                 </div>
               </div>
+
             </div>
+
             <div class="row">
               <div class="col-sm-4 grid-margin">
                 <div class="card">
@@ -218,12 +223,61 @@
                 </div>
               </div>
             </div>
+
+            <div class="row ">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Best selling Categories</h4>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>
+                             No
+                            </th>
+                            <th> Category Name </th>
+                          
+                            <th>Total products</th>
+                            
+                            <th>Top product</th>
+                      
+                          </tr>
+                        </thead>
+                        <tbody>
+                         
+                          <% locals.topTenCategory.forEach((elem,i)=>{ %>
+                            
+                          <tr id="c<%=elem._id  %>">
+                            <td>
+                              <div class="form-check form-check-muted m-0">
+                                <%= i+1  %>
+                              </div>
+                            </td>
+                            <td>
+                              <span class="pl-2"> <%= elem.categoryName %></span>
+                            </td>
+                       
+                            <td> <%= elem.totalProducts %> </td>
+                            <td><%= elem.topProductName %> </td>     
+                          </tr>
+                     
+                          <% }) %>  
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- order -->
+
             <div class="row ">
               <a href="/admin/orders" class="text-decoration-none  col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Order Status</h4>
+                    <h4 class="card-title">Recent Orders</h4>
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
@@ -258,20 +312,17 @@
                               </span>
                             </td>
                        
-                            <td> $<%= elem.orderAmount %> </td>
-                            <td>Cod</td>
+                            <td> $<%= elem.orderAmount.toFixed(2) %></td>
+                            <td><%= elem.peyment %></td>
                             <td><%=elem.orderDate.toString().split(' ').slice(0,4).join('  ') %></td>
-                            <!-- <td>
-                              <div class="badge badge-outline-success">Approved</div>
-                            </td> -->
+                            
                             <td>
                               <div style="cursor: pointer;" id="b<%=elem._id  %>" onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')" class="badge  <%= elem.orderStatus ? 'badge-outline-success' : 'badge-outline-danger' %>"><%= elem.orderStatus %></div>
                           </td>
                           <td>
                               <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >
                              <a href="/admin/ordersView/<%=elem._id  %>" class="btn bg-primary ">Details</a>
-
-                              
+                           
                           </div>
                             </td>
                           </tr>
@@ -284,6 +335,9 @@
                 </div>
               </a href="/admin/order">
             </div>
+
+            <!-- recently add users -->
+
             <div class="row">
               
               <div class="col-lg-12 grid-margin stretch-card">
@@ -313,12 +367,32 @@
                 </div>
               </div>
             </div>
+
+            <!-- chart -->
+
+            <div class="row">
+              
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Yearly Sales</h4>
+                    <canvas id="areaChart" style="height:250px"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                  <div class="card-body">
+                      <h4 class="card-title">Monthly Sales</h4>
+                      <canvas id="monthlyChart" style="height:250px"></canvas>
+                  </div>
+              </div>
+            </div>
             
         </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-
-        <!-- partial -->
+        
       </div>
       <!-- main-panel ends -->
   </div>
@@ -460,6 +534,157 @@ const peymentC=data.orderList[1]?data.orderList[1].totalCount:0;
    
 
 
+  </script>
+
+  <script>
+  //year chart
+      const currentYear = new Date().getFullYear();
+     const next5Years = Array.from({ length: 6 }, (_, index) => (currentYear+3) - index);
+     const previeYear = next5Years.reverse();
+     var d = [];
+
+
+fetch('/admin/year', {
+    method: 'put',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({})
+})
+    .then(res => res.json())
+    .then(data => {
+        const ryear = data.year.reverse();
+        previeYear.forEach((e, i) => {
+            let yearFound = false;
+
+            data.year.forEach((year, ind) => {
+                if (e === year._id) {
+                    d[i] = year.totalAmount;
+                    yearFound = true;
+                }
+            });
+
+            if (!yearFound) {
+                d[i] = 0;
+            }
+        });
+        if ($("#areaChart").length) {
+      var areaData = {
+      labels: previeYear,
+      datasets: [{
+        label: 'sales',
+        data: d,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1,
+        fill: true, // 3: no fill
+      }]
+    }; 
+    var areaOptions = {
+      plugins: {
+        filler: {
+          propagate: true
+        }
+      },
+      scales: {
+        yAxes: [{
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+        }]
+      }
+    }
+      var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
+      var areaChart = new Chart(areaChartCanvas, {
+        type: 'line',
+        data: areaData,
+        options: areaOptions
+      });
+    }
+
+        
+    console.log(d);
+      })
+
+      //monthly chart
+      const monthNames = [
+        "January", "February", "March",
+        "April", "May", "June", "July",
+        "August", "September", "October",
+        "November", "December"
+    ];
+
+    fetch('/admin/monthly', {
+        method: 'put',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+    })
+    .then(res => res.json())
+    .then(data => {
+        const months = monthNames;
+        const salesData = data.salesData;
+
+        if ($("#monthlyChart").length) {
+            var monthlyData = {
+                labels: months,
+                datasets: [{
+                    label: 'Sales',
+                    data: salesData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    fill: true,
+                }]
+            }; 
+
+            var monthlyOptions = {
+                plugins: {
+                    filler: {
+                        propagate: true
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        gridLines: {
+                            color: "rgba(204, 204, 204,0.1)"
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(204, 204, 204,0.1)"
+                        }
+                    }]
+                }
+            };
+
+            var monthlyChartCanvas = $("#monthlyChart").get(0).getContext("2d");
+            var monthlyChart = new Chart(monthlyChartCanvas, {
+                type: 'line',
+                data: monthlyData,
+                options: monthlyOptions
+            });
+        }
+
+        console.log(salesData);
+    })
+    .catch(error => console.error('Error fetching monthly sales data:', error));
   </script>
   <!-- End custom js for this page -->
   </body>
