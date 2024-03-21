@@ -11,12 +11,9 @@ const nodemailer = require("nodemailer");
 const bycrypt = require("bcrypt");
 require("dotenv").config();
 
-
-
 const e = require("express");
 const { check, validationResult } = require("express-validator");
 const reviews = require("../models/reviews");
-
 
 // functions
 const generateOTP = () => {
@@ -65,7 +62,6 @@ const securePassword = async (pass) => {
 // date setup
 const options = { day: "2-digit", month: "short", year: "numeric" };
 
-
 // routing controllers
 
 const home = async (req, res) => {
@@ -74,7 +70,7 @@ const home = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const category = await categoryModal.find({isDeleted:false});
+    const category = await categoryModal.find({ isDeleted: false });
 
     const totalProductsCount = await productModal.countDocuments({
       stock: { $gt: 0 },
@@ -158,7 +154,6 @@ const emailExist = async (req, res) => {
 
 // getting signup page detailes
 const getSignUp = async (req, res) => {
-
   try {
     const validationRules = [
       check("registerName", "name must be greater than 3+ characters")
@@ -196,9 +191,9 @@ const getSignUp = async (req, res) => {
       name: req.body.registerName,
       email: req.body.registerEmail,
       password: sp,
-      phone: req.body.signupPhone
+      phone: req.body.signupPhone,
     });
-    
+
     const noUser = await userSchema.findOne({ email: req.body.registerEmail });
 
     if (noUser) {
@@ -206,18 +201,18 @@ const getSignUp = async (req, res) => {
     } else {
       req.session.userData = userData;
       req.session.otp = generateOTP();
-        console.log(req.session.otp);
+      console.log(req.session.otp);
 
       verifyemail(
         req.body.registerName,
         req.body.registerEmail,
         req.session.otp
       );
-      
+
       setTimeout(() => {
         req.session.otp = undefined;
-        console.log('OTP has been cleared after 5 minutes.');
-      }, 5 * 60 * 1000); 
+        console.log("OTP has been cleared after 5 minutes.");
+      }, 5 * 60 * 1000);
 
       return res.redirect("/otp");
     }
@@ -229,19 +224,12 @@ const getSignUp = async (req, res) => {
 //otp page rendering
 const otp = async (req, res) => {
   try {
-
     if (req.session.otp) {
-
       if (req.session.wrong) {
-
         res.render("client/otp", { message: req.session.wrong });
-
       } else if (req.session.resend) {
-
         res.render("client/otp", { resend: req.session.resend });
-
       } else {
-
         res.render("client/otp");
       }
     } else {
@@ -270,13 +258,13 @@ const gettingOtp = async (req, res) => {
       if (Number(otp.join("")) === req.session.otp) {
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString("en-US", options);
-      
+
         const userData = new userSchema({
           name: req.session.userData.name,
           email: req.session.userData.email,
           password: req.session.userData.password,
           date: formattedDate,
-          phone: req.session.userData.phone
+          phone: req.session.userData.phone,
         });
         const userSave = await userData.save();
 
@@ -372,8 +360,8 @@ const forget = async (req, res) => {
     verifyemail(user.name, user.email, req.session.otp);
     setTimeout(() => {
       req.session.otp = undefined;
-      console.log('OTP has been cleared after 5 minutes.');
-    }, 5 * 60 * 1000); 
+      console.log("OTP has been cleared after 5 minutes.");
+    }, 5 * 60 * 1000);
     res.redirect("/otp");
   } catch (err) {
     console.log(err.message + "       forget gatting route");
@@ -452,117 +440,107 @@ const getLogin = async (req, res) => {
   }
 };
 
-
-
 const product = async (req, res) => {
   const limit = 4;
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
-  const searchQuery = req.query.product_search; 
-  const sortOption = req.query.sortby || 'newArrivals'; 
+  const searchQuery = req.query.product_search;
+  const sortOption = req.query.sortby || "newArrivals";
   let selectedCategories = req.query.categories || [];
 
   try {
-      const category = await categoryModal.find({
-          isDeleted: false,
-          listed: true,
-      });
+    const category = await categoryModal.find({
+      isDeleted: false,
+      listed: true,
+    });
 
-      const categoryIds = category.map((category) => category._id);
+    const categoryIds = category.map((category) => category._id);
 
-      let query = {
-          stock: { $gt: 0 },
-          listed: true,
-          isDeleted: false,
-          category: { $in: categoryIds },
-      };
-    
-      if (!Array.isArray(selectedCategories)) {
-        selectedCategories = [selectedCategories];
-      }
-    
+    let query = {
+      stock: { $gt: 0 },
+      listed: true,
+      isDeleted: false,
+      category: { $in: categoryIds },
+    };
 
-    if (selectedCategories.length > 0) {
-        query.category = { $in: selectedCategories }; // Apply category filter
+    if (!Array.isArray(selectedCategories)) {
+      selectedCategories = [selectedCategories];
     }
 
-   
+    if (selectedCategories.length > 0) {
+      query.category = { $in: selectedCategories }; // Apply category filter
+    }
 
-      if (searchQuery) {
-          query.name = { $regex: new RegExp(searchQuery, 'i') }; 
-      }
+    if (searchQuery) {
+      query.name = { $regex: new RegExp(searchQuery, "i") };
+    }
 
-      const totalProductsCount = await productModal.countDocuments(query);
+    const totalProductsCount = await productModal.countDocuments(query);
 
-      const totalPages = Math.ceil(totalProductsCount / limit);
+    const totalPages = Math.ceil(totalProductsCount / limit);
 
-      let sortCriteria = {};
+    let sortCriteria = {};
 
-      switch (sortOption) {
-          case 'priceLowToHigh':
-              sortCriteria = { price: 1 };
-              break;
-          case 'priceHighToLow':
-              sortCriteria = { price: -1 };
-              break;
-          case 'averageRating':
-              sortCriteria = { averageRating: -1 };
-              break;
-          case 'featured':
-              sortCriteria = { featured: -1 };
-              break;
-          case 'popularity':
-              sortCriteria = { popularity: -1 };
-              break;
-          case 'aToZ':
-              sortCriteria = { name: 1 };
-              break;
-          case 'zToA':
-              sortCriteria = { name: -1 };
-              break;
-          default:
-              sortCriteria = { createdAt: -1 }; 
-              break;
-      }
+    switch (sortOption) {
+      case "priceLowToHigh":
+        sortCriteria = { price: 1 };
+        break;
+      case "priceHighToLow":
+        sortCriteria = { price: -1 };
+        break;
+      case "averageRating":
+        sortCriteria = { averageRating: -1 };
+        break;
+      case "featured":
+        sortCriteria = { featured: -1 };
+        break;
+      case "popularity":
+        sortCriteria = { popularity: -1 };
+        break;
+      case "aToZ":
+        sortCriteria = { name: 1 };
+        break;
+      case "zToA":
+        sortCriteria = { name: -1 };
+        break;
+      default:
+        sortCriteria = { createdAt: -1 };
+        break;
+    }
 
-      const Allproduct = await productModal
-          .find(query)
-          .populate('category')
-          .sort(sortCriteria)
-          .skip(skip)
-        .limit(limit);
-    
-  
+    const Allproduct = await productModal
+      .find(query)
+      .populate("category")
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
 
-      if (req.session.login) {
-          res.render('client/shop', {
-              login: req.session.login,
-              Allproduct,
-              category,
-              currentPage: page,
-              totalPages,
-              totalProductsCount,
-              limit,
-            sortby: sortOption,
-            selectedCategories
-        });
-       
-        
-      } else {
-        res.render('client/shop', {
-          Allproduct,
-          category,
-          currentPage: page,
-          totalPages,
-          totalProductsCount,
-          limit,
+    if (req.session.login) {
+      res.render("client/shop", {
+        login: req.session.login,
+        Allproduct,
+        category,
+        currentPage: page,
+        totalPages,
+        totalProductsCount,
+        limit,
         sortby: sortOption,
-        selectedCategories
-        });
-        
-      }
+        selectedCategories,
+      });
+    } else {
+      res.render("client/shop", {
+        Allproduct,
+        category,
+        currentPage: page,
+        totalPages,
+        totalProductsCount,
+        limit,
+        sortby: sortOption,
+        selectedCategories,
+      });
+    }
   } catch (err) {
-      console.log(err.message + '        shop route');
+    console.log(err.message + "        shop route");
   }
 };
 
@@ -570,95 +548,96 @@ const products = async (req, res) => {
   const limit = 4;
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
-  const searchQuery = req.query.product_search; 
-  const sortOption = req.query.sortby || 'newArrivals'; 
+  const searchQuery = req.query.product_search;
+  const sortOption = req.query.sortby || "newArrivals";
 
   try {
-      const category = await categoryModal.find({
-          isDeleted: false,
-          listed: true,
+    const category = await categoryModal.find({
+      isDeleted: false,
+      listed: true,
+    });
+
+    const categoryIds = category.map((category) => category._id);
+
+    let query = {
+      stock: { $gt: 0 },
+      listed: true,
+      isDeleted: false,
+      category: { $in: categoryIds },
+    };
+
+    if (searchQuery) {
+      query.name = { $regex: new RegExp(searchQuery, "i") };
+    }
+
+    const totalProductsCount = await productModal.countDocuments(query);
+
+    const totalPages = Math.ceil(totalProductsCount / limit);
+
+    let sortCriteria = {};
+
+    switch (sortOption) {
+      case "priceLowToHigh":
+        sortCriteria = { price: 1 };
+        break;
+      case "priceHighToLow":
+        sortCriteria = { price: -1 };
+        break;
+      case "averageRating":
+        sortCriteria = { averageRating: -1 };
+        break;
+      case "featured":
+        sortCriteria = { featured: -1 };
+        break;
+      case "popularity":
+        sortCriteria = { popularity: -1 };
+        break;
+      case "aToZ":
+        sortCriteria = { name: 1 };
+        break;
+      case "zToA":
+        sortCriteria = { name: -1 };
+        break;
+      default:
+        sortCriteria = { createdAt: -1 };
+        break;
+    }
+
+    const Allproduct = await productModal
+      .find(query)
+      .populate("category")
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
+    
+    console.log(Allproduct);
+
+    if (req.session.login) {
+      res.render("client/shop", {
+        login: req.session.login,
+        Allproduct,
+        category,
+        currentPage: page,
+        totalPages,
+        totalProductsCount,
+        limit,
+        sortby: sortOption,
       });
-
-      const categoryIds = category.map((category) => category._id);
-
-      let query = {
-          stock: { $gt: 0 },
-          listed: true,
-          isDeleted: false,
-          category: { $in: categoryIds },
-      };
-
-      if (searchQuery) {
-          query.name = { $regex: new RegExp(searchQuery, 'i') }; 
-      }
-
-      const totalProductsCount = await productModal.countDocuments(query);
-
-      const totalPages = Math.ceil(totalProductsCount / limit);
-
-      let sortCriteria = {};
-
-      switch (sortOption) {
-          case 'priceLowToHigh':
-              sortCriteria = { price: 1 };
-              break;
-          case 'priceHighToLow':
-              sortCriteria = { price: -1 };
-              break;
-          case 'averageRating':
-              sortCriteria = { averageRating: -1 };
-              break;
-          case 'featured':
-              sortCriteria = { featured: -1 };
-              break;
-          case 'popularity':
-              sortCriteria = { popularity: -1 };
-              break;
-          case 'aToZ':
-              sortCriteria = { name: 1 };
-              break;
-          case 'zToA':
-              sortCriteria = { name: -1 };
-              break;
-          default:
-              sortCriteria = { createdAt: -1 }; 
-              break;
-      }
-
-      const Allproduct = await productModal
-          .find(query)
-          .populate('category')
-          .sort(sortCriteria)
-          .skip(skip)
-          .limit(limit);
-
-      if (req.session.login) {
-          res.render('client/shop', {
-              login: req.session.login,
-              Allproduct,
-              category,
-              currentPage: page,
-              totalPages,
-              totalProductsCount,
-              limit,
-              sortby: sortOption,
-          });
-      } else {
-          res.render('client/shop', {
-              Allproduct,
-              category,
-              currentPage: page,
-              totalPages,
-              totalProductsCount,
-              limit,
-              sortby: sortOption,
-          });
-      }
+    } else {
+      res.render("client/shop", {
+        Allproduct,
+        category,
+        currentPage: page,
+        totalPages,
+        totalProductsCount,
+        limit,
+        sortby: sortOption,
+      });
+    }
   } catch (err) {
-      console.log(err.message + '        shop route');
+    console.log(err.message + "        shop route");
   }
 };
-
 
 const category = async (req, res) => {
   try {
@@ -667,7 +646,10 @@ const category = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const category = await categoryModal.find({isDeleted: false, listed: true,});
+    const category = await categoryModal.find({
+      isDeleted: false,
+      listed: true,
+    });
 
     const categoryObj = await categoryModal.findOne({ name: catName });
 
@@ -721,15 +703,19 @@ const category = async (req, res) => {
 //profile get method
 const profile = async (req, res) => {
   try {
-    if (req.query.passwordChanged === 'true') {
-      res.locals.passwordChangedAlert = 'Your password has been changed successfully.';
+    if (req.query.passwordChanged === "true") {
+      res.locals.passwordChangedAlert =
+        "Your password has been changed successfully.";
     }
 
-    const category = await categoryModal.find({isDeleted: false, listed: true});
+    const category = await categoryModal.find({
+      isDeleted: false,
+      listed: true,
+    });
 
     const user = await userSchema.findOne({ _id: req.session.login });
 
-    const wallet1 = await wallet.findOne({ userId: req.session.login })
+    const wallet1 = await wallet.findOne({ userId: req.session.login });
     const walletAmount = wallet1?.amount || 0;
 
     if (user.is_admin === 0) {
@@ -737,7 +723,7 @@ const profile = async (req, res) => {
         user,
         login: req.session.login,
         category,
-        walletAmount
+        walletAmount,
       });
     } else {
       req.session.admin = user;
@@ -753,33 +739,41 @@ const editProfile = async (req, res) => {
     const userId = req.query.userId;
 
     const { name, phone } = req.body;
-   
+
     const updatedUser = await userSchema.findOneAndUpdate(
-        { _id: userId },
-        { $set: { name, phone } },
-        { new: true } 
+      { _id: userId },
+      { $set: { name, phone } },
+      { new: true }
     );
 
     if (updatedUser) {
-      res.redirect('/profile');
-        // res.status(200).json({ success: true, message: 'Profile updated successfully' });
+      res.redirect("/profile");
+      // res.status(200).json({ success: true, message: 'Profile updated successfully' });
     } else {
-        res.status(404).json({ success: false, message: 'User not found' });
+      res.status(404).json({ success: false, message: "User not found" });
     }
-} catch (error) {
-    console.error('Error updating profile:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-}
-}
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 const productDets = async (req, res) => {
   try {
     if (req.query.proId) {
-      const category = await categoryModal.find({ isDeleted: false, listed: true });
-      
-      const review = await reviews.find({ productId: req.query.proId }).populate("userId").populate("productId");
+      const category = await categoryModal.find({
+        isDeleted: false,
+        listed: true,
+      });
 
-      
+      const review = await reviews
+        .find({ productId: req.query.proId })
+        .populate("userId")
+        .populate("productId");
+
+      const likeproduct = await productModal
+        .find({ stock: { $gt: 0 }, listed: true })
+        .populate("category");
 
       if (req.session.login) {
         const productDet = await productModal
@@ -790,14 +784,20 @@ const productDets = async (req, res) => {
           login: req.session.login,
           productDet,
           category,
-          review
+          review,
+          likeproduct,
         });
       } else {
         const productDet = await productModal
           .findOne({ _id: req.query.proId })
           .populate("category");
 
-        res.render("client/productDet", { productDet, category ,review});
+        res.render("client/productDet", {
+          productDet,
+          category,
+          review,
+          likeproduct,
+        });
       }
     } else {
       res.redirect("/products");
@@ -806,8 +806,6 @@ const productDets = async (req, res) => {
     console.log(err.message);
   }
 };
-
-
 
 //logout
 const logout = async (req, res) => {
@@ -825,45 +823,133 @@ const logout = async (req, res) => {
   }
 };
 
-
 //coupenView
 const coupenView = async (req, res) => {
   try {
-      const category = await categoryModal.find({})
-      const coupen = await userSchema.findOne({ _id: req.session.login }).populate('coupens.coupenId')
-      
-      res.render('client/coupen', { login: req.session.login, coupen: coupen.coupens, category })
+    const category = await categoryModal.find({});
+    const coupen = await userSchema
+      .findOne({ _id: req.session.login })
+      .populate("coupens.coupenId");
+
+    res.render("client/coupen", {
+      login: req.session.login,
+      coupen: coupen.coupens,
+      category,
+    });
   } catch (err) {
-      console.log(err.message + '     coupenView')
+    console.log(err.message + "     coupenView");
   }
-}
+};
 
 //coupenCode
 const coupenCode = async (req, res) => {
   try {
-      const hh = req.body.id.trim()
-      const id = String(hh)
-      const dataExist = await userSchema.findOne({ _id: req.params.id, 'coupens.ID': id }).populate("coupens.coupenId");
-      req.session.coupenId = id
-      let offer;
-      dataExist.coupens.forEach((e) => {
-          if (e.ID == id) {
-              offer = e.coupenId.offer
-          }
-      })
-      req.session.offer = offer
-      if (dataExist) {
-          res.redirect('/checkoutPage')
-      } else {
-          req.flash('msg', "coupen did'nt exist")
-          res.redirect('/cart')
+    const hh = req.body.id.trim();
+    const id = String(hh);
+    const dataExist = await userSchema
+      .findOne({ _id: req.params.id, "coupens.ID": id })
+      .populate("coupens.coupenId");
+    req.session.coupenId = id;
+    let offer;
+    dataExist.coupens.forEach((e) => {
+      if (e.ID == id) {
+        offer = e.coupenId.offer;
       }
+    });
+    req.session.offer = offer;
+    if (dataExist) {
+      res.redirect("/checkoutPage");
+    } else {
+      req.flash("msg", "coupen did'nt exist");
+      res.redirect("/cart");
+    }
   } catch (err) {
-      console.log(err.message + ' coupenCode')
+    console.log(err.message + " coupenCode");
   }
-}
+};
 
+// const filterProducts = async (req, res) => {
+//   try {
+//     const selectedCategories = req.body.categories;
+//     const selectedColors = req.body.colors;
+    
+//     console.log(selectedCategories,selectedColors);
+ 
+//      let query = {
+//        stock: { $gt: 0 },
+//        listed: true,
+//        isDeleted: false,
+//      };
+ 
+//      if (selectedCategories && selectedCategories.length > 0) {
+//        query.category = { $in: selectedCategories };
+//      }
+ 
+//      if (selectedColors && selectedColors.length > 0) {
+//        query.color = { $in: selectedColors };
+//      }
+ 
+    
+//      const filteredProducts = await productModal.find(query);
 
+//      res.status(200).json(filteredProducts);
+//   } catch (error) {
+//      console.error("Error filtering products:", error);
+//      res.status(500).json({ message: "Internal Server Error" });
+//   }
+//  };
+
+const filterProducts = async (req, res) => {
+  try {
+     const selectedCategories = req.body.categories;
+     const selectedColors = req.body.colors;
+     const page = parseInt(req.body.page) || 1; // Default to page 1 if not provided
+     const limit = parseInt(req.body.limit) || 4; // Default to 10 items per page if not provided
+ 
+     console.log(selectedCategories, selectedColors);
+ 
+     let query = {
+       stock: { $gt: 0 },
+       listed: true,
+       isDeleted: false,
+     };
+ 
+     if (selectedCategories && selectedCategories.length > 0) {
+       query.category = { $in: selectedCategories };
+     }
+ 
+     if (selectedColors && selectedColors.length > 0) {
+       query.color = { $in: selectedColors };
+     }
+ 
+     // Calculate the number of documents to skip
+     const skip = (page - 1) * limit;
+ 
+     // Query the database with pagination
+     const filteredProducts = await productModal.find(query)
+       .skip(skip)
+       .limit(limit);
+    console.log("filter1");
+    console.log(filteredProducts);
+    console.log("filter2");
+     // Calculate the total number of pages
+     const totalProductsCount = await productModal.countDocuments(query);
+     const totalPages = Math.ceil(totalProductsCount / limit);
+ 
+     // Return the filtered products along with pagination information
+     res.status(200).json({
+       products:filteredProducts,
+       page,
+       totalPages,
+       totalProductsCount,
+       filteredProducts
+     });
+  } catch (error) {
+     console.error("Error filtering products:", error);
+     res.status(500).json({ message: "Internal Server Error" });
+  }
+ };
+ 
 
 module.exports = {
   signUp,
@@ -888,4 +974,5 @@ module.exports = {
   logout,
   productDets,
   editProfile,
+  filterProducts
 };

@@ -24,7 +24,8 @@ const order = new mongoose.Schema({
             required: true,
         },
         canceled:{type:Boolean,default:false},
-        orderProStatus: { type: String, enum: ['shipped', 'delivered','canceled'], default: 'shipped' }
+        orderProStatus: { type: String, enum: ['shipped', 'delivered', 'canceled'], default: 'shipped' },
+        cancelReason: {type: String, default: ''}
     }],
 
 })

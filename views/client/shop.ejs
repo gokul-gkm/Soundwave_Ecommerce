@@ -259,6 +259,8 @@
               </div>
               <!-- End .col-sm-6 col-lg-4 col-xl-3 -->
               <% }) %>
+
+              <input type="hidden" name="login" value="<%= locals.login %>" id="userLogin">
             </div>
             <!-- End .row -->
 
@@ -282,7 +284,104 @@
 
   <!-- Add the script here -->
 
- 
+ <script>
+  // Function to fetch products based on selected categories and colors
+function filterProducts() {
+    // Gather selected categories
+    const categories = [];
+    document.querySelectorAll('.category-checkbox:checked').forEach(checkbox => {
+        categories.push(checkbox.value);
+    });
+
+    // Gather selected colors
+    const colors = [];
+    document.querySelectorAll('.filter-colors a.selected').forEach(color => {
+        colors.push(color.style.backgroundColor);
+    });
+
+    console.log(colors);
+
+    // Make AJAX request
+    fetch('/filter-products', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            categories: categories,
+            colors: colors,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+
+      console.log(data);
+        
+        updateProductList(data.products);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+let userLogin = document.getElementById('userLogin').value;
+
+console.log(userLogin);
+
+function updateProductList(products) {
+    // Assuming you have a container for the product list
+    const productListContainer = document.querySelector('.products .row');
+
+    // Clear the current product list
+    productListContainer.innerHTML = '';
+
+    // Add the filtered products to the list
+    products.forEach(product => {
+      console.log(product);
+        const productElement = document.createElement('div');
+        productElement.classList.add('col-6', 'col-md-4', 'col-lg-4', 'col-xl-3');
+
+        const productCard = `
+            <div class="product product-7 text-center">
+                <figure class="product-media">
+                    <span class="product-label label-new">New</span>
+                    <a href="/productDets?proId=${product._id}">
+                        <img src="/productImage/${product.images[0]}" alt="Product image" class="product-image" />
+                        <img src="/productImage/${product.images[1] ? product.images[1] : product.images[0]}" alt="Product image" class="product-image-hover" />
+                    </a>
+                    <div class="product-action-vertical">
+                        <a href="#" onclick="addwishlist('${product._id}','${userLogin ? userLogin : false}',1)" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        <span class="btn-product-icon btn-stock btn-expandable fs-2"><span>stocks left</span>${product.stock}</span>
+                    </div>
+                    <div class="product-action">
+                        <div onclick="addCart('${product._id}','${userLogin ? userLogin : false}',1)" class="btn-product btn-cart" style="cursor: pointer"><span>add to cart</span></div>
+                    </div>
+                </figure>
+                <div class="product-body">
+                    <div class="product-cat">
+                        <a href="#">${product.category && product.category.name ? product.category.name : ''}</a>
+                    </div>
+                    <h3 class="product-title">
+                        <a href="product.html">${product.name}</a>
+                    </h3>
+                    <div class="product-price">$${product.price}</div>
+                    <div class="product-nav product-nav-thumbs">
+                        ${product.images.map(image => `<div href="#" class="active overflow-hidden" style="width: 40px; height: 40px"><img src="/productImage/${image}" class="w-100 h-100 object-fit-cover" alt="" /></div>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        productElement.innerHTML = productCard;
+        productListContainer.appendChild(productElement);
+    });
+}
+
+document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(element => {
+    element.addEventListener('change', filterProducts);
+});
+
+ </script>
 
 
 

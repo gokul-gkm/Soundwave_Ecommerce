@@ -1,76 +1,5 @@
 <%- include('../layout/header.ejs') -%>
-  <link rel="stylesheet" href="/css/mycss/profile.css">
-  <style>
-    /* Modal container */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
-}
-
-/* Modal content */
-.modal-content {
-  background-color: #fefefe; /* White background */
-  margin: 10% auto; /* Center the modal vertically */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 60%; /* Set the width of the modal */
-  max-width: 400px; /* Maximum width of the modal */
-}
-
-/* Close button */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Style form elements */
-#reviewForm label {
-  display: block; /* Display labels as block elements */
-  margin-bottom: 5px; /* Add some space between labels */
-}
-
-#reviewForm select,
-#reviewForm textarea {
-  width: 100%; /* Make select and textarea take full width */
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
-}
-
-/* Style submit button */
-#submitReview {
-  background-color: #4caf50; /* Green */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  float: right; /* Align button to the right */
-}
-
-#submitReview:hover {
-  background-color: #45a049; /* Darker green when hovering */
-}
-
-  </style>
+ <link rel="stylesheet" href="/css/mycss/profile.css">   
   </head>
 
   <body>
@@ -216,7 +145,7 @@
                             </td>
 
                             <% if(product.orderProStatus == 'delivered') {%>
-                              <td><button onclick="openModal()">Add Review</button></td>
+                              <td><button class="btn btn-outline-success" onclick="openModal('<%=product.productId._id %>')">Add Review</button></td>
                               <% } %>
 
                           </tr>
@@ -225,7 +154,7 @@
 
                             <!-- Modal content -->
                             <div class="modal-content">
-                              <span class="close" onclick="closeModal()">&times;</span>
+                              <span class="close text-right" onclick="closeModal()">&times;</span>
                               <h2>Add Review</h2>
                               <form id="reviewForm" action="/submit-review/<%=product.productId._id %>" method="post">
                                 <label for="rating">Rating:</label>
@@ -301,7 +230,8 @@
   var modal = document.getElementById("myModal");
   
   // Function to open the modal
-  function openModal() {
+  function openModal(productId) {
+    document.getElementById('reviewForm').action = "/submit-review/" + productId;
     modal.style.display = "block";
   }
   
@@ -321,50 +251,35 @@
             async function cancel(id,orderId, user, price) {
               const status = document.getElementById(`st${id}`);
               const btn = document.getElementById(`bt${id}`);
-              console.log(status)
-              const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                  confirmButton: "btn btn-success",
-                  cancelButton: "btn btn-danger"
-                },
-                buttonsStyling: false
-              });
-              swalWithBootstrapButtons.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel!",
-                reverseButtons: true
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  edit(id,orderId, user,price);
-                  swalWithBootstrapButtons.fire({
-                    title: "Canceled!",
-                    text: "Your order has been canceled.",
-                    icon: "success"
-                  });
-                } else if (
-                
-                  result.dismiss === Swal.DismissReason.cancel
-                ) {
-                  swalWithBootstrapButtons.fire({
-                    title: "Cancelled",
-                    text: "Your order is safe :)",
-                    icon: "error"
-                  });
+              
+             const {value: cancelReason} = await Swal.fire({
+              title: "Cancel reason",
+              input: "text",
+              inputLabel: "Cancel reason",
+              showCancelButton: true,
+              inputValidator: (value)=>{
+                if(!value){
+                  return "You need to write something"
                 }
-              });
+              }
+             });
+             if(cancelReason){
+                  edit(id,orderId,user,price,cancelReason);
+                  Swal.price({
+                    title:"succes",
+                    text: "Canceled order is success check your wallet",
+                    icon: "success"
+                  })
+                }
             }
-            function edit(id,orderId, user, price) {
+
+            function edit(id,orderId, user, price,cancelReason) {
               const status = document.getElementById(`st${id}`);
               const btn = document.getElementById(`bt${id}`);
-              console.log("cancel start 1");
               fetch('/editOrder', {
                 method: 'put',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id,orderId, user,price })
+                body: JSON.stringify({ id,orderId, user,price,cancelReason})
               }).then(res => res.json()).then(data => {
                 if (data.set) {
                   status.innerHTML = 'cancelled';
