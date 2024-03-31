@@ -15,7 +15,11 @@
             <div class="header-right">
                 <a href="/wishlist" class="wishlist-link">
                     <i class="icon-heart-o"></i>
-                    <span class="wishlist-count">3</span>
+                    <span class="wishlist-count"><% if(locals.wishlistCount) {%>
+                        <%= wishlistCount ? wishlistCount : 0 %>
+                        <% } else { %>
+                            0
+                        <% } %></span>
                     <span class="wishlist-txt">My Wishlist</span>
                 </a>
 
@@ -23,7 +27,12 @@
                     <a  href="/cart" class="dropdown-toggle" 
                        >
                         <i class="icon-shopping-cart"></i>
-                        <span class="cart-count">2</span>
+                        <span class="cart-count"><% if(locals.cartCount) {%>
+                            <%= cartCount ? cartCount : 0 %>
+                            <% } else { %>
+                                0
+                            <% } %>
+                        </span>
                         <span class="cart-txt">Cart</span>
                     </a>
 

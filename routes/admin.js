@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const userModal=require('../models/userSchema')
-const adminController = require('../controller/adminController');
-const adminCategoryController = require('../controller/adminCategoryController');
-const adminProductController = require('../controller/adminProductController');
-const adminUserController = require('../controller/adminUserController');
-const adminOrderController = require('../controller/adminOrderController');
-const adminCoupenController = require('../controller/adminCoupenController');
-const adminOfferController = require('../controller/adminOfferController');
-const adminReportController = require('../controller/adminReportController');
-const adminChartController = require('../controller/adminChartController');
+const adminController = require('../controller/admin/adminController');
+const adminCategoryController = require('../controller/admin/adminCategoryController');
+const adminProductController = require('../controller/admin/adminProductController');
+const adminUserController = require('../controller/admin/adminUserController');
+const adminOrderController = require('../controller/admin/adminOrderController');
+const adminCoupenController = require('../controller/admin/adminCoupenController');
+const adminOfferController = require('../controller/admin/adminOfferController');
+const adminReportController = require('../controller/admin/adminReportController');
+const adminChartController = require('../controller/admin/adminChartController');
 
-const adminMidleware=require('../middleware/admin');
+const adminMidleware=require('../middleware/adminMiddleware');
 const path = require('path');
 const multer=require('multer');
 const storage = multer.diskStorage({
@@ -32,16 +32,20 @@ const upload = multer({
 });
 
 //admin dashborad page rendering
-router.get('/',adminMidleware.adminRoute,adminController.adminPage)
+router.get('/', adminMidleware.adminRoute, adminController.adminPage)
+
+/***************User Management***************/
 
 // user list showing 
 router.get('/users', adminMidleware.adminRoute, adminUserController.users)
 
 // remove category
-router.get('/userRemove',adminMidleware.adminRoute,adminUserController.userdlt);
+router.get('/userRemove',adminMidleware.adminRoute,adminUserController.userRemove);
 
 //fetching the data
-router.post('/user',adminUserController.blockFetch)
+router.post('/user', adminUserController.userBlock)
+
+/***************Category Mangement***************/
 
 // catagory page rendering
 router.get('/catagory',adminMidleware.adminRoute,adminCategoryController.category)
@@ -61,6 +65,8 @@ router.get('/Catremove',adminMidleware.adminRoute,adminCategoryController.catego
 //  category active or not fecting
 router.post('/activeOrnot', adminCategoryController.catgoryActive);
 
+/***************Product Management***************/
+
 //product dets page rendering
 router.get('/product',adminMidleware.adminRoute,adminProductController.productDets)
 
@@ -77,7 +83,9 @@ router.post('/edit',upload.fields([{ name: 'images0', maxCount: 1 },{ name: 'ima
 router.get('/dltProduct', adminProductController.dltPro);
 
 //list product
-router.post('/listedOrnot',adminProductController.productListed)
+router.post('/listedOrnot', adminProductController.productListed)
+
+/***************Order Management***************/
 
 //order list 
 router.get('/orders', adminMidleware.adminRoute, adminOrderController.order)
@@ -99,6 +107,7 @@ router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orde
 router.put('/peyment',adminController.peyment)
 
 
+/***************Coupen management***************/
 
 //coupen get
 router.get('/coupen',adminMidleware.adminRoute, adminCoupenController.coupenPage);
@@ -112,7 +121,7 @@ router.delete('/coupenRemove/:id', adminCoupenController.coupenRemove);
 //coupen edit 
 router.post('/coupenEdit/:id', upload.array('images'), adminCoupenController.coupenEdit);
 
-/************offers************/
+/************Offers Management************/
 
 //offer page get
 router.get('/offer', adminMidleware.adminRoute, adminOfferController.offerPage);
@@ -146,6 +155,8 @@ router.post('/report/download/:id',adminReportController.reportdownload)
 
 //report custom
 router.put('/report', adminReportController.customreport)
+
+/***************Chart***************/
 
 //yearly chart
 router.put('/year', adminChartController.year)

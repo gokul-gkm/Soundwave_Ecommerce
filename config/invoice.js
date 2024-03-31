@@ -1,5 +1,6 @@
 const fs = require("fs");
 const easyinvoice = require("easyinvoice");
+const dotEnv = require('dotenv');
 
 const data = (det) => {
   const products = det.OrderedItems.map((e, i) => {
@@ -12,7 +13,7 @@ const data = (det) => {
   });
 
   const obj = {
-    apiKey: "jLMfRq3EFKqfYKHQ7IEImhL5SeFPDkv9On8IkVWv8zxW8LojwLbZaZzM08o8jdXK",
+    apiKey: process.env.INVOICE_API_KEY,
     images: {
       logo: "",
     },

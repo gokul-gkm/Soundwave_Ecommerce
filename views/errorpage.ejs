@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Page</title>
+<link rel="stylesheet" href="css/mycss/errorpage.css" />
+</head>
+<body>
+<div class="error-container">
+  <div class="error-content">
+    <div class="error-header">
+      <h1>Error <%= error.status %></h1>
+      <p><%= message %></p>
+    </div>
+    <button id="showStackBtn">Show Error Details</button>
+    <p class="stack hidden"><%= error.stack %></p>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+
+
+<script>
+    document.getElementById('showStackBtn').addEventListener('click', function() {
+  document.querySelector('.stack').classList.toggle('hidden');
+});
+</script>

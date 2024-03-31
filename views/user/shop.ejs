@@ -1,0 +1,476 @@
+<%- include('../layout/header.ejs')-%>
+
+<body>
+  <!-- Button trigger modal -->
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    style="display: none"
+    id="exampleModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+    style="
+      width: 100vw;
+      backdrop-filter: blur(1rem);
+      height: 100vh;
+      position: fixed;
+      z-index: 999999;
+      background-color: rgb(36 34 34 / 33%);
+    "
+  >
+    <div
+      class="modal fade show"
+      style="display: block; border-radius: 15px"
+      id="exampleModal"
+    >
+      <div class="modal-dialog hh" style="display: block">
+        <style>
+          @media (min-width: 576px) {
+            .hh {
+              width: 20vw !important;
+            }
+          }
+        </style>
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <button
+              type="button border-0"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center" style="margin-top: -1rem">
+            <h5>Your Cart is add</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="page-wrapper">
+    <%- include('../layout/nave.ejs') -%>
+
+    <main class="main">
+      <!-- <div
+        class="page-header text-center"
+        style="background-image: url('images/page-header-bg.jpg')"
+      > -->
+        <div class="container">
+          <h1 class="page-title fs-2 mt-2"><span>All products</span></h1>
+        </div>
+        
+      <!-- </div> -->
+      <!-- End .page-header -->
+      <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+        <div class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <a href="/products">Products</a>
+            </li>
+          </ol>
+
+          <div class="d-flex mb-2">
+            <div class="header-search toolbox-right">
+              <a href="#" class="search-toggle" role="button" title="Search"
+                ><i class="icon-search"></i
+              ></a>
+              <form action="/products" method="get" id="searchForm">
+                <div class="header-search-wrapper" style="width: 20rem">
+                  <label for="product_search" class="sr-only">Search</label>
+                  <input
+                    type="search"
+                    class="form-control"
+                    name="product_search"
+                    id="product_search"
+                    placeholder="Search in..."
+                    required
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- End .container -->
+        
+
+      </nav>
+      <!-- End .breadcrumb-nav -->
+
+      <div class="page-content">
+        <div class="container">
+         
+
+          <div class="toolbox">
+            <div class="toolbox-left">
+              <a href="#" class="sidebar-toggler"
+                ><i class="icon-bars"></i>Filters</a
+              >
+            </div>
+            <!-- End .toolbox-left -->
+
+            <div class="toolbox-center">
+              <div class="toolbox-info">
+                Showing
+                <span
+                  ><%= totalProductsCount < limit ? totalProductsCount : limit
+                  %> of <%= totalProductsCount%></span
+                >
+                Products
+              </div>
+              <!-- End .toolbox-info -->
+            </div>
+            <!-- End .toolbox-center -->
+
+            <div class="toolbox-right">
+              <div class="toolbox-sort">
+                  <form action="/products" method="GET">
+                      <label for="sortby">Sort by:</label>
+                      <div class="select-custom">
+                          <select name="sortby" id="sortby" class="form-control" onchange="this.form.submit()">
+                              <option value="popularity" <% if (sortby === 'popularity') { %>selected<% } %>>Most Popular</option>
+                              <option value="priceLowToHigh" <% if (sortby === 'priceLowToHigh') { %>selected<% } %>>Price: Low to High</option>
+                              <option value="priceHighToLow" <% if (sortby === 'priceHighToLow') { %>selected<% } %>>Price: High to Low</option>
+                              <option value="averageRating" <% if (sortby === 'averageRating') { %>selected<% } %>>Average Ratings</option>
+                              <option value="featured" <% if (sortby === 'featured') { %>selected<% } %>>Featured</option>
+                              <option value="newArrivals" <% if (sortby === 'newArrivals') { %>selected<% } %>>New Arrivals</option>
+                              <option value="aToZ" <% if (sortby === 'aToZ') { %>selected<% } %>>aA - zZ</option>
+                              <option value="zToA" <% if (sortby === 'zToA') { %>selected<% } %>>zZ - aA</option>
+                          </select>
+                      </div>
+                  </form>
+              </div>
+              <!-- End .toolbox-sort -->
+          </div>
+          
+          <!-- Render your product items below -->
+          
+
+            
+            
+            <!-- End .toolbox-right -->
+          </div>
+          <!-- End .toolbox -->
+
+          <div class="products">
+            <div class="row">
+              <% Allproduct.forEach(e=>{ %>
+
+              <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                <div class="product product-7 text-center">
+                  <figure class="product-media">
+                    <span class="product-label label-new">New</span>
+                    <a href="/productDets?proId=<%=e._id  %>">
+                      <img
+                        src="/productImage/<%=e.images[0]  %>"
+                        alt="Product image"
+                        class="product-image"
+                      />
+                      <img
+                        src="/productImage/<%=e.images[1]?e.images[1]:e.images[0]  %>"
+                        alt="Product image"
+                        class="product-image-hover"
+                      />
+                    </a>
+
+                    <div class="product-action-vertical">
+                      <a
+                        href="#" onclick="addwishlist('<%=e._id  %>','<%=locals.login?locals.login:false  %>',1)"
+                        class="btn-product-icon btn-wishlist btn-expandable"
+                        ><span>add to wishlist</span></a
+                      >
+                      <span
+                        class="btn-product-icon btn-stock btn-expandable fs-2"
+                        ><span>stocks left</span><%= e.stock %></span
+                      >
+                    </div>
+                    <!-- End .product-action-vertical -->
+
+                    <div class="product-action">
+                      <div
+                        onclick="addCart('<%=e._id  %>','<%=locals.login?locals.login:false  %>',1)"
+                        class="btn-product btn-cart"
+                        style="cursor: pointer"
+                      >
+                        <span>add to cart</span>
+                      </div>
+                    </div>
+                    <!-- End .product-action -->
+                  </figure>
+                  <!-- End .product-media -->
+
+                  <div class="product-body">
+                    <div class="product-cat">
+                      <a href="#">
+                        <% if (e.category && e.category.name) { %> <%=
+                        e.category.name %> <% } %>
+                      </a>
+                    </div>
+                    <!-- End .product-cat -->
+                    <h3 class="product-title">
+                      <a href="product.html">
+                        <%= e.name %>
+                        <br />
+                      </a>
+                    </h3>
+                    <!-- End .product-title -->
+                    <div class="product-price">₹<%=e.price %></div>
+                    <!-- End .product-price -->
+
+                    <div class="product-nav product-nav-thumbs">
+                      <% e.images.forEach(e=>{ %>
+                      <div
+                        href="#"
+                        class="active overflow-hidden"
+                        style="width: 40px; height: 40px"
+                      >
+                        <img
+                          src="/productImage/<%=e  %>"
+                          class="w-100 h-100 object-fit-cover"
+                          alt=""
+                        />
+                      </div>
+                      <% }) %>
+                    </div>
+                    <!-- End .product-nav -->
+                  </div>
+                  <!-- End .product-body -->
+                </div>
+              </div>
+              <!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+              <% }) %>
+
+              <input type="hidden" name="login" value="<%= locals.login %>" id="userLogin">
+            </div>
+            <!-- End .row -->
+
+            <%- include('../layout/pagination.ejs') -%>
+          </div>
+          <!-- End .products -->
+
+          <%- include('../layout/filter.ejs') -%>
+        </div>
+        <!-- End .container -->
+      </div>
+      <!-- End .page-content -->
+    </main>
+    <%- include('../layout/lyfooter.ejs') -%>
+  </div>
+  <button id="scroll-top" title="Back to Top">
+    <i class="icon-arrow-up"></i>
+  </button>
+
+  <%- include('../layout/mobMenu.ejs') -%>
+
+  <!-- Add the script here -->
+
+ <script>
+  // Function to fetch products based on selected categories and colors
+function filterProducts() {
+    // Gather selected categories
+    const categories = [];
+    document.querySelectorAll('.category-checkbox:checked').forEach(checkbox => {
+        categories.push(checkbox.value);
+    });
+
+    // Gather selected colors
+    const colors = [];
+    document.querySelectorAll('.filter-colors a.selected').forEach(color => {
+        colors.push(color.style.backgroundColor);
+    });
+
+    console.log(colors);
+
+    // Make AJAX request
+    fetch('/filter-products', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            categories: categories,
+            colors: colors,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+
+      console.log(data);
+        
+        updateProductList(data.products);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+let userLogin = document.getElementById('userLogin').value;
+
+console.log(userLogin);
+
+function updateProductList(products) {
+    // Assuming you have a container for the product list
+    const productListContainer = document.querySelector('.products .row');
+
+    // Clear the current product list
+    productListContainer.innerHTML = '';
+
+    // Add the filtered products to the list
+    products.forEach(product => {
+      console.log(product);
+        const productElement = document.createElement('div');
+        productElement.classList.add('col-6', 'col-md-4', 'col-lg-4', 'col-xl-3');
+
+        const productCard = `
+            <div class="product product-7 text-center">
+                <figure class="product-media">
+                    <span class="product-label label-new">New</span>
+                    <a href="/productDets?proId=${product._id}">
+                        <img src="/productImage/${product.images[0]}" alt="Product image" class="product-image" />
+                        <img src="/productImage/${product.images[1] ? product.images[1] : product.images[0]}" alt="Product image" class="product-image-hover" />
+                    </a>
+                    <div class="product-action-vertical">
+                        <a href="#" onclick="addwishlist('${product._id}','${userLogin ? userLogin : false}',1)" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        <span class="btn-product-icon btn-stock btn-expandable fs-2"><span>stocks left</span>${product.stock}</span>
+                    </div>
+                    <div class="product-action">
+                        <div onclick="addCart('${product._id}','${userLogin ? userLogin : false}',1)" class="btn-product btn-cart" style="cursor: pointer"><span>add to cart</span></div>
+                    </div>
+                </figure>
+                <div class="product-body">
+                    <div class="product-cat">
+                        <a href="#">${product.category && product.category.name ? product.category.name : ''}</a>
+                    </div>
+                    <h3 class="product-title">
+                        <a href="product.html">${product.name}</a>
+                    </h3>
+                    <div class="product-price">₹${product.price}</div>
+                    <div class="product-nav product-nav-thumbs">
+                        ${product.images.map(image => `<div href="#" class="active overflow-hidden" style="width: 40px; height: 40px"><img src="/productImage/${image}" class="w-100 h-100 object-fit-cover" alt="" /></div>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        productElement.innerHTML = productCard;
+        productListContainer.appendChild(productElement);
+    });
+}
+
+document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(element => {
+    element.addEventListener('change', filterProducts);
+});
+
+ </script>
+
+
+
+
+ 
+  <!-- script for search -->
+
+  <script>
+    // Add an event listener to the form for the "keypress" event
+    document
+      .getElementById("searchForm")
+      .addEventListener("keypress", function (event) {
+        
+        if (event.keyCode === 13) {
+          event.preventDefault(); 
+
+          const searchQuery = document
+            .getElementById("product_search")
+            .value.trim();
+          if (searchQuery !== "") {
+            
+            this.submit();
+          }
+        }
+      });
+  </script>
+
+<!-- script for add to cart -->
+  <script>
+    const modal = document.getElementById("exampleModal");
+
+    function addCart(id, user, q) {
+      if (user === "false") {
+        console.log("hello");
+        window.location.href = "/login";
+      } else {
+        fetch("/addcart", {
+          method: "put",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ id, user, q }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              toast("success", "cart added");
+            }
+            if (data.exist) {
+              toast("warning", "product already there");
+            }
+          });
+      }
+    }
+
+    function addwishlist(id, user, q) {
+      if (user === "false") {
+        window.location.href = "/login";
+      } else {
+        fetch("/addToWishlist", {
+          method: "post",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ id, user, q }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              toast("success", "wishlist added");
+            }
+            if (data.exist) {
+              toast("warning", "product already there");
+            }
+          });
+      }
+    }
+
+    function toast(icon, title) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        },
+      });
+      Toast.fire({
+        icon: icon,
+        title: title,
+      });
+    }
+  </script>
+
+  <style>
+    body::-webkit-scrollbar {
+      width: 0;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <script
+    src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"
+    defer
+  ></script>
+  <script src="js/base.js"></script>
+  <%- include('../layout/footer.ejs') -%>
+</body>

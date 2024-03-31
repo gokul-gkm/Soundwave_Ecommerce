@@ -14,7 +14,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$<%=sale %>
+                          <h3 class="mb-0">₹<%=sale %>
                           </h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
@@ -37,7 +37,7 @@
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0">
                             
-                            $<%=locals.daily[0]?locals.daily[0].totalAmount:0  %>
+                            ₹<%=locals.daily[0]?locals.daily[0].totalAmount:0  %>
                           </h3>
                           <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p> -->
                         </div>
@@ -58,7 +58,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$<%=locals.monthSale  %></h3>
+                          <h3 class="mb-0">₹<%=locals.monthSale  %></h3>
                           <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
                         </div>
                       </div>
@@ -78,7 +78,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$<%=locals.yearly[0]?locals.yearly[0].totalAmount:0  %></h3>
+                          <h3 class="mb-0">₹<%=locals.yearly[0]?locals.yearly[0].totalAmount:0  %></h3>
                           <p class="text-success ml-2 mb-0 font-weight-medium"></p>
                         </div>
                       </div>
@@ -106,7 +106,7 @@
                         <p class="text-muted mb-0" id="op_time"><%= op[0]?op[0].orderDate.toString().split(' ').slice(0,5).join('  '):''%></p>
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="online-peyment">$<%=op[0]?op[0].orderAmount:''  %></h6>
+                        <h6 class="font-weight-bold mb-0" id="online-peyment">₹<%=op[0]?op[0].orderAmount:''  %></h6>
                       </div>
                     </div>
                     <div
@@ -116,7 +116,7 @@
                         <p class="text-muted mb-0" id="cod_time"><%=cod[0]?cod[0].orderDate.toString().split(' ').slice(0,5).join('  '):''   %></p>
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="cod">$<%=cod[0]?cod[0].orderAmount:''  %></h6>
+                        <h6 class="font-weight-bold mb-0" id="cod">₹<%=cod[0]?cod[0].orderAmount:''  %></h6>
                       </div>
                     </div>
                   </div>
@@ -146,7 +146,7 @@
                             <div class="preview-item-content d-sm-flex flex-grow">
                               <div class="flex-grow">
                                 <h6 class="preview-subject"><%=e.productData[0].name  %></h6>
-                                <p class="text-muted mb-0">product price:- $<%=e.productData[0].price  %></p>
+                                <p class="text-muted mb-0">product price:- ₹<%=e.productData[0].price  %></p>
                               </div>
                               <div class="mr-auto text-sm-right pt-2 pt-sm-0">
                                 <p class="text-muted"><%=e.totalCount  %>  products</p>
@@ -312,7 +312,7 @@
                               </span>
                             </td>
                        
-                            <td> $<%= elem.orderAmount.toFixed(2) %></td>
+                            <td> ₹<%= elem.orderAmount.toFixed(2) %></td>
                             <td><%= elem.peyment %></td>
                             <td><%=elem.orderDate.toString().split(' ').slice(0,4).join('  ') %></td>
                             
@@ -498,7 +498,7 @@ const peymentC=data.orderList[1]?data.orderList[1].totalCount:0;
             ctx.textBaseline = "middle";
             ctx.fillStyle = "#ffffff";
 
-            var text = `$${amoount}`,
+            var text = `₹${amoount}`,
               textX = Math.round((width - ctx.measureText(text).width) / 2),
               textY = height / 2.4;
 
@@ -529,10 +529,6 @@ const peymentC=data.orderList[1]?data.orderList[1].totalCount:0;
       }
 
     })
-    
-
-   
-
 
   </script>
 

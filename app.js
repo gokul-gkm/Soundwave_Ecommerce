@@ -13,6 +13,7 @@ const createError = require('http-errors');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -43,9 +44,12 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.render('error');
+  res.render('errorpage');
 });
 
+app.get('*',(req,res)=>{
+  res.redirect('/404')
+})
 
 const port = process.env.PORT || 3001
 app.listen(port, () => { console.log('http://localhost:3001') })

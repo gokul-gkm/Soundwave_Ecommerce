@@ -1,0 +1,308 @@
+<%- include('../layout/header.ejs') -%>
+ <link rel="stylesheet" href="/css/mycss/profileOrder.css">   
+  </head>
+
+  <body>
+
+    <%- include('../layout/nave.ejs') -%>
+      <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Account</li>
+          </ol>
+        </div><!-- End .container -->
+      </nav>
+      <br>
+
+
+
+      <section class="">
+        <div class="container-fluid  py-5 h-100 position-relative ">
+          <div class="row d-flex    align-items-start  h-100" style="gap: 10rem;">
+            <aside class="col-md-2 col-lg-2  ">
+              <!-- profile nave -->
+              <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+
+                <li class="nav-item">
+                  <a class="nav-link active" id="tab-orders-link" href="/order" aria-selected="true">Back to Orders</a>
+                </li>
+
+              </ul>
+              <br>
+
+              <div class="card" style="border: .1rem solid #ebebeb !important; border-radius: 10px;">
+                <div class="card-body">
+                  <div class="hedaer  d-flex align-items-center  justify-content-between w-100 ms-4   ">
+
+                    <h5 class="card-title text-center mb-2">
+                      address
+                    </h5>
+
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label"> name:-&nbsp;<%=order.deliveryAdress.name %></label>
+
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label"> city:-&nbsp;<%=order.deliveryAdress.city %></label>
+
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label"> state:-&nbsp;<%=order.deliveryAdress.state %></label>
+
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label"> pincode:-&nbsp;<%=order.deliveryAdress.pincode %></label>
+
+                  </div>
+                  <% if (order.orderStatus === 'delivered') { %>
+                    <a href="/invoice/<%= order._id %>" class="btn text-white text-capitalize bg-primary" style="cursor: pointer;">Download Invoice Bill</a>
+                <% } %>
+                </div>
+              </div>
+            </aside>
+            <aside class="col col-lg-6 mb-4 mb-lg-0">
+              <div class="row w-100" style="gap: 2rem;">
+                <div class="container">
+                  <table class="table table-wishlist table-mobile " style="width: 920px;">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity </th>
+                        <th>Delivery </th>
+                        <th>Total Price</th>
+                        <th>Options</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <% if(locals.order) { %>
+                        <% order.OrderedItems.forEach((product, index)=>{ %>
+                          <tr>
+                            <td class="product-col">
+
+                              <figure class="product-media">
+                                <a href="/productDets?proId=<%= product.productId._id %>">
+                                  <img src="/productImage/<%= product.productId.images[0] %> " alt="Product image">
+                                </a>
+                              </figure>
+
+                            </td>
+                            <td>
+
+                              <a href="/productDets?proId=<%= product.productId._id %>">
+                                <%= product.productId.name %>
+                              </a>
+
+                              <!-- End .product -->
+                            </td>
+                            <td class="stock-col ms-3 ">₹<%=product.productId.price %>
+                            </td>
+                            <td class="stock-col"><span class="in-stock">
+                                <%=product.quantity %>
+                              </span></td>
+                            <td class="stock-col <%=product.orderProStatus=='canceled'? 'text-danger' :''%>" id="st<%=product.productId._id  %>">
+                              <%=product.orderProStatus%>
+                            </td>
+
+                            <td class="price-col">
+                              ₹<%=product.price %>
+                            </td>
+                            <td>
+                              <div class="d-flex align-items-center justify-content-between w-100">
+
+                                <% if(product.orderProStatus=='shipped' ){%>
+
+                                   <button type="submit"
+                                  onclick="cancel('<%=product.productId._id %>','<%=locals.order._id%>','<%=locals.login%>','<%=product.price %>')"
+                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
+                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
+                                  Cancel</button>
+                                  <% } else if(product.orderProStatus=='delivered') { %>
+
+                                    <button type="submit"
+                                  onclick="returnOrder('<%=product.productId._id %>','<%=locals.login%>')"
+                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
+                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
+                                  Return</button>
+
+                                  <%}else{ %>
+                                    <button type="submit"
+                                  onclick="cancel('<%=product.productId._id %>', '<%=locals.order._id%>','<%=locals.login%>','<%=product.price %>')"
+                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96; pointer-events: none; opacity: .5;"
+                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
+                                  Cancel</button>
+
+                                    <%}%>
+
+                                    
+                              </div>
+                            </td>
+
+                            <% if(product.orderProStatus == 'delivered') {%>
+                              <td><button class="btn btn-outline-success" onclick="openModal('<%=product.productId._id %>')">Add Review</button></td>
+                              <% } %>
+
+                          </tr>
+
+                          <div id="myModal" class="modal">
+
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                              <span class="close text-right" onclick="closeModal()">&times;</span>
+                              <h2>Add Review</h2>
+                              <form id="reviewForm" action="/submit-review/<%=product.productId._id %>" method="post">
+                                <label for="rating">Rating:</label>
+                                <select id="rating" name="rating">
+                                  <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
+                                  <option value="4">4 Stars ⭐⭐⭐⭐</option>
+                                  <option value="3">3 Stars ⭐⭐⭐</option>
+                                  <option value="2">2 Stars ⭐⭐</option>
+                                  <option value="1">1 Star  ⭐</option>
+                                </select><br><br>
+                                <label for="review">Review:</label><br>
+                                <textarea id="review" name="review" rows="4" cols="50" onclick="check(this)"></textarea><br><br>
+                                <button type="submit" id="submitReview" >Submit Review</button>
+                              </form>
+                            </div>
+                          
+                          </div>
+                          <% })} %>
+
+                    </tbody>
+                  </table>
+                  <% if(locals.order) {%>
+                    <div class="wishlist-share">
+                      <div class="social-icons social-icons-sm mb-2">
+                        <label class="social-label">Total:</label>
+                        ₹<%=locals.order.orderAmount %>
+                      </div><!-- End .soial-icons -->
+                    </div>
+                    <% } %>
+                </div>
+
+              </div>
+            </aside>
+          </div>
+
+          
+
+        </div>
+      </section>
+
+
+
+<%- include('../layout/mobMenu.ejs') -%>
+<%- include('../layout/lyfooter') -%>
+
+<style>
+  *::-webkit-scrollbar {
+    width: 0;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+  }
+</style>
+
+<script>
+  const submit= document.getElementById('submitReview')
+   function check(e){
+       if(e.value.trim()==''){
+           submit.style.pointerEvents='none';
+           submit.style.opacity=.6;
+       }else{
+           submit.style.pointerEvents='all';
+           submit.style.opacity=1;
+           
+       }
+   }
+ </script>
+
+<script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+  
+  // Function to open the modal
+  function openModal(productId) {
+    document.getElementById('reviewForm').action = "/submit-review/" + productId;
+    modal.style.display = "block";
+  }
+  
+  // Function to close the modal
+  function closeModal() {
+    modal.style.display = "none";
+  }
+  
+  // Close the modal when clicking outside of it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>  
+
+<script>
+  async function cancel(id,orderId, user, price) {
+    const status = document.getElementById(`st${id}`);
+    const btn = document.getElementById(`bt${id}`);
+    
+  const {value: cancelReason} = await Swal.fire({
+    title: "Cancel reason",
+    input: "text",
+    inputLabel: "Cancel reason",
+    showCancelButton: true,
+    inputValidator: (value)=>{
+      if(!value){
+        return "You need to write something"
+      }
+    }
+  });
+  if(cancelReason){
+        edit(id,orderId,user,price,cancelReason);
+        Swal.price({
+          title:"succes",
+          text: "Canceled order is success check your wallet",
+          icon: "success"
+        })
+      }
+  }
+
+  function edit(id,orderId, user, price,cancelReason) {
+    const status = document.getElementById(`st${id}`);
+    const btn = document.getElementById(`bt${id}`);
+    fetch('/editOrder', {
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id,orderId, user,price,cancelReason})
+    }).then(res => res.json()).then(data => {
+      console.log(data);
+      if (data.set) {
+        status.innerHTML = 'cancelled';
+        status.classList.add('text-danger')
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = 0.5;
+      }
+      if (data.issue) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+
+        });
+      }
+    })
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+<script src="js/demos/demo-6.js"></script>
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+<%- include('../layout/footer.ejs') -%>
+  <!-- <script src="js/base.js"></script> -->
