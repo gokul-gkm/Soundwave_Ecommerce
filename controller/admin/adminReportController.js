@@ -157,12 +157,12 @@ const reportdownload = async (req, res) => {
       };
       const ejsPage = await ejs.renderFile(ejspagepath, data);
 
-      // Optimize Puppeteer launch options for better performance
+      
       const browser = await puppeteer.launch({
-        headless: true, // Set to true to run in headless mode
-        args: ["--no-sandbox", "--disable-setuid-sandbox"], // Add additional args for improved performance and security
-        defaultViewport: null, // Set to null for faster page loading
-        ignoreHTTPSErrors: true, // Ignore HTTPS errors to avoid potential slowdowns
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        defaultViewport: null, 
+        ignoreHTTPSErrors: true, 
       });
 
       const page = await browser.newPage();

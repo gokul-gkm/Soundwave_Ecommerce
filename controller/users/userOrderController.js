@@ -160,13 +160,13 @@ const postSucces = async (req, res) => {
 
     if (req.body.peyment == "wallet") {
       const ne = 0 - subtotal.toFixed(1);
-      const debitAMount = ne * -1;
+      const debitAmount = ne * -1;
       await wallet.findOneAndUpdate(
         { userId: req.session.login },
         {
           $inc: { amount: ne },
           $push: {
-            transaction: { amount: debitAMount, creditOrDebit: "debit" },
+            transaction: { amount: debitAmount, creditOrDebit: "debit" },
           },
         }
       );
@@ -201,7 +201,7 @@ const postSucces = async (req, res) => {
 };
 
 //order det page rendering
-const orderDet = async (req, res) => {
+const orderDetails = async (req, res) => {
   try {
     const category = await categoryModal.find({ isDeleted: false });
     const order = await orderModal
@@ -276,7 +276,7 @@ const editOrder = async (req, res) => {
           { $set: { orderStatus: "canceled" } },
           { new: true } 
         );
-        console.log(k+"if");
+        
       } else {
         let flag = newOne.OrderedItems.filter(
           (e) => e.orderProStatus === "canceled"
@@ -288,7 +288,7 @@ const editOrder = async (req, res) => {
             { $set: { orderStatus: "canceled" } },
             { new: true } 
           );
-          console.log(k+"else");
+          
         }
       }
 
@@ -445,7 +445,7 @@ module.exports = {
   postSucces,
   success,
   orderView,
-  orderDet,
+  orderDetails,
   editOrder,
   razor,
   invoice,

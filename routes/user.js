@@ -133,7 +133,7 @@ router.put("/Defaddress", userAddressController.Defaddress);
 router.get("/checkoutPage", userMidleware.userbloack, userMidleware.user, userOrderController.checkoutPage);
 
 //  order det page rendering
-router.get("/order", userMidleware.userbloack, userMidleware.user, userOrderController.orderDet);
+router.get("/order", userMidleware.userbloack, userMidleware.user, userOrderController.orderDetails);
 
 //  order det page rendering
 router.get("/orderView/:id", userMidleware.userbloack, userMidleware.user, userOrderController.orderView);
