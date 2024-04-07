@@ -69,7 +69,6 @@ const products = async (req, res) => {
         .skip(skip)
         .limit(limit);
       
-      console.log(Allproduct);
   
       if (req.session.login) {
         const cartCount = await getCartCount(req.session.login);

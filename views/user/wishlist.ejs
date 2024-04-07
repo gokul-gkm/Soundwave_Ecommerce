@@ -23,6 +23,7 @@
     
                 <div class="page-content mt-0">
                     <div class="container">
+                        <% if(locals.wishlistCount > 0) {%>
                         <table class="table table-wishlist table-mobile">
                             <thead>
                                 <tr>
@@ -67,9 +68,13 @@
                                
 
                                 <% }) %>
+                                
                                 <% } %>
                             </tbody>
                         </table><!-- End .table table-wishlist -->
+                        <% } else { %>
+                            <div class="text-center text-primary fs-2">Wishlist is empty</div> 
+                        <% } %>
                         <div class="wishlist-share">
                             <div class="social-icons social-icons-sm mb-2">
                                 <label class="social-label">Share on:</label>

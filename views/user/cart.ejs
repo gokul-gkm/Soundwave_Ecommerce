@@ -25,8 +25,10 @@
                     <div class="page-content">
                         <div class="cart">
                             <div class="container">
+                                <% if(locals.cartCount > 0){ %>
                                 <div class="row">
                                     <div class="col-lg-9">
+                                       
                                         <table class="table table-cart table-mobile">
                                             <thead>
                                                 <tr>
@@ -145,10 +147,14 @@
                                                     </tr><!-- End .summary-total -->
                                                 </tbody>
                                             </table><!-- End .table table-summary -->
-
+                                            <% if(locals.cartCount > 0){ %>
                                             <a href="/checkoutPage"
                                                 class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
                                                 CHECKOUT</a>
+                                            <% } else { %>
+                                                <a 
+                                                class="btn btn-outline-primary-2 btn-order btn-block">Cart is Empty</a>
+                                                <% } %>
                                         </div><!-- End .summary -->
 
                                         <a href="/shop"
@@ -156,6 +162,9 @@
                                                 SHOPPING</span><i class="icon-refresh"></i></a>
                                     </aside><!-- End .col-lg-3 -->
                                 </div><!-- End .row -->
+                                <% } else { %>
+                                    <div class="text-center text-primary fs-2">Cart is Empty</div>
+                                <% } %>
                             </div><!-- End .container -->
                         </div><!-- End .cart -->
                     </div><!-- End .page-content -->

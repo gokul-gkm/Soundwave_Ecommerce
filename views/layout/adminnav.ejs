@@ -69,6 +69,25 @@
           <span class="menu-title">Category</span>
         </a>
       </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+          <span class="menu-icon">
+            <i class="mdi mdi-file-document-box"></i>
+          </span>
+          <span class="menu-title">Sales Report</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="auth">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="/admin/report/weekly"><i class="ri-calendar-event-fill text-primary "></i>weekly report</a></li>
+            <li class="nav-item"> <a class="nav-link" href="/admin/report/monthly"><i class="ri-calendar-event-line text-info "></i>monthly report  </a></li>
+            <li class="nav-item"> <a class="nav-link" href="/admin/report/yearly"> <i class="ri-calendar-todo-fill text-danger "></i>yearly report</a></li>
+            <li class="nav-item"> <a class="nav-link" href="/admin/report/costum"><i class="ri-calendar-todo-fill text-bg-warning  "></i></i>  custom report </a></li>
+          </ul>
+        </div>
+      </li>
+
       <li class="nav-item menu-items <%= locals.coupens?'active':''   %>">
         <a class="nav-link" href="/admin/coupen">
           <span class="menu-icon">
@@ -85,6 +104,8 @@
           <span class="menu-title">Offers</span>
         </a>
       </li>
+
+      
       
   
    
@@ -112,57 +133,7 @@
         </ul>
         <ul class="navbar-nav navbar-nav-right">
 
-          <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#">Reports <i class="ri-arrow-down-s-fill"></i></a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
-              <h6 class="p-3 mb-0">Sales Reports</h6>
-              <div class="dropdown-divider"></div>
-              <a href="/admin/report/weekly" class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                  <div class="preview-icon bg-dark rounded-circle">
-                    <i class="ri-calendar-event-fill text-primary "></i>
-                  </div>
-                </div>
-                <div class="preview-item-content">
-                  <p class="preview-subject ellipsis mb-1 text-capitalize ">weekly Report</p>
-                </div>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="/admin/report/monthly"  class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                  <div class="preview-icon bg-dark rounded-circle">
-                   <i class="ri-calendar-event-line text-info "></i>
-                  </div>
-                </div>
-                <div class="preview-item-content">
-                  <p class="preview-subject ellipsis mb-1" text-capitalize >monthly Report</p>
-                </div>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="/admin/report/yearly" class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                  <div class="preview-icon bg-dark rounded-circle">
-                    <i class="ri-calendar-todo-fill text-danger "></i>
-                  </div>
-                </div>
-                <div class="preview-item-content">
-                  <p class="preview-subject ellipsis mb-1 text-capitalize ">yearly Report</p>
-                </div>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="/admin/report/costum" class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                  <div class="preview-icon bg-dark rounded-circle">
-                    <i class="ri-calendar-todo-fill text-bg-warning  "></i>
-                  </div>
-                </div>
-                <div class="preview-item-content" >
-                  <p class="preview-subject ellipsis mb-1 text-capitalize ">custom Report</p>
-                </div>
-              </a>
-         
-            </div>
-          </li>
+          
 
        
           <li class="nav-item dropdown">

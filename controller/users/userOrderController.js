@@ -255,7 +255,7 @@ const orderView = async (req, res) => {
 const editOrder = async (req, res) => {
   try {
     const cancelReason = req.body.cancelReason;
-    console.log(cancelReason);
+    
     const newOne = await orderModal.findOneAndUpdate(
       { userId: req.body.user, "OrderedItems.productId": req.body.id , _id: req.body.orderId},
       {
@@ -267,7 +267,7 @@ const editOrder = async (req, res) => {
       },
       { new: true }
     );
-    console.log(newOne);
+
 
     if (newOne) {
       if (newOne.OrderedItems.length == 1) {
