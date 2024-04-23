@@ -36,6 +36,7 @@
             <aside class="col col-lg-6 col-md-6 mb-4 mb-lg-0">
               <div class="row w-100" style="gap: 2rem;">
                 <div class="container" style="width: 900px; gap: 3rem;">
+                  <div style="max-height: 600px; overflow-y: auto;">
                   <table class="table table-wishlist table-mobile">
                     <thead>
                       <tr>
@@ -43,6 +44,7 @@
                         <th>amount</th>
                         <th>time</th>
                         <th>Debit Or Credit</th>
+                        <th>Source</th>
                    
                       </tr>
                     </thead>
@@ -64,7 +66,9 @@
                           
                               <%=elam.creditOrDebit%>
                             </td>
-
+                            
+                            <td class="stock-col ms-3 "><%=elam?.source %> <br> <span class="text-primary"><%= elam?.orderId %></span>
+                            </td>
                        
                           </tr>
                           <% })} %>
@@ -79,6 +83,7 @@
                       </div><!-- End .soial-icons -->
                     </div>
                     <% } %>
+                  </div>
                 </div>
 
               </div>
@@ -87,7 +92,7 @@
 
         </div>
         
-        <%- include('../layout/pagination.ejs') -%>
+        
 
 
       <%- include('../layout/mobMenu.ejs') -%>

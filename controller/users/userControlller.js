@@ -47,6 +47,35 @@ const home = async (req, res) => {
       .populate("category")
       .skip(skip)
       .limit(limit);
+    
+    
+    const catCount = await productModal.aggregate([
+      {
+         $group: {
+           _id: "$category", 
+           count: { $sum: 1 } 
+         }
+      },
+      {
+         $lookup: {
+           from: "catgories", 
+           localField: "_id", 
+           foreignField: "_id", 
+           as: "categoryDetails" 
+         }
+      },
+      {
+         $unwind: "$categoryDetails" 
+      },
+      {
+         $project: {
+           _id: 0, 
+           categoryName: "$categoryDetails.name", 
+           count: 1 
+         }
+      }
+     ])
+    
 
     if (req.session.login) {
       const cartCount = await getCartCount(req.session.login);
@@ -59,7 +88,8 @@ const home = async (req, res) => {
         currentPage: page,
         totalPages,
         cartCount,
-        wishlistCount
+        wishlistCount,
+        catCount
       });
     } else {
       res.render("user/home", {
@@ -67,6 +97,7 @@ const home = async (req, res) => {
         Allproduct,
         currentPage: page,
         totalPages,
+        catCount
         
       });
     }
@@ -465,14 +496,15 @@ const profile = async (req, res) => {
     const wallet1 = await wallet.findOne({ userId: req.session.login });
     const walletAmount = wallet1?.amount || 0;
 
-    if (user.is_admin === 0) {
+    if (user.is_admin === 0) { 
       res.render("user/profile", {
         user,
         login: req.session.login,
         category,
         walletAmount,
         cartCount,
-        wishlistCount
+        wishlistCount,
+        wallet1
       });
     } else {
       req.session.admin = user;

@@ -3,7 +3,7 @@
 </head>
 <body>
   <%- include('../layout/nave.ejs') -%>
-  <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+  <nav aria-label="breadcrumb" class="breadcrumb-nav mb-0">
     <div class="container">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -66,7 +66,7 @@
         <aside class="col col-xl-9 col-lg-8 col-md-6 col-sm-6 mb-4 mb-lg-0">
           <div class="row w-100" style="gap: 2rem">
             <div class="container">
-
+              <div style="max-height: 400px; overflow-y: auto;">
               <% if(locals.ordercount >0) {%> 
               <table class="table table-wishlist table-mobile" style="width: 920px">
                 <thead>
@@ -116,7 +116,7 @@
                   <% })} %>
                 </tbody>
               </table>
-              
+            </div>
               <% if(locals.order) {%>
               <div class="wishlist-share">
                 <div class="social-icons social-icons-sm mb-2">

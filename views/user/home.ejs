@@ -52,45 +52,68 @@
             <div class="mb-5"></div><!-- End .mb-5 -->
 
                     <div class="row ">
+                        
                 		<div class="col-md-6">
-                			<div class="banner banner-cat banner-badge">
+                			<div class="banner banner-cat banner-badge" style="border-radius: 15px; box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);">
 	                			<a href="#">
-	                				<img src="/images/soundwave-img/headphones-cat.jpg" alt="Banner">
+	                				<img src="/images/soundwave-img/headphones-cat.jpg" alt="Banner" style="border-radius: 15px;">
 	                			</a>
 
-	                			<a class="banner-link" href="/category?catName=Soundbars">
+	                			<a class="banner-link" href="/category?catName=Headphones">
 	                				<h3 class="banner-title">Headphones</h3><!-- End .banner-title -->
-	                				<h4 class="banner-subtitle">8 Products</h4><!-- End .banner-subtitle -->
+	                				
+                                    <% catCount.forEach(function(category) { %>
+                                    <% if (category?.categoryName === "Headphones") { %>
+                                        <h4 class="banner-subtitle"><%= category?.count %> Products</h4><!-- End .banner-subtitle -->
+                                    <% } %>
+                                    <% }); %>
 	                				<span class="banner-link-text">Shop Now</span>
 	                			</a><!-- End .banner-link -->
                 			</div><!-- End .banner -->
                 		</div><!-- End .col-md-6 -->
 
                 		<div class="col-md-6">
-                			<div class="banner banner-cat banner-badge">
+                			<div class="banner banner-cat banner-badge" style="border-radius: 15px; box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);">
 	                			<a href="#">
-	                				<img src="/images/soundwave-img/speakers-cat.jpg" alt="Banner">
+	                				<img src="/images/soundwave-img/speakers-cat.jpg" alt="Banner" style="border-radius: 15px;">
 	                			</a>
 
 	                			<a class="banner-link" href="/category?catName=Speakers">
 	                				<h3 class="banner-title">Speakers</h3><!-- End .banner-title -->
-	                				<h4 class="banner-subtitle">15 Products</h4><!-- End .banner-subtitle -->
+
+	                				
+                                    <% catCount.forEach(function(category) { %>
+                                    <% if (category?.categoryName === "Speakers") { %>
+                                        <h4 class="banner-subtitle"><%= category?.count %> Products</h4><!-- End .banner-subtitle -->
+                                    <% } %>
+                                    <% }); %>
 	                				<span class="banner-link-text">Shop Now</span>
 	                			</a><!-- End .banner-link -->
                 			</div><!-- End .banner -->
 
-                			<div class="banner banner-cat banner-badge">
+                			<div class="banner banner-cat banner-badge" style="border-radius: 15px; box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);">
 	                			<a href="#">
-	                				<img src="/images/soundwave-img/soundbars-cat.png" alt="Banner">
+	                				<img src="/images/soundwave-img/soundbars-cat.png" alt="Banner" style="border-radius: 15px;">
 	                			</a>
 
 	                			<a class="banner-link" href="/category?catName=Soundbars">
 	                				<h3 class="banner-title">Soundbars</h3><!-- End .banner-title -->
-	                				<h4 class="banner-subtitle">12 Products</h4><!-- End .banner-subtitle -->
+
+
+	                				
+
+                                    <% catCount.forEach(function(category) { %>
+                                        <% if (category?.categoryName === "Soundbars") { %>
+                                            <h4 class="banner-subtitle"><%= category?.count %> Products</h4><!-- End .banner-subtitle -->
+                                        <% } %>
+                                        <% }); %>
+
+
 	                				<span class="banner-link-text">Shop Now</span>
 	                			</a><!-- End .banner-link -->
                 			</div><!-- End .banner -->
                 		</div><!-- End .col-md-6 -->
+                        
                 	</div><!-- End .row -->
 
                     <div class="mb-5"></div><!-- End .mb-5 -->

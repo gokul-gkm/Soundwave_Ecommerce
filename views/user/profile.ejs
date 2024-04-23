@@ -88,9 +88,10 @@
 
                 <div class=" gap-5">
                   <p>Wallet :₹<%= locals.walletAmount  %></p>
-                  
+                  <% if(locals.wallet1) { %>
                   <a class=" btn btn-outline-dark" style="margin-left: 1rem;" href="/walletHistory">
                     Wallet History<i class=" ri-history-line"></i></a>
+                    <% } %>
                 </div>
                
               </div>

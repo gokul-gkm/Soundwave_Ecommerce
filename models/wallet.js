@@ -6,7 +6,9 @@ const wallet = new mongoose.Schema({
     transaction:[{
         amount:{type:Number},
         time:{type: Date, default: Date.now },
-        creditOrDebit:{type:String,enum:['debit','credit']}
+        creditOrDebit: { type: String, enum: ['debit', 'credit'] },
+        source: { type: String },
+        orderId:{ type: mongoose.Schema.Types.ObjectId, ref: 'orders' }
     }]
 
 })

@@ -16,6 +16,8 @@ const fs = require("fs");
 const path = require("path");
 const invoiceConfig = require("../../config/invoice");
 const { getWishlistCount ,getCartCount} = require('../../utils/count'); 
+const { Page } = require("puppeteer");
+const { log } = require("console");
 
 require("dotenv").config();
 const { RAZORPAY_IDKEY, RAZORPAY_SECRET_KEY } = process.env;
@@ -69,8 +71,8 @@ const checkoutPage = async (req, res) => {
       .populate("products.productId")
       .exec();
 
-      const cartCount = await getCartCount(req.session.login);
-      const wishlistCount = await getWishlistCount(req.session.login)
+    const cartCount = await getCartCount(req.session.login);
+    const wishlistCount = await getWishlistCount(req.session.login)
     
     if (adress) {
       const add = adress?.address.find(
@@ -111,8 +113,7 @@ const success = async (req, res) => {
       const wishlistCount = await getWishlistCount(req.session.login)
     if (req.session.succes) {
       delete req.session.succes;
-
-      res.render("user/succes", { login: req.session.login, category ,cartCount,wishlistCount});
+      res.render("user/succes", { login: req.session.login, category, cartCount, wishlistCount });
     } else {
       res.redirect("/order");
     }
@@ -166,7 +167,7 @@ const postSucces = async (req, res) => {
         {
           $inc: { amount: ne },
           $push: {
-            transaction: { amount: debitAmount, creditOrDebit: "debit" },
+            transaction: { amount: debitAmount, creditOrDebit: "debit" , source: "product ordered", orderId: orderSet._id},
           },
         }
       );
@@ -255,6 +256,9 @@ const orderView = async (req, res) => {
 const editOrder = async (req, res) => {
   try {
     const cancelReason = req.body.cancelReason;
+    const orderId = req.body.orderId;
+
+    console.log(orderId)
     
     const newOne = await orderModal.findOneAndUpdate(
       { userId: req.body.user, "OrderedItems.productId": req.body.id , _id: req.body.orderId},
@@ -298,7 +302,7 @@ const editOrder = async (req, res) => {
           {
             $inc: { amount: req.body.price },
             $push: {
-              transaction: { amount: req.body.price, creditOrDebit: "credit" },
+              transaction: { amount: req.body.price, creditOrDebit: "credit" , source: "refund from canceled order ", orderId: orderId},
             },
           },
           { new: true, upsert: true }
@@ -379,20 +383,22 @@ const invoice = async (req, res) => {
 
 const walletHistory = async (req, res) => {
   try {
-    const perPage = 5;
-    const page = req.query.page || 1;
+    const limit = 5;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
     const walletOld = await wallet
       .find({ userId: req.session.login })
-      .skip(perPage * page - perPage)
-      .limit(perPage);
+      .skip(skip)
+      .limit(limit);
+    const le = await wallet.findOne({ userId: req.session.login });
+    const trancount = le.length;
 
-    const le = await wallet.find({ userId: req.session.login });
-    const totalPages = Math.ceil(le.length / 5);
+    const totalPages = Math.ceil(trancount / limit);   
     if (walletOld.length != 0 && totalPages < page) {
       res.redirect(`/walletHistory`);
     }
     const category = await categoryModal.find({
-      isDeleted: false,
+      isDeleted: false, 
       listed: true,
     });
     const walletData =
@@ -408,7 +414,7 @@ const walletHistory = async (req, res) => {
       totalPages,
       currentPage: page,
       wishlistCount,
-      cartCount
+      cartCount 
     });
   } catch (err) {
     console.log(err.message + "wallet history");

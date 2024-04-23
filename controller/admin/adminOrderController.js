@@ -8,7 +8,7 @@ const order = async (req, res) => {
         const skip = (page - 1) * limit;
         const totalOrderCount = await orderModal.countDocuments({});
         const totalPages = Math.ceil(totalOrderCount / limit);
-
+        console.log(skip + " "+page)
         const orderList = await orderModal.find({})
             .populate('userId')
             .skip(skip)

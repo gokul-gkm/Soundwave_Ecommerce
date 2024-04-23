@@ -45,11 +45,11 @@ const report = async (req, res) => {
         orderDate: { $gte: currentYearStart, $lte: currentYearEnd },
       });
       res.render("admin/report", { report, data: "yearly", gg: req.params.id });
-    } else if ((req.params.id = "costum")) {
+    } else if ((req.params.id = "custom")) {
       res.render("admin/report", {
         custom: true,
         gg: req.params.id,
-        data: "costum",
+        data: "custom",
       });
     } else {
       res.redirect("/admin");
@@ -68,7 +68,7 @@ const customreport = async (req, res) => {
     const data = await orderModal.find({
       orderDate: { $gte: start, $lte: end },
     });
-    res.send({ data });
+    res.send({ data});
   } catch (err) {
     console.log(err.message + "     customreport");
   }
@@ -150,7 +150,7 @@ const reportdownload = async (req, res) => {
       } else if (req.params.id) {
         var report = await reportG(req.params.id);
       }
-      const ejspagepath = path.resolve(__dirname, "../views/admin/report.ejs");
+      const ejspagepath = path.resolve(__dirname, "../../views/admin/report.ejs");
       const data = {
         report: report,
         gg: req.params.id,
@@ -169,7 +169,7 @@ const reportdownload = async (req, res) => {
       await page.setContent(ejsPage);
 
       const uuidb = uuid();
-      const pdfPath = path.join(__dirname, "../public/files", `${uuidb}.pdf`);
+      const pdfPath = path.join(__dirname, "../../public/files", `${uuidb}.pdf`);
 
       await page.pdf({
         path: pdfPath,
