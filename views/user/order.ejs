@@ -186,6 +186,19 @@
                     <% } %>
                 </div>
 
+                <% if(locals.order) { %>
+
+                  <% if(order.orderStatus == 'payment pending') {%>
+                  <button type="button"
+                    onclick="failedPaymentRetry('<%= order._id %>','<%= order.orderAmount %>')"
+                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
+                                  class="p-3 rounded-2  border-0 text-white col-md-3" id="retrybtn">
+                                  Retry payment</button>
+
+                  <% } %>
+                  <% } %>
+                
+
               </div>
             </aside>
           </div>
@@ -262,6 +275,56 @@ margin: 0.5rem 0;
     -webkit-appearance: none !important;
   }
 </style>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  function failedPaymentRetry( ordId , amount){
+    console.log(ordId , amount);
+
+    fetch('/failedPaymentRetry',{
+        method:"POST",
+        headers:{'Content-type':'application/json'},
+        body: JSON.stringify({ amount })
+    }).then(res=> res.json()).then(data=>{
+        if (data.succes) {
+                    console.log(data)
+                    let options = {
+                                    "key": `${data.key_id}`,
+                                    "amount": `${data.amount}`,
+                                    "currency": "INR",
+                                    "name": "soundwave",
+                                    "order_id": `${data.order_id}`,
+                                    "handler": function (response) {
+                                        // Call the second fetch on successful payment
+                                        fetch('/changeStatusRetry', {
+                                            method: 'POST',
+                                            headers: { 'Content-type': 'application/json' },
+                                            body: JSON.stringify({ ordId })
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                location.reload();
+                                            }
+                                        });
+                                    },
+                                    "profile": {
+                                        "name": `${data.name}`,
+                                        "email": `${data.email}`
+                                    }
+                                }
+								let razorpayObject = new Razorpay(options);
+                  
+                    razorpayObject.on('payment.failed', (response) => {
+                        location.reload();
+                    });
+                    razorpayObject.open();
+    }})
+
+}
+
+</script>
 
 <script>
   const submit= document.getElementById('submitReview')

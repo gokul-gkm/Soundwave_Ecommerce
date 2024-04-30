@@ -6,7 +6,7 @@ const orderModal = require("../../models/orders");
 const adminPage = async (req, res) => {
   try {
     const orderList1 = await orderModal
-      .find({})
+      .find({orderStatus: { $ne: "payment pending" }})
       .sort({ _id: -1 })
       .populate("userId")
       .limit(10);
@@ -46,7 +46,7 @@ const adminPage = async (req, res) => {
     ]);
 
     const op = await orderModal
-      .find({ peyment: "online peyment" })
+      .find({ peyment: "online peyment", orderStatus: { $ne: "payment pending" } })
       .sort({ _id: -1 })
       .limit(1);
     const cod = await orderModal

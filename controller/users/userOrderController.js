@@ -19,6 +19,9 @@ const { getWishlistCount ,getCartCount} = require('../../utils/count');
 const { Page } = require("puppeteer");
 const { log } = require("console");
 
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
+
 require("dotenv").config();
 const { RAZORPAY_IDKEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -492,6 +495,98 @@ const reviewPost = async (req, res) => {
   }
 };
 
+
+const razorFailure = async(req,res)=>{
+  try {
+      const offer = req.session.offer || 0;
+      const user = await userSchema.findOne({ _id: req.session.login });
+      const cart = await cartModal.findOne({ userId: req.session.login });
+      const subtotal = cart.TotalPrice;
+  
+      const orderAmount = subtotal.toFixed(1);
+      const orderSet = await orderModal.create({
+        userId: req.session.login,
+        orderAmount: orderAmount,
+        deliveryAdress: user.addressId,
+        peyment: req.body.peyment,
+        deliveryAdress: {
+          name: req.body.name,
+          city: req.body.city,
+          state: req.body.state,
+          pincode: req.body.pincode,
+        },
+        orderDate: new Date(),
+        coupen: offer,
+        orderStatus: 'payment pending',
+        OrderedItems: cart.products.map((e) => ({
+          productId: e.productId,
+          quantity: e.quantity,
+          price: e.price,
+          orderProStatus: 'payment pending' 
+        })),
+      });
+
+      await cartModal.updateOne(
+        { userId: req.session.login },
+        { $unset: { products: 1 } }
+      );
+
+        res.redirect('/order');
+
+  } catch (error) {
+      console.error(error.message)
+  }
+}
+
+const failedPaymentRetry = async(req,res)=>{
+  try {
+      const currentSessionId = req.session.login;
+
+      const CurrentUser = await userSchema.findOne({_id:currentSessionId});
+
+      const amount = req.body.amount * 100
+          const options = {
+              amount: amount,
+              currency: "INR",
+              receipt: process.env.RAZORPAY_EMAIL
+          }
+          instance.orders.create(options, (err, order) => {
+              if (!err) {
+                  res.send({
+                      succes: true,
+                      msg: 'ORDER created',
+                      order_id: order.id,
+                      amount: amount,
+                      key_id: process.env.RAZORPAY_IDKEY,
+                      name: CurrentUser.name,
+                      email: CurrentUser.email
+                  })
+              } else {
+                  console.error("Error creating order:", err);
+                  res.status(500).send({ success: false, msg: "Failed to create order" });
+              }
+            })
+  } catch (error) {
+      console.error(error.message + "failed payment retry")
+  }
+}
+
+const changeStatusRetry = async (req, res) => {
+  
+  try {
+      const orderId = req.body.ordId;
+    const changeStatus = await orderModal.findOneAndUpdate({ _id: orderId }, { $set: { 'OrderedItems.$[].orderProStatus': 'pending', orderStatus: 'pending' } });
+    
+      if(changeStatus){
+          res.send({success:true})
+      }
+      
+  } catch (error) {
+      console.error(error.message)
+  }
+}
+
+
 module.exports = {
   checkoutPage,
   postSucces,
@@ -504,4 +599,7 @@ module.exports = {
   invoice,
   walletHistory,
   reviewPost,
+  razorFailure,
+  failedPaymentRetry,
+  changeStatusRetry
 };

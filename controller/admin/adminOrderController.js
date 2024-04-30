@@ -11,11 +11,11 @@ const order = async (req, res) => {
         const totalOrderCount = await orderModal.countDocuments({});
         const totalPages = Math.ceil(totalOrderCount / limit);
         console.log(skip + " "+page)
-        const orderList = await orderModal.find({})
-            .populate('userId')
-            .skip(skip)
-            .limit(limit)
-            .sort({ orderDate: -1 });
+        const orderList = await orderModal.find({ orderStatus: { $ne: "payment pending" } })
+        .populate('userId')
+        .skip(skip)
+        .limit(limit)
+        .sort({ orderDate: -1 });
 
         if (orderList) {
             res.render('admin/orderDets', { admin: req.session.admin, order: true, orderList , totalPages, currentPage: page})
