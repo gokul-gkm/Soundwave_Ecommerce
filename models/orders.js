@@ -16,7 +16,7 @@ const order = new mongoose.Schema({
     peyment: { type: String },
      
     orderDate: { type: Date, required: true, default: Date.now },
-    
+
     coupen: {type: Number},
     
     orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered', 'canceled','returned', 'payment pending'], default: 'pending' },

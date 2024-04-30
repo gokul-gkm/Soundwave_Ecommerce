@@ -19,6 +19,9 @@ const { getWishlistCount ,getCartCount} = require('../../utils/count');
 const { Page } = require("puppeteer");
 const { log } = require("console");
 
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
+
 require("dotenv").config();
 const { RAZORPAY_IDKEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -492,6 +495,51 @@ const reviewPost = async (req, res) => {
   }
 };
 
+
+const failedPayment = async (req, res) => {
+  console.log("failed is working")
+  // Extracting the request signature and body
+  const signature = req.headers['x-razorpay-signature'];
+  const body = JSON.stringify(req.body);
+
+  // Verify the signature
+  const secret = 'gokulgkm333'; // Replace with your actual webhook secret
+  const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
+
+  console.log(secret, expectedSignature , "failed signa")
+
+  if (signature === expectedSignature) {
+    // Signature is valid
+    const event = req.body.event;
+    const payload = req.body.payload;
+
+    // Handle payment failure event
+    if (event === 'payment.failed') {
+      const paymentId = payload.payment.entity.id;
+      const orderId = payload.payment.entity.order_id;
+      const errorDescription = payload.payment.entity.error_description;
+
+      try {
+        // Update order status to "payment pending" for the failed payment
+        await orderModal.updateOne(
+          { _id: orderId },
+          { $set: { orderStatus: 'payment pending' } }
+        );
+
+        console.log(`Payment failed for payment ID: ${paymentId}, Order ID: ${orderId}`);
+        console.log(`Error Description: ${errorDescription}`);
+      } catch (error) {
+        console.error('Error updating order status:', error);
+      }
+    }
+
+    res.status(200).send('Webhook received successfully');
+  } else {
+    // Signature is invalid
+    res.status(400).send('Invalid signature');
+  }
+};
+
 module.exports = {
   checkoutPage,
   postSucces,
@@ -504,4 +552,5 @@ module.exports = {
   invoice,
   walletHistory,
   reviewPost,
+  failedPayment
 };

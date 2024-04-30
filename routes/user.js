@@ -161,6 +161,8 @@ router.get("/invoice/:id", userOrderController.invoice);
 //review
 router.post("/submit-review/:proId", userOrderController.reviewPost);
 
+router.post("/failedpayment", userOrderController.failedPayment)
+
 /*****************Coupens***************** */
 
 //  order det page rendering
