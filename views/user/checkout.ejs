@@ -301,7 +301,6 @@
                                 let razorpayObject = new Razorpay(options);
                                 razorpayObject.on('payment.failed',(response)=>{
                                     alert('payment failed');
-                                    // window.location.href = "/failedpayment";
                                     form.action = "/failedpayment"
                                     form.submit()
                                 });

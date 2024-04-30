@@ -496,49 +496,96 @@ const reviewPost = async (req, res) => {
 };
 
 
-const failedPayment = async (req, res) => {
-  console.log("failed is working")
-  // Extracting the request signature and body
-  const signature = req.headers['x-razorpay-signature'];
-  const body = JSON.stringify(req.body);
+const razorFailure = async(req,res)=>{
+  try {
+      const offer = req.session.offer || 0;
+      const user = await userSchema.findOne({ _id: req.session.login });
+      const cart = await cartModal.findOne({ userId: req.session.login });
+      const subtotal = cart.TotalPrice;
+  
+      const orderAmount = subtotal.toFixed(1);
+      const orderSet = await orderModal.create({
+        userId: req.session.login,
+        orderAmount: orderAmount,
+        deliveryAdress: user.addressId,
+        peyment: req.body.peyment,
+        deliveryAdress: {
+          name: req.body.name,
+          city: req.body.city,
+          state: req.body.state,
+          pincode: req.body.pincode,
+        },
+        orderDate: new Date(),
+        coupen: offer,
+        orderStatus: 'payment pending',
+        OrderedItems: cart.products.map((e) => ({
+          productId: e.productId,
+          quantity: e.quantity,
+          price: e.price,
+          orderProStatus: 'payment pending' 
+        })),
+      });
 
-  // Verify the signature
-  const secret = 'gokulgkm333'; // Replace with your actual webhook secret
-  const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
+      await cartModal.updateOne(
+        { userId: req.session.login },
+        { $unset: { products: 1 } }
+      );
 
-  console.log(secret, expectedSignature , "failed signa")
+        res.redirect('/order');
 
-  if (signature === expectedSignature) {
-    // Signature is valid
-    const event = req.body.event;
-    const payload = req.body.payload;
-
-    // Handle payment failure event
-    if (event === 'payment.failed') {
-      const paymentId = payload.payment.entity.id;
-      const orderId = payload.payment.entity.order_id;
-      const errorDescription = payload.payment.entity.error_description;
-
-      try {
-        // Update order status to "payment pending" for the failed payment
-        await orderModal.updateOne(
-          { _id: orderId },
-          { $set: { orderStatus: 'payment pending' } }
-        );
-
-        console.log(`Payment failed for payment ID: ${paymentId}, Order ID: ${orderId}`);
-        console.log(`Error Description: ${errorDescription}`);
-      } catch (error) {
-        console.error('Error updating order status:', error);
-      }
-    }
-
-    res.status(200).send('Webhook received successfully');
-  } else {
-    // Signature is invalid
-    res.status(400).send('Invalid signature');
+  } catch (error) {
+      console.error(error.message)
   }
-};
+}
+
+const failedPaymentRetry = async(req,res)=>{
+  try {
+      const currentSessionId = req.session.login;
+
+      const CurrentUser = await userSchema.findOne({_id:currentSessionId});
+
+      const amount = req.body.amount * 100
+          const options = {
+              amount: amount,
+              currency: "INR",
+              receipt: process.env.RAZORPAY_EMAIL
+          }
+          instance.orders.create(options, (err, order) => {
+              if (!err) {
+                  res.send({
+                      succes: true,
+                      msg: 'ORDER created',
+                      order_id: order.id,
+                      amount: amount,
+                      key_id: process.env.RAZORPAY_IDKEY,
+                      name: CurrentUser.name,
+                      email: CurrentUser.email
+                  })
+              } else {
+                  console.error("Error creating order:", err);
+                  res.status(500).send({ success: false, msg: "Failed to create order" });
+              }
+            })
+  } catch (error) {
+      console.error(error.message + "failed payment retry")
+  }
+}
+
+const changeStatusRetry = async (req, res) => {
+  
+  try {
+      const orderId = req.body.ordId;
+    const changeStatus = await orderModal.findOneAndUpdate({ _id: orderId }, { $set: { 'OrderedItems.$[].orderProStatus': 'pending', orderStatus: 'pending' } });
+    
+      if(changeStatus){
+          res.send({success:true})
+      }
+      
+  } catch (error) {
+      console.error(error.message)
+  }
+}
+
 
 module.exports = {
   checkoutPage,
@@ -552,5 +599,7 @@ module.exports = {
   invoice,
   walletHistory,
   reviewPost,
-  failedPayment
+  razorFailure,
+  failedPaymentRetry,
+  changeStatusRetry
 };

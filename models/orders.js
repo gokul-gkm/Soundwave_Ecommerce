@@ -37,7 +37,7 @@ const order = new mongoose.Schema({
         },
 
         canceled: { type: Boolean, default: false },
-        orderProStatus: { type: String, enum: ['shipped', 'delivered', 'canceled','returned'], default: 'shipped' },
+        orderProStatus: { type: String, enum: ['shipped', 'delivered', 'canceled','returned','payment pending'], default: 'shipped' },
         cancelReason: { type: String, default: '' },
         returnReason:{type: String, default: ''},
         returned: { type: Boolean, default: false }

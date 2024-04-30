@@ -161,7 +161,11 @@ router.get("/invoice/:id", userOrderController.invoice);
 //review
 router.post("/submit-review/:proId", userOrderController.reviewPost);
 
-router.post("/failedpayment", userOrderController.failedPayment)
+router.post("/failedpayment", userOrderController.razorFailure)
+
+router.post('/failedPaymentRetry', userOrderController.failedPaymentRetry)
+
+router.post('/changeStatusRetry',userOrderController.changeStatusRetry)
 
 /*****************Coupens***************** */
 
