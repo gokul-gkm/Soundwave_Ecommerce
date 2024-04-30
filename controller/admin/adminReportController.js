@@ -163,6 +163,7 @@ const reportdownload = async (req, res) => {
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
         defaultViewport: null, 
         ignoreHTTPSErrors: true, 
+        ignoreDefaultArgs: ['--disable-extensions']
       });
 
       const page = await browser.newPage();
