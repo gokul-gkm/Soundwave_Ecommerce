@@ -24,7 +24,7 @@
                 <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
                   <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between ">
-                      <h4 class="card-title">offer product adding Status</h4>
+                      <h4 class="card-title">offer category adding Status</h4>
                       <a href="/admin/offer" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">back to offer</a>
                     </div>
                     <div class="table-responsive">
@@ -35,27 +35,27 @@
                             <th>
                               No
                             </th>
-                            <th>image</th>
+                            <!-- <th>image</th> -->
                             <th>  Name </th>
-                            <th> price </th>
+                            <!-- <th> price </th> -->
                             <th> add </th>
 
                   
                           </tr>
                         </thead>
                         <tbody>
-                          <% console.log(locals.product); %>
-                            <%locals.product.forEach((e,i)=>{%>
+                          <% console.log(locals.category); %>
+                            <%locals.category.forEach((e,i)=>{%>
                               
                        <tr>
                         <td><%=i+1  %></td>
-                        <td><img src="/productImage/<%=e.images[0]  %>" alt=""></td>
+                       
                         <td  ><%=e.name  %></td>
-                        <td  >₹<%=e.actualPrice  %></td>
+                        
                         <td  >    <div class="form-check form-check-flat form-check-primary">
                             <label class="form-check-label">
                                 <% console.log(locals.offer); %>
-                              <input type="checkbox"  <%= e.offer?"checked":'' %> onchange="offerCheck(this,'<%=e._id%>','<%=locals.id%>',<%=locals.offer%>)" class="form-check-input"></label>
+                              <input type="checkbox"  <%= e.isOffer?"checked":'' %> onchange="offerCheck(this,'<%=e._id%>','<%=locals.id%>',<%=locals.offer%>)" class="form-check-input"></label>
                           </div> </td>
                        </tr>
                        <% }) %>
@@ -78,7 +78,7 @@
         console.log('add');
         const add=e.checked?true:false
         console.log(add);
-        fetch(`/admin/offer/${offerId}`,{
+        fetch(`/admin/offer/catOffer/${offerId}`,{
             method:'put',
             headers:{ "Content-Type": "application/json" },
             body:JSON.stringify({id,add,offer})

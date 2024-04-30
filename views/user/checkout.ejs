@@ -124,7 +124,7 @@
 
                                                         <tr class="summary-subtotal">
                                                             <td>Subtotal:</td>
-                                                            <td>₹<%= (cart.TotalPrice/100*(100-locals.coupenOffer)).toFixed(2) %>
+                                                            <td>₹<%= (cart.TotalPrice).toFixed(2) %>
 
                                                             </td>
                                                         </tr><!-- End .summary-subtotal -->
@@ -135,7 +135,7 @@
                                                             </tr>
                                                             <tr class="summary-total">
                                                                 <td>Total:</td>
-                                                                <td>₹<%= (cart.TotalPrice/100*(100-locals.coupenOffer)).toFixed(2) %>
+                                                                <td>₹<%= (cart.TotalPrice).toFixed(2) %>
                                                                 </td>
                                                             </tr>
                                                 </tbody>

@@ -1,4 +1,37 @@
 <%- include('../layout/adminlayout.ejs') -%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<div class="modal fade" id="staticBackdropp" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+     <div class="modal-content">
+
+         <div class="modal-header">
+
+         <h4 class="modal-title fs-5" id="staticBackdropLabel">Accept<Address></Address></h4>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+         </div>
+
+         <div class="modal-body d-flex justify-content-center p-5">
+
+         <p>Are you Sure Accept The Return ?</p>
+
+         </div>
+
+         <div class="modal-footer">
+
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+         <button type="button" onclick="acceptReturn()" class="btn btn-primary"data-bs-dismiss="modal">YES</button>
+
+         </div>
+
+     </div>
+
+     </div>
+
+ </div>
   <div class="container-scroller">
 
     <%- include('../layout/adminnav.ejs') -%>
@@ -63,6 +96,14 @@
                              
                              
                               <td>
+                                <% if (product.returned == true) { %>
+                                  <% if (orderList.orderAmount !== 0) { %>
+                                  <button data-bs-toggle="modal" data-bs-target="#staticBackdropp" class="btn btn-outline-success">Yes</button>
+                                  <% } else { %>
+                                    <button <%= orderList.orderAmount == 0 && 'disabled' %> data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-outline-success <%= orderList.orderAmount == 0  && 'opacity-50' %>">Returned</button>
+                                    <% } %>
+                                <% } else { %>
+
                                 <% if(product.canceled) {%>
                                   <div class=" badge badge-outline-danger">canceled</div>
                                   <% }else{ %>
@@ -72,6 +113,7 @@
                                 <option <%= product.orderProStatus=='delivered'?'hidden':'' %>>delivered</option>
                                 <option class="text-danger " <%= product.orderProStatus=='canceled'?'hidden':'' %>>canceled</option>
                                 </select>
+                                <% } %>
                                 <% } %>
                               </td>
                               <td class="<%=  product.canceled?'text-danger': 'text-success  '  %>">
@@ -100,6 +142,10 @@
         </div>
       </div>
   </div>
+  <div hidden id="oderId" ><%= ordId %></div>
+
+  
+
 <script>
   function orderProstatus(e,id,proId){
     const select=document.getElementById(`s${proId}`)
@@ -135,6 +181,18 @@
   }
 })
   }
+</script>
+
+<script>
+  //  Accepting Return :-
+
+const orderId = document.getElementById('oderId').textContent
+
+function acceptReturn(){
+    console.log("accept fetch")
+    fetch(`/admin/returnManage?id=${orderId}` , {method : 'POST'})
+    
+}
 </script>
  
   <script src="/vendors/js/vendor.bundle.base.js"></script>

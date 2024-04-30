@@ -139,7 +139,10 @@ router.get("/order", userMidleware.userbloack, userMidleware.user, userOrderCont
 router.get("/orderView/:id", userMidleware.userbloack, userMidleware.user, userOrderController.orderView);
 
 //order canceling
-router.put("/editOrder", userOrderController.editOrder);
+router.put("/editOrder", userOrderController.cancelOrder);
+
+//  returnOrder (post)
+router.put('/returnOrder', userOrderController.returnOrder);
 
 // succes msg rendering
 router.get("/success", userMidleware.userbloack, userMidleware.user, userOrderController.success);

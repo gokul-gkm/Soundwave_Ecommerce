@@ -1,4 +1,6 @@
 const orderModal = require('../../models/orders');
+const productModal = require('../../models/products');
+const wallet = require('../../models/wallet');
 
 //order 
 const order = async (req, res) => {
@@ -28,7 +30,7 @@ const orderView = async (req, res) => {
     try {
         if (req.params.id) {
             const orderList = await orderModal.findOne({ _id: req.params.id }).populate('OrderedItems.productId userId')
-            res.render('admin/order', { admin: req.session.admin, order: true, orderList })
+            res.render('admin/order', { admin: req.session.admin, order: true, orderList ,ordId:req.params.id})
         } else {
             res.redirect('admin/orders')
         }
@@ -92,7 +94,10 @@ const updateOrderStatus = async (orderId) => {
             newOrderStatus = 'shipped';
         } else if (orderProStatusValues.every(status => status === 'canceled')) {
             newOrderStatus = 'canceled';
-        } else {
+        }else if (orderProStatusValues.every(status => status === 'returned')) {
+            newOrderStatus = 'returned';
+        } 
+        else {
             newOrderStatus = 'pending';
         }
 
@@ -103,6 +108,96 @@ const updateOrderStatus = async (orderId) => {
     }
 }
 
+const returnManaging = async (req, res) => {
+
+    try {
+
+        const ordId = req.query.id
+
+        const findReturnOrd = await orderModal.find({ _id: ordId, "OrderedItems.returned": true });
+
+    
+
+        for (const ordData of findReturnOrd) {
+
+            const userIdd = ordData.userId;     //  UserId
+
+            for (const element of ordData.OrderedItems) {
+
+                if (element.returned) {
+
+                    await orderModal.findOneAndUpdate(
+                  
+                        { _id: ordId, "OrderedItems.productId": element.productId },
+                    
+                        { $set: { "OrderedItems.$.orderProStatus": "returned" } },
+                    
+                        { new: true }
+                    
+                    );
+                    
+                  
+
+                    const findOrder = await orderModal.findOne(
+                  
+                        {
+                            _id: ordId,
+                            "OrderedItems.productId": element.productId,
+                            "OrderedItems.returned": true,
+                      
+                        },
+
+                        { "OrderedItems.$": 1 }
+                    
+                    );
+                   
+                    if (findOrder) {
+                      
+                        const findStock = element.quantity;
+
+                        await productModal.findOneAndUpdate(
+                        
+                            { _id: element.productId },
+
+                            { $inc: { stock: findStock } }
+
+                        );
+
+                      
+      
+                        const moneyDecreses = element.price;
+                        
+                        const money = await orderModal.findOne({ _id: ordId, "OrderedItems.productId": element.productId })
+                    
+                        await orderModal.findOneAndUpdate(
+      
+                            { _id: ordId, "OrderedItems.productId": element.productId },
+      
+                            { $inc: { orderAmount: -moneyDecreses } }
+      
+                        );
+                        
+                    };
+
+                };
+
+                if (element.returned && ordId.peyment !== 'Cash on Delivery') {
+                
+                    await wallet.findOneAndUpdate({ userId: userIdd }, { $inc: { amount: element.price }, $push: { transaction: { amount: element.price, creditOrDebit: 'credit', source: "refund from returned order ", orderId: ordId } } }, { new: true, upsert: true });
+                
+                }
+            }
+
+        }
+
+    } catch (error) {
+
+        console.log(error.message);
+
+    }
+
+};
+
 
 module.exports = {
     order,
@@ -110,4 +205,5 @@ module.exports = {
     orderView,
     removeordeFull,
     orderProstatus,
+    returnManaging
 }

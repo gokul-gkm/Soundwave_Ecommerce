@@ -17,11 +17,13 @@ const order = new mongoose.Schema({
      
     orderDate: { type: Date, required: true, default: Date.now },
     
-    orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered', 'canceled', 'payment pending'], default: 'pending' },
+    coupen: {type: Number},
+    
+    orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered', 'canceled','returned', 'payment pending'], default: 'pending' },
     
     OrderedItems: [{
 
-        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, 
         
         quantity: {
             type: Number,
@@ -34,10 +36,11 @@ const order = new mongoose.Schema({
             required: true,
         },
 
-        canceled:{type:Boolean,default:false},
-        orderProStatus: { type: String, enum: ['shipped', 'delivered', 'canceled'], default: 'shipped' },
-        cancelReason: { type: String, default: '' }
-        
+        canceled: { type: Boolean, default: false },
+        orderProStatus: { type: String, enum: ['shipped', 'delivered', 'canceled','returned'], default: 'shipped' },
+        cancelReason: { type: String, default: '' },
+        returnReason:{type: String, default: ''},
+        returned: { type: Boolean, default: false }
     }],
 
 })

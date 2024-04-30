@@ -1,5 +1,7 @@
 const offerSchema = require("../../models/offer");
 const productModal = require("../../models/products");
+const categoryModal = require("../../models/catagory");
+const { category } = require("./adminCategoryController");
 
 const offerPage = async (req, res) => {
   try {
@@ -90,13 +92,39 @@ const offerProduct = async (req, res) => {
     const skip = (page - 1) * limit;
     const totalProductsCount = await productModal.countDocuments({});
     const totalPages = Math.ceil(totalProductsCount / limit);
-
+    
     const offer = await offerSchema.findOne({ _id: req.params.id });
     const product = await productModal.find({}).skip(skip).limit(limit);
 
     res.render("admin/offerProduct", {
       admin: req.session.admin,
       product,
+      id: req.params.id,
+      offer: offer.offer,
+      offers: true,
+      currentPage: page,
+      totalPages,
+    });
+  } catch (err) {
+    console.log(err.message + "offer product");
+  }
+};
+
+
+const offerCategory = async (req, res) => {
+  try {
+    const limit = 5;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+    const totalCatCount = await categoryModal.countDocuments({});
+    const totalPages = Math.ceil(totalCatCount / limit);
+
+    const offer = await offerSchema.findOne({ _id: req.params.id });
+    const category = await categoryModal.find({}).skip(skip).limit(limit);
+
+    res.render("admin/offerCategory", {
+      admin: req.session.admin,
+      category,
       id: req.params.id,
       offer: offer.offer,
       offers: true,
@@ -132,6 +160,38 @@ const offerProductAdd = async (req, res) => {
   }
 };
 
+const offerCategoryAdd = async (req, res) => {
+  try {
+    const { id: categoryId, offer, add } = req.body;
+    const offerPercentage = parseInt(req.body.offer);
+
+    const products = await productModal.find({ category: categoryId });
+    await offerSchema.findOne({ _id: req.params.catId });
+
+    if (req.body.add) {
+
+      for (const product of products) {
+        const offerPrice = product.price - (product.price * offerPercentage) / 100;
+        await productModal.findByIdAndUpdate(product._id, { $set: { offer: req.params.catId, price: offerPrice } });
+      }
+
+      await categoryModal.findOneAndUpdate({_id: categoryId},{$set:{isOffer: true}})
+      
+    } else {
+
+      for (const product of products) {
+        await productModal.findByIdAndUpdate(product._id, { $unset: { offer: 1 }, $set: { price: product.actualPrice } });
+      }
+      await categoryModal.findOneAndUpdate({_id: categoryId},{$set:{isOffer: false}})
+     
+    }
+  } catch (err) {
+    console.log(err.message + "offerCatAdd");
+  }
+};
+
+
+
 module.exports = {
   offerPage,
   addOfferPage,
@@ -140,5 +200,7 @@ module.exports = {
   getOfferEdit,
   offerRemove,
   offerProduct,
+  offerCategory,
   offerProductAdd,
+  offerCategoryAdd
 };

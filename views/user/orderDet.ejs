@@ -75,6 +75,7 @@
                     <th>Order ID</th>
                     <th>order Status</th>
                     <th>Items</th>
+                    <th>Coupen offer</th>
                     <th>Total price</th>
                     <th>Detailes</th>
                   </tr>
@@ -96,6 +97,8 @@
                       <%=e.orderStatus %>
                     </td>
                     <td class=""><%=e.OrderedItems.length %></td>
+
+                    <td class="text-center"><%if(e.coupen){%><%=e.coupen %>% <%} else {%>No coupen used<%}%></td>
                     
                     <td class="price-col">₹<%=e.orderAmount %></td>
                     <td>

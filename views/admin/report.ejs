@@ -7,26 +7,22 @@
     <title>Sales Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        
 </head>
 
-<body style="background-color: #18191f; ">
+<body>
 
-    <section class="content-main ">
-        <div class="content-header">
-            <div>
-                <h2 class="content-title card-title"></h2>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <a class="nav-link" href="/admin/">Admin Home</a>
+    </nav>
 
-            </div>
-
-        </div>
-        <div class="card mb-4 border-0 " style="background-color: #18191f; ">
-
+    <section class="content-main">
+        
+        <div class="card mb-4 border-0" style="background-color: #18191f;">
             <header class="card-header">
                 <div class="row align-items-center">
-                    <div class="col col-check flex-grow-0">
-
-                    </div>
-                    <div class="col-md-4 col-12 me-auto mb-md-0 mb-3">
+                    <div class="col-md-4 col-12 me-auto mb-md-0 ">
                         <h2 style='color: #fff;' class="content-title card-title text-white ">
                             <%=locals.gg %> Sales Report
                         </h2>
@@ -61,7 +57,7 @@
 
                     </div>
                     
-                    <div class="mt-5">
+                    <div class="">
                         <span id="fromDate" style="color: #fff;" class="text-white fw-bold fs-4 pe-3"></span><span id="toDate" class="text-white fw-bold fs-4 pe-3" style="color: #fff;"></span>
                     </div>
                 </div>
@@ -111,41 +107,36 @@
                         </table>
                     </div>
                 </div>
-
-
-
-
-
             </div>
             <!-- card-body end// -->
         </div>
         <!-- card end// -->
 
+    </section>
 
+    <script>
+        const tb=document.getElementById('tb')
+        const start=document.getElementById('start')
+        const fromDate=document.getElementById('fromDate')
+        const toDate=document.getElementById('toDate')
+        const end=document.getElementById('end');
+        const form=document.getElementById('myForm');
 
-<script>
-const tb=document.getElementById('tb')
-const start=document.getElementById('start')
-const fromDate=document.getElementById('fromDate')
-const toDate=document.getElementById('toDate')
-const end=document.getElementById('end');
-const form=document.getElementById('myForm');
-
-function change(e){
-    if(start.value!=='' &&end.value!=='' ){
-        
-        fetch('/admin/report',{
-            method:'put',
-            headers:{"Content-Type":'application/json'},
-            body:JSON.stringify({start:start.value ,end:end.value })
-        }).then(res=>res.json()).then(data=>{
-            console.log(data)
-            console.log(start.value,end.value)
-         if(data.data.length>0){
-            fromDate.textContent = "FROM: "+start.value;
-            toDate.textContent = "TO: "+end.value;
-            tb.innerHTML=data.data.map((e,i)=>`
-            <tr>
+        function change(e){
+            if(start.value!=='' &&end.value!=='' ){
+                
+                fetch('/admin/report',{
+                    method:'put',
+                    headers:{"Content-Type":'application/json'},
+                    body:JSON.stringify({start:start.value ,end:end.value })
+                }).then(res=>res.json()).then(data=>{
+                    console.log(data)
+                    console.log(start.value,end.value)
+                if(data.data.length>0){
+                    fromDate.textContent = "FROM: "+start.value;
+                    toDate.textContent = "TO: "+end.value;
+                    tb.innerHTML=data.data.map((e,i)=>`
+                    <tr>
                                             <td scope="col">
                                                ${i+1}
                                             </td>
@@ -165,48 +156,85 @@ function change(e){
                                            ${e.peyment}
                                         </td>
                                     </tr>
-            `).join('');
-            form.action=`/admin/report/download/custom?start=${start.value}&&end=${end.value}`;
-         } else{
-            tb.innerHTML='no data here'
-         }
-        })
-    }
-}
-
-
-</script>
-
-
-
-    </section>
-    <% if(locals.data){ %>
-    <style>
-        body {
-            padding: 2rem;
-          
-            background-color: #212529;
+                    `).join('');
+                    form.action=`/admin/report/download/custom?start=${start.value}&&end=${end.value}`;
+                } else{
+                    tb.innerHTML='no data here'
+                }
+                })
+            }
         }
-        select {
-   -webkit-appearance:none;
-   -moz-appearance:none;
-   -ms-appearance:none;
-   appearance:none;
-   outline:0;
-   box-shadow:none;
-   border:0!important;
-   background: #5c6664;
-   background-image: none;
-   /* flex: 1; */
-   padding: 0 .5em;
-   color:#fff;
-   cursor:pointer;
-   font-size: 1em;
-   font-family: ' Open Sans', sans-serif; } select::-ms-expand { display: none; } </style>
-                                                    <% } %>
+
+
+    </script>
+
+    <footer>
+        
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+        <style>
+            body {
+                padding: 2rem;
+                background-color: #18191f;
+                color: #fff;
+                font-family: Arial, sans-serif;
+            }
+    
+            .content-header {
+                margin-bottom: 2rem;
+            }
+    
+            .card-header {
+                background-color: #18191f;
+                border: none;
+                padding: 1rem;
+            }
+    
+            .card-title {
+                color: #fff;
+            }
+    
+            .table {
+                color: #fff;
+            }
+    
+            .btn {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+    
+            .btn:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+    
+            .nav-bar {
+                background-color: #343a40;
+                padding: 1rem;
+                border-bottom: 2px solid #dc3545; /* Add a bottom border for styling */
+            }
+    
+            .nav-link {
+                color: #fff;
+                font-size: 1.2rem; /* Increase font size */
+                text-transform: uppercase; /* Uppercase text */
+                margin: 0 1rem; /* Add margin between links */
+                padding: 0.5rem 1rem; /* Add padding to make clickable area larger */
+                border-radius: 0.5rem; /* Add border radius for rounded corners */
+                transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+                max-width: fit-content;
+            }
+    
+            .nav-link:hover {
+                background-color: #495057; /* Darken background on hover */
+                color: #23c823;
+            }
+        </style>
+
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
 
 </html>

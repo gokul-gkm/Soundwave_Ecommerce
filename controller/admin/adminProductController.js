@@ -48,6 +48,11 @@ const productAdd = async (req, res) => {
       productAdd: "prod",
       categoryList: category,
     });
+    // res.render("admin/addProduct", {
+    //   admin: req.session.admin,
+    //   productAdd: "prod",
+    //   categoryList: category,
+    // });
   } catch (err) {
     console.log(err.message + "     productadd route ");
   }

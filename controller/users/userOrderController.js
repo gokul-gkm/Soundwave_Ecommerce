@@ -35,6 +35,8 @@ const checkoutPage = async (req, res) => {
       isDeleted: false,
     });
     const coupenOffer = req.session.offer || 0;
+
+    console.log(coupenOffer + "co")
     const user = await userSchema.findOne({ _id: req.session.login });
     const cart = await cartModal
       .findOne({ userId: req.session.login })
@@ -53,10 +55,17 @@ const checkoutPage = async (req, res) => {
       }
     }
 
-    const total1 = nonBlockedProduct.reduce(
+    let total1 = nonBlockedProduct.reduce(
       (acc, product) => acc + product.price,
       0
     );
+
+    if (coupenOffer >= 0) {
+                    
+      total1  = total1 - (total1 * coupenOffer)/100;
+
+    }
+    console.log(total1 + "tot1")
     const total = Number(total1.toFixed(1));
     const wallet1 = await wallet.findOne({ userId: req.session.login });
     const walletAmount = wallet1?.amount || 0;
@@ -125,11 +134,11 @@ const success = async (req, res) => {
 //postSucces
 const postSucces = async (req, res) => {
   try {
-    console.log(req.body.peyment);
     const offer = req.session.offer || 0;
     const user = await userSchema.findOne({ _id: req.session.login });
     const cart = await cartModal.findOne({ userId: req.session.login });
-    const subtotal = (cart.TotalPrice / 100) * (100 - offer);
+    const subtotal = cart.TotalPrice;
+
     const orderAmount = subtotal.toFixed(1);
     const orderSet = await orderModal.create({
       userId: req.session.login,
@@ -143,6 +152,7 @@ const postSucces = async (req, res) => {
         pincode: req.body.pincode,
       },
       orderDate: new Date(),
+      coupen: offer,
       OrderedItems: cart.products.map((e) => ({
         productId: e.productId,
         quantity: e.quantity,
@@ -253,7 +263,7 @@ const orderView = async (req, res) => {
 };
 
 //editOrder
-const editOrder = async (req, res) => {
+const cancelOrder = async (req, res) => {
   try {
     const cancelReason = req.body.cancelReason;
     const orderId = req.body.orderId;
@@ -318,6 +328,42 @@ const editOrder = async (req, res) => {
   }
 };
 
+// return order
+
+const returnOrder = async (req, res) => {
+    
+  try {
+
+      const { proId, ordId, price, reason } = req.body;
+      
+      const returnMsg = await orderModal.findOneAndUpdate({ _id: ordId, 'OrderedItems.productId': proId }, {
+
+          $set: {
+
+              'OrderedItems.$.returned': true, "OrderedItems.$.returnReason": reason,
+
+          }
+
+      });
+
+      if (returnMsg) {
+       
+          console.log("return success");
+       
+      } else {
+
+          console.log("return fail");
+
+      }
+
+  } catch (error) {
+
+      console.log(error.message);
+      
+  }
+
+};
+
 const razor = async (req, res) => {
   try {
     const user = await userSchema.findOne({ _id: req.body.userId });
@@ -360,7 +406,7 @@ const invoice = async (req, res) => {
       const result = await easyinvoice.createInvoice(inv);
       const filePath = path.join(
         __dirname,
-        "../public/files",
+        "../../public/files",
         `invoice_${uuidb}.pdf`
       );
       await fs.writeFileSync(filePath, result.pdf, "base64");
@@ -452,7 +498,8 @@ module.exports = {
   success,
   orderView,
   orderDetails,
-  editOrder,
+  cancelOrder,
+  returnOrder,
   razor,
   invoice,
   walletHistory,

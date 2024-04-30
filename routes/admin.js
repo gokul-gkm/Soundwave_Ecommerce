@@ -104,7 +104,10 @@ router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orde
 
 
 //peyment chart fetching
-router.put('/peyment',adminController.peyment)
+router.put('/peyment', adminController.peyment)
+
+//  Return Managing (put)
+router.post("/returnManage", adminOrderController.returnManaging);
 
 
 /***************Coupen management***************/
@@ -134,7 +137,11 @@ router.post('/offer', adminOfferController.offerCreating);
 
 router.put('/offer/:id', adminOfferController.offerProductAdd)
 
+router.put('/offer/catOffer/:catId', adminOfferController.offerCategoryAdd)
+
 router.get('/offerProduct/:id', adminMidleware.adminRoute, adminOfferController.offerProduct);
+
+router.get('/offerCategory/:id', adminMidleware.adminRoute, adminOfferController.offerCategory);
 
 //offer edit get
 router.get('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.offerEdit);
