@@ -265,7 +265,7 @@ const orderView = async (req, res) => {
   }
 };
 
-//editOrder
+//cancel order
 const cancelOrder = async (req, res) => {
   try {
     const cancelReason = req.body.cancelReason;
