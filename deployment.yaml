@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soundwave-ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soundwave-ecommerce
+  template:
+    metadata:
+      labels:
+        app: soundwave-ecommerce
+    spec:
+      containers:
+      - name: soundwave-ecommerce
+        image: gokulgkm/soundwave-ecommerce:latest
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - secretRef:
+            name: soundwave-secrets
+        env:
+        - name: PORT
+          value: "3001"
+        - name: NODE_ENV
+          value: "production"
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: soundwave-ecommerce-service
+spec:
+  selector:
+    app: soundwave-ecommerce
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+  type: LoadBalancer
