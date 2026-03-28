@@ -85,7 +85,7 @@
                                 </div>
                               </td>
                               <td>
-                                <img src="/productImage/<%= product.productId.images[0] %>" alt="image" />
+                                <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="image" />
                                 <span class="pl-2"><%= product.productId.name%></span>
                               </td>
                          

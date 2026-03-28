@@ -135,9 +135,9 @@
                                             <figure class="product-media">
                                                 <span class="product-label label-new">New</span>
                                                 <a href="/productDets?proId=<%=e._id  %>">
-                                                    <img src="/productImage/<%=e.images[0]  %>" alt="Product image"
+                                                    <img src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>" alt="Product image"
                                                         class="product-image">
-                                                    <img src="/productImage/<%=e.images[1]?e.images[1]:e.images[0]  %>"
+                                                    <img src="<%= (e.images[1] ? e.images[1] : e.images[0]).startsWith('http') ? (e.images[1] ? e.images[1] : e.images[0]) : '/productImage/' + (e.images[1] ? e.images[1] : e.images[0]) %>"
                                                         alt="Product image" class="product-image-hover">
                                                 </a>
 
@@ -173,7 +173,7 @@
                                                     <% e.images.forEach(e=>{ %>
                                                         <div href="#" class="active  overflow-hidden "
                                                             style="width: 40px; height: 40px; ">
-                                                            <img src="/productImage/<%=e  %>"
+                                                            <img src="<%= e.startsWith('http') ? e : '/productImage/' + e %>"
                                                                 class="w-100 h-100 object-fit-cover " alt="">
                                                         </div>
                                                         <% }) %>

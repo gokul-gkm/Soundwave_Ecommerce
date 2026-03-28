@@ -168,12 +168,12 @@
                     <span class="product-label label-new">New</span>
                     <a href="/productDets?proId=<%=e._id  %>">
                       <img
-                        src="/productImage/<%=e.images[0]  %>"
+                        src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>"
                         alt="Product image"
                         class="product-image"
                       />
                       <img
-                        src="/productImage/<%=e.images[1]?e.images[1]:e.images[0]  %>"
+                        src="<%= (e.images[1] ? e.images[1] : e.images[0]).startsWith('http') ? (e.images[1] ? e.images[1] : e.images[0]) : '/productImage/' + (e.images[1] ? e.images[1] : e.images[0]) %>"
                         alt="Product image"
                         class="product-image-hover"
                       />
@@ -231,7 +231,7 @@
                         style="width: 40px; height: 40px"
                       >
                         <img
-                          src="/productImage/<%=e  %>"
+                          src="<%= e.startsWith('http') ? e : '/productImage/' + e %>"
                           class="w-100 h-100 object-fit-cover"
                           alt=""
                         />
@@ -332,8 +332,8 @@ function updateProductList(products) {
                 <figure class="product-media">
                     <span class="product-label label-new">New</span>
                     <a href="/productDets?proId=${product._id}">
-                        <img src="/productImage/${product.images[0]}" alt="Product image" class="product-image" />
-                        <img src="/productImage/${product.images[1] ? product.images[1] : product.images[0]}" alt="Product image" class="product-image-hover" />
+                        <img src="${product.images[0].startsWith('http') ? product.images[0] : '/productImage/' + product.images[0]}" alt="Product image" class="product-image" />
+                        <img src="${(product.images[1] ? product.images[1] : product.images[0]).startsWith('http') ? (product.images[1] ? product.images[1] : product.images[0]) : '/productImage/' + (product.images[1] ? product.images[1] : product.images[0])}" alt="Product image" class="product-image-hover" />
                     </a>
                     <div class="product-action-vertical">
                         <a href="#" onclick="addwishlist('${product._id}','${userLogin ? userLogin : false}',1)" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
@@ -352,7 +352,7 @@ function updateProductList(products) {
                     </h3>
                     <div class="product-price">₹${product.price}</div>
                     <div class="product-nav product-nav-thumbs">
-                        ${product.images.map(image => `<div href="#" class="active overflow-hidden" style="width: 40px; height: 40px"><img src="/productImage/${image}" class="w-100 h-100 object-fit-cover" alt="" /></div>`).join('')}
+                        ${product.images.map(image => `<div href="#" class="active overflow-hidden" style="width: 40px; height: 40px"><img src="${image.startsWith('http') ? image : '/productImage/' + image}" class="w-100 h-100 object-fit-cover" alt="" /></div>`).join('')}
                     </div>
                 </div>
             </div>

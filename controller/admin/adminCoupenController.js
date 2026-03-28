@@ -1,8 +1,8 @@
 const coupenSchema = require("../../models/coupen");
 const userSchema = require("../../models/userSchema");
 const coupenId = require("../../config/coupenId");
-const path = require("path");
-const fs = require("fs");
+const { cloudinary } = require("../../config/cloudinary");
+const { getPublicId } = require("../../utils/cloudinaryHelper");
 
 const coupenPage = async (req, res) => {
   const coupen = (await coupenSchema.find({})) || [];
@@ -27,13 +27,16 @@ const addCoupen = async (req, res) => {
         id = coupenId.generateRandomId();
       }
     }
+    
+    const imagePath = req.files && req.files[0] ? req.files[0].path : null;
+
     const coupen1 = await coupenSchema.create({
       name: req.body.name,
       offer: req.body.offer,
       from: req.body.from,
       to: req.body.to,
       ID: id,
-      image: req.files[0].filename,
+      image: imagePath,
     });
 
     console.log(coupen1);
@@ -63,14 +66,16 @@ const addCoupen = async (req, res) => {
 const coupenRemove = async (req, res) => {
   try {
     const coupen = await coupenSchema.findOneAndDelete({ _id: req.params.id });
-    const imagePath = path.join(
-      __dirname,
-      "../public/productImage",
-      coupen.image
-    );
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    
+    if (coupen && coupen.image) {
+      try {
+        const publicId = getPublicId(coupen.image);
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error(`Failed to delete coupon image from Cloudinary: ${coupen.image}`, error);
+      }
     }
+
     if (coupen) {
       res.send({ set: true });
     }
@@ -82,8 +87,22 @@ const coupenRemove = async (req, res) => {
 const coupenEdit = async (req, res) => {
   try {
     const coupen = await coupenSchema.findOne({ _id: req.params.id });
-    const image = req.files[0].filename || coupen.image;
-    console.log(image);
+    let image = coupen.image;
+
+    if (req.files && req.files[0]) {
+      image = req.files[0].path;
+      
+      // Delete old image from Cloudinary
+      if (coupen.image) {
+        try {
+          const publicId = getPublicId(coupen.image);
+          await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+          console.error(`Failed to delete old coupon image: ${coupen.image}`, error);
+        }
+      }
+    }
+
     const coupenNew = await coupenSchema.findOneAndUpdate(
       { _id: req.params.id },
       {
@@ -96,16 +115,6 @@ const coupenEdit = async (req, res) => {
         },
       }
     );
-    if (req.files[0]) {
-      const imagePath = path.join(
-        __dirname,
-        "../public/productImage",
-        coupen.image
-      );
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
 
     if (coupenNew) {
       res.redirect("/admin/coupen");
@@ -123,3 +132,4 @@ module.exports = {
   coupenRemove,
   coupenEdit,
 };
+

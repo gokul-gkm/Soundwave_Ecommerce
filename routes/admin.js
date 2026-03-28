@@ -14,15 +14,7 @@ const adminChartController = require('../controller/admin/adminChartController')
 const adminMidleware=require('../middleware/adminMiddleware');
 const path = require('path');
 const multer=require('multer');
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/productImage'));
-  },
-  filename: (req, file, cb) => {
-    const name = Date.now() + ' - ' + file.originalname;
-    cb(null, name);
-  },
-});
+const { storage } = require('../config/cloudinary');
 
 const upload = multer({
   storage: storage,
@@ -30,6 +22,7 @@ const upload = multer({
     cb(null, true);
   },
 });
+
 
 //admin dashborad page rendering
 router.get('/', adminMidleware.adminRoute, adminController.adminPage)

@@ -88,7 +88,7 @@
 
                               <figure class="product-media">
                                 <a href="/productDets?proId=<%= product.productId._id %>">
-                                  <img src="/productImage/<%= product.productId.images[0] %> " alt="Product image">
+                                  <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="Product image">
                                 </a>
                               </figure>
 

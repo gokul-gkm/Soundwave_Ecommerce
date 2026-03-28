@@ -140,7 +140,7 @@
                             <div class="preview-thumbnail">
                               <div class="preview-icon bg-primary">
                                 <img style="width: 100%; height: 100%; object-fit: cover; "
-                                src='/productImage/<%=e.productData[0].images[0] %>' alt="">
+                                src='<%= e.productData[0].images[0].startsWith('http') ? e.productData[0].images[0] : '/productImage/' + e.productData[0].images[0] %>' alt="">
                               </div>
                             </div>
                             <div class="preview-item-content d-sm-flex flex-grow">

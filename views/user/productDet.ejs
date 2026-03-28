@@ -57,8 +57,8 @@
                                                 <div class="row">
                                                     <figure class="product-main-image position-relative imf">
                                                         <img id="product-zoom zoomim"
-                                                            src="/productImage/<%=productDet.images[0]  %>"
-                                                            data-zoom-image="/productImage/<%=productDet.images[0]  %>"
+                                                            src="<%= productDet.images[0].startsWith('http') ? productDet.images[0] : '/productImage/' + productDet.images[0] %>"
+                                                            data-zoom-image="<%= productDet.images[0].startsWith('http') ? productDet.images[0] : '/productImage/' + productDet.images[0] %>"
                                                             alt="product image">
 
                                                       
@@ -67,7 +67,7 @@
                                                     <div id="product-zoom-gallery" class="product-image-gallery">
                                                         <% productDet.images.forEach(e=>{ %>
                                                             <a class="product-gallery-item active" href="#">
-                                                                <img src="/productImage/<%=e  %>" alt="product side">
+                                                                <img src="<%= e.startsWith('http') ? e : '/productImage/' + e %>" alt="product side">
                                                             </a>
                                                             <% }) %>
 
@@ -107,7 +107,7 @@
                                                     <div class="product-nav product-nav- " >
                                                        
                                                             <a href="#" class="" >
-                                                                <div  class="colorbox" style="background-color: <%= productDet.color %>;"></div>
+                                                                <div  class="colorbox" style="--box-color: <%= productDet.color %>; background-color: var(--box-color);"></div>
 
                                                             </a>
                                                             
@@ -189,7 +189,7 @@
                                         <li class="nav-item">
                                             <a class="nav-link" id="product-review-link" data-toggle="tab"
                                                 href="#product-review-tab" role="tab" aria-controls="product-review-tab"
-                                                aria-selected="false">Reviews (2)</a>
+                                                aria-selected="false">Reviews (<%= locals.review ? review.length : 0 %>)</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
@@ -206,7 +206,7 @@
                                         <div class="tab-pane fade" id="product-review-tab" role="tabpanel"
                                             aria-labelledby="product-review-link">
                                             <div class="reviews">
-                                                <h3>Reviews (2)</h3>
+                                                <h3>Reviews (<%= locals.review ? review.length : 0 %>)</h3>
                                                 <% if(locals.review) { %>
                                                 <% review.forEach(e=>{ %>
                                                 <div class="review">
@@ -216,7 +216,7 @@
                                                             <div class="ratings-container">
                                                                 <div class="ratings">
                                                                     <!-- <div class="ratings-val" style="width: 100%;"></div> -->
-                                                                    <div class="ratings-val" style="width: <%= 20 * e.rating %>%;"></div>
+                                                                    <div class="ratings-val" style="--rating-width: <%= (e.rating * 20) %>%; width: var(--rating-width);"></div>
                                                                     <!-- End .ratings-val -->
                                                                 </div><!-- End .ratings -->
                                                             </div><!-- End .rating-container -->
@@ -277,7 +277,7 @@
                                         <figure class="product-media">
                                             <span class="product-label label-new">New</span>
                                             <a href="/productDets?proId=<%=e._id  %>">
-                                                <img src="/productImage/<%=e.images[0]  %>" alt="Product image"
+                                                <img src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>" alt="Product image"
                                                     class="product-image">
                                             </a>
 
@@ -336,7 +336,7 @@
                         <div class="col-6">
                             <figure class="product-media">
                                 <a href="product.html">
-                                    <img src="/productImage/<%=productDet.images[0]  %>" alt="Product image">
+                                    <img src="<%= productDet.images[0].startsWith('http') ? productDet.images[0] : '/productImage/' + productDet.images[0] %>" alt="Product image">
                                 </a>
                             </figure><!-- End .product-media -->
                             <h4 class="product-title"><a href="product.html">
@@ -381,7 +381,7 @@
                     <div class="col-6">
                         <figure class="product-media">
                             <a href="product.html">
-                                <img src="/productImage/<%=productDet.images[0]  %>" alt="Product image">
+                                <img src="<%= productDet.images[0].startsWith('http') ? productDet.images[0] : '/productImage/' + productDet.images[0] %>" alt="Product image">
                             </a>
                         </figure><!-- End .product-media -->
                         <h4 class="product-title"><a href="product.html">

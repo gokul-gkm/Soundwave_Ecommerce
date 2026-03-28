@@ -238,7 +238,7 @@
                                 class="img-co  bg-primary  l position-relative   d-flex align-items-center justify-content-center "
                                 style=" height: 10rem; overflow: hidden;  cursor:pointer;   border-radius: 15px;">
 
-                                <img src="/productImage/<%=e.image  %>" alt="" id="i"
+                                <img src="<%= e.image.startsWith('http') ? e.image : '/productImage/' + e.image %>" alt="" id="i"
                                   style="     border-radius: 15px;  width: 100% ; height: 100%; object-fit: cover; ">
 
                               </div>
@@ -366,7 +366,7 @@
                                 <p class="opacity-50 text-center text-capitalize w-100  " id="p${i+1}"
                                   style="opacity: .7; display:none;"><i class="ri-upload-cloud-2-line text-center   "></i><br>uplaod
                                   images</p>
-                                <img src="/productImage/${image}"" alt="" id="i${i+1}"
+                                <img src="${image.startsWith('http') ? image : '/productImage/' + image}" alt="" id="i${i+1}"
                                   style="     border-radius: 15px;  width: 100% ; height: 100%; object-fit: cover; ">
 
                                 <div for="images${i+1}" id="imageL${i+1}"

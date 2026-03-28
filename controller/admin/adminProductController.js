@@ -1,8 +1,9 @@
 const productModal = require("../../models/products");
 const categoryModal = require("../../models/catagory");
-const fs = require("fs");
-const path = require("path");
+const { cloudinary } = require("../../config/cloudinary");
+const { getPublicId } = require("../../utils/cloudinaryHelper");
 const options = { day: "2-digit", month: "short", year: "numeric" };
+
 
 const productListed = async (req, res) => {
   try {
@@ -48,11 +49,6 @@ const productAdd = async (req, res) => {
       productAdd: "prod",
       categoryList: category,
     });
-    // res.render("admin/addProduct", {
-    //   admin: req.session.admin,
-    //   productAdd: "prod",
-    //   categoryList: category,
-    // });
   } catch (err) {
     console.log(err.message + "     productadd route ");
   }
@@ -64,7 +60,7 @@ const getproduct = async (req, res) => {
     let imgeArray = [];
     const images = req.files;
     images.forEach((file) => {
-      imgeArray.push(file.filename);
+      imgeArray.push(file.path); // Cloudinary URL
     });
 
     const currentDate = new Date();
@@ -129,124 +125,59 @@ const productDets = async (req, res) => {
 const editProduct = async (req, res) => {
   try {
     const elementsToRemove = req.body.pe;
-    const result = await productModal.findOne({ _id: req.query.id });
-    let rem = false;
-    if (typeof elementsToRemove == "object") {
-      var oldData = await productModal.findOneAndUpdate(
+    const currentProduct = await productModal.findOne({ _id: req.query.id });
+    
+    // Handle image deletions from Cloudinary for removed images
+    if (elementsToRemove) {
+      const imagesToDelete = Array.isArray(elementsToRemove) ? elementsToRemove : [elementsToRemove];
+      for (const imgUrl of imagesToDelete) {
+        try {
+          const publicId = getPublicId(imgUrl);
+          await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+          console.error(`Failed to delete image from Cloudinary: ${imgUrl}`, error);
+        }
+      }
+      
+      await productModal.findOneAndUpdate(
         { _id: req.query.id },
-        { $pull: { images: { $in: elementsToRemove } } },
-        { new: true }
-      );
-      rem = true;
-    } else {
-      var oldData = await productModal.findOneAndUpdate(
-        { _id: req.query.id },
-        { $pull: { images: elementsToRemove } },
+        { $pull: { images: { $in: imagesToDelete } } },
         { new: true }
       );
     }
 
+    const updatedOldData = await productModal.findOne({ _id: req.query.id });
     const category_id = await categoryModal.findOne({
       name: req.body.category,
     });
-    let flag = 0;
-    if (req.files.images0) {
-      flag++;
-    }
-    if (req.files.images1) {
-      flag++;
-    }
-    if (req.files.images2) {
-      flag++;
-    }
 
     let imgeArray = [];
-    if (flag !== 0) {
-      for (let i = 0; i < flag; i++) {
-        if (i == 0) {
-          if (req.files.images0) {
-            let imge0 = req.files.images0;
-            imgeArray[i] = imge0[0].filename;
+    const files = req.files;
 
-            flag++;
-            continue;
-          } else {
-            if (oldData.images[0]) {
-              if (req.body.pe0) {
-                console.log(req.body.pe0 + "first");
-                flag++;
-                continue;
-              } else {
-                console.log(oldData.images[0] + "first");
-                imgeArray[i] = oldData.images[0];
-
-                flag++;
-              }
-            } else {
-              flag++;
+    // Preserve existing images or replace them
+    for (let i = 0; i < 3; i++) {
+        const fileKey = `images${i}`;
+        if (files[fileKey]) {
+            // New image uploaded for this slot
+            imgeArray[i] = files[fileKey][0].path;
+            
+            // Delete old image if it existed in this slot
+            if (updatedOldData.images[i]) {
+                try {
+                    const publicId = getPublicId(updatedOldData.images[i]);
+                    await cloudinary.uploader.destroy(publicId);
+                } catch (error) {
+                    console.error(`Failed to delete old image: ${updatedOldData.images[i]}`, error);
+                }
             }
-          }
-        } else if (i == 1) {
-          if (req.files.images1) {
-            console.log("second");
-            let imge1 = req.files.images1;
-            imgeArray[i] = imge1[0].filename;
-            if (oldData.images[1]) {
-              const imagePath = path.join(
-                __dirname,
-                "../public/productImage",
-                oldData.images[1]
-              );
-              if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
-              }
+        } else {
+            // Keep old image if not explicitly removed
+            if (updatedOldData.images[i]) {
+                imgeArray[i] = updatedOldData.images[i];
             }
-            flag++;
-            continue;
-          } else {
-            if (oldData.images[1]) {
-              if (req.body.pe1) {
-                flag++;
-                continue;
-              } else {
-                console.log(oldData.images[1] + "second");
-                imgeArray[i] = oldData.images[1];
-
-                flag++;
-              }
-            } else {
-              flag++;
-            }
-          }
-        } else if (i == 2) {
-          if (req.files.images2) {
-            let imge2 = req.files.images2;
-            imgeArray[i] = imge2[0].filename;
-            if (oldData.images[2]) {
-              const imagePath = path.join(
-                __dirname,
-                "../public/productImage",
-                oldData.images[2]
-              );
-              if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
-              }
-            }
-          } else {
-            if (oldData.images[2]) {
-              imgeArray[i] = oldData.images[2];
-            }
-            if (oldData.images[1] && req.body.pe1) {
-              imgeArray[1] = oldData.images[1];
-            }
-          }
         }
-      }
-    } else {
-      oldData.images.forEach((e) => {
-        imgeArray.push(e);
-      });
     }
+
     const newArray = imgeArray.filter(Boolean);
 
     const done = await productModal.findOneAndUpdate(
@@ -264,23 +195,38 @@ const editProduct = async (req, res) => {
     if (done) {
       res.redirect("/admin/product");
     } else {
-      res.send("Hi");
+      res.send("Update failed");
     }
   } catch (err) {
-    console.log(err.message + "      edit product routr");
+    console.log(err.message + "      edit product route");
   }
 };
 
 // dlt product
 const dltPro = async (req, res) => {
   try {
+    const product = await productModal.findOne({ _id: req.query.id });
+    
+    // Optional: Keep images on soft delete, or delete them if entirely removing.
+    // Given the user's request "when delete the product", they likely want Cloudinary cleanup.
+    if (product && product.images) {
+        for (const imgUrl of product.images) {
+            try {
+                const publicId = getPublicId(imgUrl);
+                await cloudinary.uploader.destroy(publicId);
+            } catch (error) {
+                console.error(`Failed to delete image from Cloudinary during product deletion: ${imgUrl}`, error);
+            }
+        }
+    }
+
     const delPro = await productModal.findOneAndUpdate(
       { _id: req.query.id },
-      { $set: { isDeleted: true } }
+      { $set: { isDeleted: true, images: [] } } // Emptying images after deletion from Cloudinary
     );
+
     if (delPro) {
       res.send({ success: true, message: "Product deleted successfully" });
-      // res.redirect('/admin/product');
     } else {
       res.send("Unable to delete the product");
     }
@@ -289,6 +235,16 @@ const dltPro = async (req, res) => {
     res.send("An error occurred while deleting the product");
   }
 };
+
+module.exports = {
+  productAdd,
+  productDets,
+  getproduct,
+  editProduct,
+  dltPro,
+  productListed,
+};
+
 
 module.exports = {
   productAdd,
