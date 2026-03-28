@@ -10,11 +10,10 @@ const dotEnv = require('dotenv');
 const app = express();
 const fs = require('fs')
 const createError = require('http-errors');
+const connectDB = require('./config/dbconnect');
 
-const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGO_URL);
 
-// view engine setup
+connectDB()
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -38,9 +37,7 @@ app.get('/test-error', (req, res, next) => {
   next(err);
 });
 
-// error handler
 app.use(function (err, req, res, next) {
-  
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
@@ -51,7 +48,10 @@ app.get('*',(req,res)=>{
   res.redirect('/404')
 })
 
-const port = process.env.PORT || 3001
-app.listen(port, () => { console.log('http://localhost:3001') })
+const port = process.env.PORT || 3001;
+
+app.listen(port, () => {
+  console.log('http://localhost:3001')
+});
 
 module.exports = app;

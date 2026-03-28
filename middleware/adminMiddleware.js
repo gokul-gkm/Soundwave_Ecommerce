@@ -5,7 +5,7 @@ const adminRoute=(req,res,next)=>{
        }
        next();
     }catch(err){
-
+        console.log(err.message+' admin middleware')
     }
 }
 module.exports={
