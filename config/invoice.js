@@ -26,10 +26,10 @@ const data = (det) => {
     },
     client: {
       company: det.userId.name,
-      address: det.deliveryAdress.name,
-      zip: det.deliveryAdress.pincode,
-      city: det.deliveryAdress.city,
-      state: det.deliveryAdress.state,
+      address: det.deliveryAddress.name,
+      zip: det.deliveryAddress.pincode,
+      city: det.deliveryAddress.city,
+      state: det.deliveryAddress.state,
       country: "india",
     },
     information: {

@@ -166,7 +166,7 @@
                 <div class="product product-7 text-center">
                   <figure class="product-media">
                     <span class="product-label label-new">New</span>
-                    <a href="/productDets?proId=<%=e._id  %>">
+                    <a href="/product?proId=<%=e._id  %>">
                       <img
                         src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>"
                         alt="Product image"
@@ -331,7 +331,7 @@ function updateProductList(products) {
             <div class="product product-7 text-center">
                 <figure class="product-media">
                     <span class="product-label label-new">New</span>
-                    <a href="/productDets?proId=${product._id}">
+                    <a href="/product?proId=${product._id}">
                         <img src="${product.images[0].startsWith('http') ? product.images[0] : '/productImage/' + product.images[0]}" alt="Product image" class="product-image" />
                         <img src="${(product.images[1] ? product.images[1] : product.images[0]).startsWith('http') ? (product.images[1] ? product.images[1] : product.images[0]) : '/productImage/' + (product.images[1] ? product.images[1] : product.images[0])}" alt="Product image" class="product-image-hover" />
                     </a>

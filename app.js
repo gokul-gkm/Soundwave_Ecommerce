@@ -1,57 +1,145 @@
-const express = require('express');
-const path = require('path');
-const session = require('express-session');
-const flash = require('express-flash');
-const bycrypt = require('bcrypt');
-const userRouter = require('./routes/user');
-const adminRouter = require('./routes/admin');
-const nocache = require('nocache');
-const dotEnv = require('dotenv');
+/**
+ * =========================================================
+ *  APPLICATION ENTRY POINT (app.js)
+ * =========================================================
+ */
+
+const express = require("express");
+const path = require("path");
+const session = require("express-session");
+const flash = require("express-flash");
+const nocache = require("nocache");
+const dotenv = require("dotenv");
+const createError = require("http-errors");
+
+/**
+ * =========================================================
+ *  CONFIGURATION
+ * =========================================================
+ */
+
+// Load environment variables
+dotenv.config();
+
+// Initialize Express app
 const app = express();
-const fs = require('fs')
-const createError = require('http-errors');
-const connectDB = require('./config/dbconnect');
 
+// Connect Database
+const connectDB = require("./config/dbconnect");
+connectDB();
 
-connectDB()
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+/**
+ * =========================================================
+ *  VIEW ENGINE SETUP
+ * =========================================================
+ */
 
+// Set EJS as template engine
+app.set("view engine", "ejs");
+
+// Set views directory
+app.set("views", path.join(__dirname, "views"));
+
+/**
+ * =========================================================
+ *  STATIC FILES
+ * =========================================================
+ */
+
+// Serve static files (CSS, JS, Images)
+
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/static', express.static(path.join(__dirname, 'public')));
-
 app.use('css', express.static(path.join(__dirname, 'public/css')));
 app.use('js', express.static(path.join(__dirname, 'public/js')));
 
-app.use(session({secret: process.env.SESSION_SECRET,resave: false,saveUninitialized: true}))
-app.use(nocache())
-app.use(flash());
+
+
+
+/**
+ * =========================================================
+ * 🔐 MIDDLEWARES
+ * =========================================================
+ */
+
+// Parse JSON & Form Data
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', userRouter);
-app.use('/admin', adminRouter)
+app.use(express.urlencoded({ extended: true }));
 
+// Disable caching 
+app.use(nocache());
 
-app.get('/test-error', (req, res, next) => {
-  const err = createError(500, 'This is a test error');
-  next(err);
+// Session Configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secretKey",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false, // set true in production (HTTPS)
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, 
+    },
+  })
+);
+
+// Flash messages
+app.use(flash());
+
+/**
+ * =========================================================
+ *  ROUTES
+ * =========================================================
+ */
+
+// User Routes
+const userRouter = require("./routes/user");
+
+// Admin Routes
+const adminRouter = require("./routes/admin");
+const notFound = require("./middleware/notFound.middlware");
+const errorHandler = require("./middleware/error.middleware");
+
+// Mount Routes
+app.use("/", userRouter);
+app.use("/admin", adminRouter);
+
+/**
+ * =========================================================
+ *  TEST ROUTE (FOR ERROR HANDLING)
+ * =========================================================
+ */
+
+app.get("/test-error", (req, res, next) => {
+  next(createError(500, "This is a test error"));
 });
 
-app.use(function (err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('errorpage');
-});
+/**
+ * =========================================================
+ *  404 HANDLER
+ * =========================================================
+ */
 
-app.get('*',(req,res)=>{
-  res.redirect('/404')
-})
+app.use(notFound);
 
-const port = process.env.PORT || 3001;
+/**
+ * =========================================================
+ *  GLOBAL ERROR HANDLER
+ * =========================================================
+ */
 
-app.listen(port, () => {
-  console.log('http://localhost:3001')
+app.use(errorHandler);
+
+/**
+ * =========================================================
+ *  SERVER START
+ * =========================================================
+ */
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
 
 module.exports = app;

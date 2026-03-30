@@ -166,7 +166,7 @@ const products = async (req, res) => {
     }
 };
   
-const productDets = async (req, res) => {
+const productDetails = async (req, res) => {
     try {
       if (req.query.proId) {
         const category = await categoryModal.find({
@@ -269,6 +269,6 @@ const filterProducts = async (req, res) => {
 module.exports = {
     products,
     category,
-    productDets,
+    productDetails,
     filterProducts,
   };

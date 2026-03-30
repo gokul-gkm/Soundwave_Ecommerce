@@ -61,7 +61,7 @@ router.post('/activeOrnot', adminCategoryController.catgoryActive);
 /***************Product Management***************/
 
 //product dets page rendering
-router.get('/product',adminMidleware.adminRoute,adminProductController.productDets)
+router.get('/product',adminMidleware.adminRoute,adminProductController.productDetails)
 
 //product add route
 router.get('/productAdd',adminMidleware.adminRoute,adminProductController.productAdd);

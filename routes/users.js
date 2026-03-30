@@ -69,7 +69,7 @@ router.get("/products", userMidleware.userbloack, userProductController.products
 router.get("/category", userMidleware.userbloack, userProductController.category);
 
 //profile route
-router.get("/productDets", userMidleware.userbloack, userProductController.productDets);
+router.get("/product", userMidleware.userbloack, userProductController.productDetails);
 
 //filter products
 router.post('/filter-products', userProductController.filterProducts);
@@ -113,17 +113,17 @@ router.delete("/wishlistremove", userWishlistController.wishlistRemove);
 
 /***************Address***************/
 
-//adress route
-router.get("/adress", userMidleware.userbloack, userMidleware.user, userAddressController.adress);
+//address route
+router.get("/address", userMidleware.userbloack, userMidleware.user, userAddressController.address);
 
 // getting addresss
-router.post("/adress", userAddressController.getadress);
+router.post("/address", userAddressController.getaddress);
 
-//fetching adress exists or note
+//fetching address exists or note
 router.put("/address", userAddressController.patchaddress);
 
 //remove address
-router.delete("/address", userAddressController.removeadress);
+router.delete("/address", userAddressController.removeaddress);
 
 // defulat address fetching
 router.put("/Defaddress", userAddressController.Defaddress);

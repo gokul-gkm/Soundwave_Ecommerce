@@ -461,11 +461,11 @@ const getLogin = async (req, res) => {
         req.session.login = user._id;
         res.redirect("/profile");
       } else {
-        req.session.err2 = "password is wrong";
+        req.session.err2 = "Invalid credentials";
         res.redirect("/login");
       }
     } else {
-      req.session.err1 = " email is not exist";
+      req.session.err1 = "Invalid credentials";
       res.redirect("/login");
     }
   } catch (err) {

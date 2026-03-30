@@ -1,6 +1,6 @@
 const userSchema = require("../../models/userSchema");
 const categoryModal = require("../../models/catagory");
-const addressModal = require("../../models/adress");
+const addressModal = require("../../models/address");
 const cartModal = require("../../models/cart");
 const productModal = require("../../models/products");
 const orderModal = require("../../models/orders");
@@ -73,7 +73,7 @@ const checkoutPage = async (req, res) => {
     const wallet1 = await wallet.findOne({ userId: req.session.login });
     const walletAmount = wallet1?.amount || 0;
     let add;
-    const adress = await addressModal.findOne({ userId: req.session.login });
+    const address = await addressModal.findOne({ userId: req.session.login });
     const totalPriceAdding = await cartModal
       .findOneAndUpdate(
         { userId: req.session.login },
@@ -86,8 +86,8 @@ const checkoutPage = async (req, res) => {
     const cartCount = await getCartCount(req.session.login);
     const wishlistCount = await getWishlistCount(req.session.login)
     
-    if (adress) {
-      const add = adress?.address.find(
+    if (address) {
+      const add = address?.address.find(
         (e) => e._id + "hh" == user.addressId + "hh"
       );
 
@@ -146,9 +146,9 @@ const postSucces = async (req, res) => {
     const orderSet = await orderModal.create({
       userId: req.session.login,
       orderAmount: orderAmount,
-      deliveryAdress: user.addressId,
+      deliveryAddress: user.addressId,
       peyment: req.body.peyment,
-      deliveryAdress: {
+      deliveryAddress: {
         name: req.body.name,
         city: req.body.city,
         state: req.body.state,
@@ -507,9 +507,9 @@ const razorFailure = async(req,res)=>{
       const orderSet = await orderModal.create({
         userId: req.session.login,
         orderAmount: orderAmount,
-        deliveryAdress: user.addressId,
+        deliveryAddress: user.addressId,
         peyment: req.body.peyment,
-        deliveryAdress: {
+        deliveryAddress: {
           name: req.body.name,
           city: req.body.city,
           state: req.body.state,

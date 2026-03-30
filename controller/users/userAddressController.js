@@ -1,25 +1,25 @@
-const addressModal = require("../../models/adress");
+const addressModal = require("../../models/address");
 const userSchema = require("../../models/userSchema");
 const categoryModal = require("../../models/catagory");
 const { getWishlistCount ,getCartCount} = require('../../utils/count'); 
 
-//adress
-const adress = async (req, res) => {
+//address
+const address = async (req, res) => {
   try {
     const user = await userSchema.findOne({ _id: req.session.login });
     const category = await categoryModal.find({isDeleted: false, listed: true});
 
     if (user.is_admin === 0) {
-      const adress = await addressModal.findOne({ userId: req.session.login });
-      if (adress) {
+      const address = await addressModal.findOne({ userId: req.session.login });
+      if (address) {
       }
       const cartCount = await getCartCount(req.session.login);
       const wishlistCount = await getWishlistCount(req.session.login)
 
-      res.render("user/adress", {
+      res.render("user/address", {
         user,
         login: req.session.login,
-        adress,
+        address,
         category,
         cartCount,
         wishlistCount
@@ -29,12 +29,12 @@ const adress = async (req, res) => {
       res.redirect("/admin");
     }
   } catch (err) {
-    console.log(err.message + "   adress route");
+    console.log(err.message + "   address route");
   }
 };
 
 //get address
-const getadress = async (req, res) => {
+const getaddress = async (req, res) => {
   try {
     const exits = await addressModal.findOne({
       userId: req.query.id,
@@ -57,13 +57,13 @@ const getadress = async (req, res) => {
         new: true,
       };
 
-      const newAdress = await addressModal.findOneAndUpdate(
+      const newAddress = await addressModal.findOneAndUpdate(
         { userId: req.query.id },
         update,
         options
       );
-      if (newAdress) {
-        res.redirect("/adress");
+      if (newAddress) {
+        res.redirect("/address");
       } else {
         res.send("address didnt find");
       }
@@ -92,7 +92,7 @@ const patchaddress = async (req, res) => {
 };
 
 //remove address
-const removeadress = async (req, res) => {
+const removeaddress = async (req, res) => {
   try {
     const remove = await addressModal.updateOne(
       { userId: req.body.uid },
@@ -128,9 +128,9 @@ const Defaddress = async (req, res) => {
 };
 
 module.exports = {
-  adress,
-  getadress,
+  address,
+  getaddress,
   patchaddress,
-  removeadress,
+  removeaddress,
   Defaddress,
 };

@@ -134,7 +134,7 @@
                                         <div class="product product-7 text-center">
                                             <figure class="product-media">
                                                 <span class="product-label label-new">New</span>
-                                                <a href="/productDets?proId=<%=e._id  %>">
+                                                <a href="/product?proId=<%=e._id  %>">
                                                     <img src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>" alt="Product image"
                                                         class="product-image">
                                                     <img src="<%= (e.images[1] ? e.images[1] : e.images[0]).startsWith('http') ? (e.images[1] ? e.images[1] : e.images[0]) : '/productImage/' + (e.images[1] ? e.images[1] : e.images[0]) %>"
@@ -319,7 +319,7 @@
 
                                             <form action="#">
                                                 <input type="email" class="form-control"
-                                                    placeholder="Enter your Email Address" aria-label="Email Adress"
+                                                    placeholder="Enter your Email Address" aria-label="Email Address"
                                                     required>
                                                 <div class="text-center">
                                                     <button class="btn btn-outline-dark-2"

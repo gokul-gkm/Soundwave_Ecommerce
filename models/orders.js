@@ -6,7 +6,7 @@ const order = new mongoose.Schema({
     
     orderAmount: { type: Number, required: true },
 
-    deliveryAdress: {
+    deliveryAddress: {
         name:{type:String,required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },

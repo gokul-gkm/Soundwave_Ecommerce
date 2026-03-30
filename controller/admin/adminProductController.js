@@ -93,7 +93,7 @@ const getproduct = async (req, res) => {
 };
 
 //product dets page rendering
-const productDets = async (req, res) => {
+const productDetails = async (req, res) => {
   try {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
@@ -238,7 +238,7 @@ const dltPro = async (req, res) => {
 
 module.exports = {
   productAdd,
-  productDets,
+  productDetails,
   getproduct,
   editProduct,
   dltPro,
@@ -246,11 +246,11 @@ module.exports = {
 };
 
 
-module.exports = {
-  productAdd,
-  productDets,
-  getproduct,
-  editProduct,
-  dltPro,
-  productListed,
-};
+// module.exports = {
+//   productAdd,
+//   productDetails,
+//   getproduct,
+//   editProduct,
+//   dltPro,
+//   productListed,
+// };

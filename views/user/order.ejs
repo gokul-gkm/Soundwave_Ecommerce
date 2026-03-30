@@ -43,10 +43,10 @@
                      <div class="card-body">
                        <figure>
                          <figcaption>
-                           <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> <%=order.deliveryAdress.name %></p>
-                           <p><i class="fas fa-city"></i> <strong>City:</strong> <%=order.deliveryAdress.city %></p>
-                           <p><i class="fas fa-map-marked-alt"></i> <strong>State:</strong> <%=order.deliveryAdress.state %></p>
-                           <p><i class="fas fa-map-pin"></i> <strong>Pincode:</strong> <%=order.deliveryAdress.pincode %></p>
+                           <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> <%=order.deliveryAddress.name %></p>
+                           <p><i class="fas fa-city"></i> <strong>City:</strong> <%=order.deliveryAddress.city %></p>
+                           <p><i class="fas fa-map-marked-alt"></i> <strong>State:</strong> <%=order.deliveryAddress.state %></p>
+                           <p><i class="fas fa-map-pin"></i> <strong>Pincode:</strong> <%=order.deliveryAddress.pincode %></p>
                          </figcaption>
                        </figure>
                      </div>
@@ -87,7 +87,7 @@
                             <td class="product-col">
 
                               <figure class="product-media">
-                                <a href="/productDets?proId=<%= product.productId._id %>">
+                                <a href="/product?proId=<%= product.productId._id %>">
                                   <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="Product image">
                                 </a>
                               </figure>
@@ -95,7 +95,7 @@
                             </td>
                             <td>
 
-                              <a href="/productDets?proId=<%= product.productId._id %>">
+                              <a href="/product?proId=<%= product.productId._id %>">
                                 <%= product.productId.name %>
                               </a>
 

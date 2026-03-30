@@ -30,7 +30,7 @@
                 </li>
 
                 <li class="nav-item">
-                  <a class="nav-link active" id="tab-address-link" href="/adress" aria-selected="true">Adresses</a>
+                  <a class="nav-link active" id="tab-address-link" href="/address" aria-selected="true">Addresses</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="tab-account-link" href="/coupen" aria-selected="false">Coupens</a>
@@ -52,13 +52,13 @@
                
                  
                  <div class="address-container hh">
-                  <% if(locals.adress) {%>
-                  <%adress.address.forEach((e,i)=>{ %>
+                  <% if(locals.address) {%>
+                  <%address.address.forEach((e,i)=>{ %>
                   <article class="address-card" id="card<%= e._id %>">
                      <div class="card-header">
                        <input type="checkbox" name="group1" class="checkbox-group" <%= user.addressId+'hh' == e._id+'hh' ? 'checked' : '' %> onchange="change('<%= e._id %>','<%= locals.login%>')">
                        <h3 class="card-title"><i class="fas fa-map-marker-alt"></i> <%= e.name %></h3>
-                       <button onclick="dele('<%= e._id %>','<%=adress.userId%>')" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+                       <button onclick="dele('<%= e._id %>','<%=address.userId%>')" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
                      </div>
                      <div class="card-body">
                        <figure>
@@ -164,11 +164,11 @@
           div.innerHTML = `<div class="card" style="border: .1rem solid #ebebeb !important; border-radius: 10px;">
                     <div class="card-body">
                         <div class="hedaer  d-flex align-items-center  justify-content-between w-100 ms-4   " style="padding-left: 8rem;">
-                      <h5 class="card-title text-center mb-2">New adress</h5>
+                      <h5 class="card-title text-center mb-2">New address</h5>
                       <h5 style="margin-top: -.5rem; cursor: pointer;" onclick="remove('${i}')"><i class="ri-close-line text-primary  " ></i></h5>
                     </div>
 
-                    <form id='myForm${id}' action="/adress?id=${id}" method="post">
+                    <form id='myForm${id}' action="/address?id=${id}" method="post">
                         <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label">Address  </label>
                             <input type="text" id='inp${id}' class="form-control" name="name"  placeholder="address "  oninput="exists(this,'${id}')" required>
