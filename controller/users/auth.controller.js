@@ -120,8 +120,15 @@ const loginUser = async (req, res, next) => {
       return res.redirect("/login");
     }
 
-    req.session.login = user._id;
-    res.redirect("/");
+      req.session.login = user._id;
+      console.log(user)
+      if (user.is_admin === 1) {
+        req.session.admin = user;
+        res.redirect("/admin");
+      } else {
+          console.log("user")
+        res.redirect("/");
+    }   
 
   } catch (error) {
     next(error);
