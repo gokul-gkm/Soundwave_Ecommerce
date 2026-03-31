@@ -1,5 +1,6 @@
 const router = require("express").Router();
-const userController = require("../../controller/users/userControlller");
+const userController = require("../../controller/users/userController");
+const pageController = require("../../controller/users/page.controller")
 
 /**
  * ================= USER ROUTES =================
@@ -22,12 +23,12 @@ router.use("/", require("./coupon.routes"));
  * @route   GET /about
  * @desc    Render About Page
  */
-router.get("/about", userController.about);
+router.get("/about", pageController.aboutPage);
 
 /**
  * @route   GET /404
  * @desc    Render 404 Page
  */
-router.get("/404", userController.catchAll);
+router.get("/404", pageController.notFoundPage);
 
 module.exports = router;

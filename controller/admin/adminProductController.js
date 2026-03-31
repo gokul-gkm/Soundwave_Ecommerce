@@ -60,7 +60,7 @@ const getproduct = async (req, res) => {
     let imgeArray = [];
     const images = req.files;
     images.forEach((file) => {
-      imgeArray.push(file.path); // Cloudinary URL
+      imgeArray.push(file.path);
     });
 
     const currentDate = new Date();
@@ -127,7 +127,6 @@ const editProduct = async (req, res) => {
     const elementsToRemove = req.body.pe;
     const currentProduct = await productModal.findOne({ _id: req.query.id });
     
-    // Handle image deletions from Cloudinary for removed images
     if (elementsToRemove) {
       const imagesToDelete = Array.isArray(elementsToRemove) ? elementsToRemove : [elementsToRemove];
       for (const imgUrl of imagesToDelete) {
@@ -154,14 +153,11 @@ const editProduct = async (req, res) => {
     let imgeArray = [];
     const files = req.files;
 
-    // Preserve existing images or replace them
     for (let i = 0; i < 3; i++) {
         const fileKey = `images${i}`;
         if (files[fileKey]) {
-            // New image uploaded for this slot
             imgeArray[i] = files[fileKey][0].path;
             
-            // Delete old image if it existed in this slot
             if (updatedOldData.images[i]) {
                 try {
                     const publicId = getPublicId(updatedOldData.images[i]);
@@ -171,7 +167,6 @@ const editProduct = async (req, res) => {
                 }
             }
         } else {
-            // Keep old image if not explicitly removed
             if (updatedOldData.images[i]) {
                 imgeArray[i] = updatedOldData.images[i];
             }
@@ -207,8 +202,6 @@ const dltPro = async (req, res) => {
   try {
     const product = await productModal.findOne({ _id: req.query.id });
     
-    // Optional: Keep images on soft delete, or delete them if entirely removing.
-    // Given the user's request "when delete the product", they likely want Cloudinary cleanup.
     if (product && product.images) {
         for (const imgUrl of product.images) {
             try {
@@ -222,7 +215,7 @@ const dltPro = async (req, res) => {
 
     const delPro = await productModal.findOneAndUpdate(
       { _id: req.query.id },
-      { $set: { isDeleted: true, images: [] } } // Emptying images after deletion from Cloudinary
+      { $set: { isDeleted: true, images: [] } }
     );
 
     if (delPro) {
@@ -244,13 +237,3 @@ module.exports = {
   dltPro,
   productListed,
 };
-
-
-// module.exports = {
-//   productAdd,
-//   productDetails,
-//   getproduct,
-//   editProduct,
-//   dltPro,
-//   productListed,
-// };

@@ -125,7 +125,7 @@ const success = async (req, res) => {
       const wishlistCount = await getWishlistCount(req.session.login)
     if (req.session.succes) {
       delete req.session.succes;
-      res.render("user/succes", { login: req.session.login, category, cartCount, wishlistCount });
+      res.render("user/success", { login: req.session.login, category, cartCount, wishlistCount });
     } else {
       res.redirect("/order");
     }

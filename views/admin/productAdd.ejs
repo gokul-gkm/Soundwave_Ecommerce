@@ -108,7 +108,7 @@
 
 <script defer src="https://cdn.crop.guide/loader/l.js?c=PQDNWR"></script>
 
-<script>
+<!-- <script>
   for (let i = 0; i < 3; i++) {
     const icon = document.getElementById(`icon${i}`);
     icon.addEventListener('click', (event) => {
@@ -218,10 +218,10 @@
       }
     });
   });
-</script>
+</script> -->
 
 <!-- stock and price validation -->
-<script>
+<!-- <script>
   const priceInput = document.getElementById('inlineFormInputGroupUsername2');
   const priceErrorElement = document.getElementById('priceError');
   const stockInput = document.getElementById('exampleInputPassword4');
@@ -259,7 +259,189 @@
       stockInput.style.borderColor = 'red';
     }
   });
+</script> -->
+
+<script>
+  for (let i = 0; i < 3; i++) {
+    const icon = document.getElementById(`icon${i}`);
+    icon.addEventListener('click', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      const text = document.getElementById(`p${i}`);
+      const im = document.getElementById(`i${i}`);
+      const imL = document.getElementById(`imageL${i}`);
+      const inp = document.getElementById(`images${i}`);
+      inp.value = '';
+      im.src = '';
+      im.style.display = 'none';
+      text.style.display = 'block';
+      imL.style.display = 'none';
+      icon.style.opacity = 0;
+    });
+  }
+
+  const textInput = document.querySelectorAll('.text');
+  const err1 = document.getElementById('err1');
+  const submit11 = document.querySelector('.submit');
+
+  document.getElementById('myForm').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  });
+
+  const msgP = document.getElementById(`msgP`);
+  const form = document.getElementById('myForm')
+  const imgco = document.querySelector('.image')
+
+  form.addEventListener('submit', (ev) => {
+    const inputs = document.querySelectorAll('input[type="file"]');
+    let validFiles = 0;
+
+    inputs.forEach(input => {
+      if (input.files.length > 0) {
+        const file = input.files[0];
+        const fileType = file.type;
+
+        if (fileType === 'image/png' || fileType === 'image/jpeg') {
+          validFiles++;
+        } else {
+          msgP.textContent = 'Only PNG or JPEG images are allowed.';
+          imgco.style.height = '10rem';
+          ev.preventDefault();
+          return;
+        }
+      }
+    });
+
+    if (validFiles === 3) {
+      form.submit();
+    } else {
+      msgP.textContent = 'Please upload exactly 3 images.';
+      imgco.style.height = '10rem';
+      ev.preventDefault();
+    }
+  });
+
+  function hello(e, i) {
+    const text = document.getElementById(`p${i}`);
+    const im = document.getElementById(`i${i}`);
+    const imL = document.getElementById(`imageL${i}`);
+
+    im.src = URL.createObjectURL(e.files[0]);
+    const icon = document.getElementById(`icon${i}`)
+    icon.style.opacity = 1;
+    im.style.display = 'block';
+    text.style.display = 'none';
+    imL.style.display = 'flex';
+  }
+
+  /**
+   * ================= UPDATED REGEX =================
+   */
+
+  const nameRegex = /^[a-zA-Z0-9\s\-()]+$/;
+  const descRegex = /^[a-zA-Z0-9\s.,:;!?()\-\/&%]+$/;
+
+  textInput.forEach((inputElement, i) => {
+    const errorElement = document.getElementById(`err${i + 1}`);
+
+    inputElement.addEventListener('input', function (event) {
+      const inputValue = event.target.value.trim();
+
+      let isValid = false;
+
+      // 👉 First input = Name
+      if (i === 0) {
+        if (inputValue !== '' && nameRegex.test(inputValue)) {
+          isValid = true;
+        } else {
+          errorElement.textContent = 'Name can include letters, numbers, spaces, (), -';
+        }
+      }
+
+      // 👉 Second input = Description
+      if (i === 1) {
+        if (inputValue !== '' && descRegex.test(inputValue)) {
+          isValid = true;
+        } else {
+          errorElement.textContent = 'Description allows symbols like . , : ; ! ? ( ) - / & %';
+        }
+      }
+
+      if (isValid) {
+        submit11.style.pointerEvents = 'all';
+        submit11.style.opacity = 1;
+
+        errorElement.textContent = '';
+        inputElement.style.borderColor = 'green';
+      } else {
+        inputElement.style.borderColor = 'red';
+        submit11.style.pointerEvents = 'none';
+        submit11.style.opacity = 0.5;
+      }
+    });
+  });
+
+  document.getElementById('myForm').addEventListener('submit', function (event) {
+    textInput.forEach((inputElement, i) => {
+      const inputValue = inputElement.value.trim();
+
+      let isValid = false;
+
+      if (i === 0) isValid = nameRegex.test(inputValue);
+      if (i === 1) isValid = descRegex.test(inputValue);
+
+      if (!isValid) {
+        document.getElementById(`err${i + 1}`).textContent = 'Please enter valid data.';
+        inputElement.style.borderColor = 'red';
+        event.preventDefault();
+      }
+    });
+  });
 </script>
+
+<!-- stock and price validation -->
+<script>
+  const priceInput = document.getElementById('inlineFormInputGroupUsername2');
+  const priceErrorElement = document.getElementById('priceError');
+  const stockInput = document.getElementById('exampleInputPassword4');
+  const stockErrorElement = document.getElementById('stockError');
+  const submitButton = document.querySelector('.submit');
+
+  priceInput.addEventListener('input', function (event) {
+    const priceValue = parseFloat(event.target.value);
+
+    if (priceValue >= 0) {
+      submitButton.style.pointerEvents = 'all';
+      submitButton.style.opacity = 1;
+      priceErrorElement.textContent = '';
+      priceInput.style.borderColor = 'green';
+    } else {
+      submitButton.style.pointerEvents = 'none';
+      submitButton.style.opacity = 0.5;
+      priceErrorElement.textContent = 'Price must be a positive number';
+      priceInput.style.borderColor = 'red';
+    }
+  });
+
+  stockInput.addEventListener('input', function (event) {
+    const stockValue = Number(event.target.value);
+
+    if (!isNaN(stockValue) && stockValue >= 0 && Number.isInteger(stockValue)) {
+      submitButton.style.pointerEvents = 'all';
+      submitButton.style.opacity = 1;
+      stockErrorElement.textContent = '';
+      stockInput.style.borderColor = 'green';
+    } else {
+      submitButton.style.pointerEvents = 'none';
+      submitButton.style.opacity = 0.5;
+      stockErrorElement.textContent = 'Stock must be a non-negative integer';
+      stockInput.style.borderColor = 'red';
+    }
+  });
+</script>
+
 
 <script src="/vendors/js/vendor.bundle.base.js"></script>
 <script src="/vendors/chart.js/Chart.min.js"></script>
