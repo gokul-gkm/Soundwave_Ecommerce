@@ -1,20 +1,42 @@
-# the base image
-FROM node:18
+# Use lightweight image
+FROM node:18-alpine
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy only package files first
 COPY package*.json ./
 
-# Install project dependencies
-RUN npm install
+# Install only production dependencies
+RUN npm install --omit=dev
 
-# Copy the project files into the container
+# Copy rest of app
 COPY . .
 
-# Expose the port 
+# Expose port
 EXPOSE 3001
 
-# Run the application
+# Start app
 CMD ["npm", "start"]
+
+
+# # the base image
+# FROM node:18
+
+# # Set the working directory in the container
+# WORKDIR /usr/src/app
+
+# # Copy package.json and package-lock.json
+# COPY package*.json ./
+
+# # Install project dependencies
+# RUN npm install
+
+# # Copy the project files into the container
+# COPY . .
+
+# # Expose the port 
+# EXPOSE 3001
+
+# # Run the application
+# CMD ["npm", "start"]
