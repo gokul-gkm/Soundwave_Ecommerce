@@ -1,17 +1,20 @@
-const categoryModal = require("../../models/catagory");
-const cartModal = require("../../models/cart");
-const productModal = require("../../models/products");
+const Category = require("../../models/catagory");
+const Cart = require("../../models/cart");
+const Product = require("../../models/products");
 const { getWishlistCount ,getCartCount} = require('../../utils/count'); 
 
-/********************* Cart Rendering ***********************/
-
-const cart = async (req, res) => {
+/**
+ * @desc    Render Cart Page
+ * @route   GET /cart
+ */
+const renderCartPage = async (req, res) => {
   try {
-    const cart = await cartModal
-      .findOne({ userId: req.session.login })
+    const userId = req.session.login;    
+    const cart = await Cart
+      .findOne({ userId })
       .populate("products.productId");
-      const cartCount = await getCartCount(req.session.login);
-      const wishlistCount = await getWishlistCount(req.session.login)
+      const cartCount = await getCartCount(userId);
+      const wishlistCount = await getWishlistCount(userId)
     if (cart) {
       const total = cart.products.reduce(
         (acc, product) => acc + product.price,
@@ -21,16 +24,16 @@ const cart = async (req, res) => {
         upsert: true,
         new: true,
       };
-      const totalPriceAdding = await cartModal
+      const totalPriceAdding = await Cart
         .findOneAndUpdate(
-          { userId: req.session.login },
+          { userId },
           { $set: { TotalPrice: total } },
           options
         )
         .exec();
-      const category = await categoryModal.find({});
+      const category = await Category.find({});
       res.render("user/cart", {
-        login: req.session.login,
+        login: userId,
         cart,
         totalprice: totalPriceAdding.TotalPrice,
         category,
@@ -38,9 +41,9 @@ const cart = async (req, res) => {
         wishlistCount
       });
     } else {
-      const category = await categoryModal.find({});
+      const category = await Category.find({});
       res.render("user/cart", {
-        login: req.session.login,
+        login: userId,
         totalprice: 0,
         category,
         cartCount,
@@ -52,31 +55,35 @@ const cart = async (req, res) => {
   }
 };
 
-/********************* Add cart Fetching ***********************/
-
-const addcart = async (req, res) => {
+/**
+ * @desc    Add to Cart (API)
+ * @route   PUT /cart
+ */
+const addToCart = async (req, res) => {
   try {
-    const product = await productModal.findOne({ _id: req.body.id });
-    const result = await cartModal
+    const userId = req.session.login;
+    const { id, q } = req.body;
+    const product = await Product.findOne({ _id: id });
+    const result = await Cart
       .findOne({
-        userId: req.body.user,
+        userId,
         products: {
           $elemMatch: {
-            productId: req.body.id,
+            productId: id,
           },
         },
       })
       .exec();
     if (!result) {
-      const tp = product.price * req.body.q;
+      const tp = product.price * q;
 
-      const filter = { userId: req.body.user };
+      const filter = { userId };
       const update = {
         $set: {
-          userId: req.body.user,
+          userId,
         },
         $addToSet: {
-          products: { productId: req.body.id, price: tp },
+          products: { productId: id, price: tp },
         },
       };
       const options = {
@@ -84,7 +91,7 @@ const addcart = async (req, res) => {
         new: true,
       };
 
-      const cartSuccess = await cartModal
+      const cartSuccess = await Cart
         .findOneAndUpdate(filter, update, options)
         .exec();
 
@@ -99,36 +106,41 @@ const addcart = async (req, res) => {
   }
 };
 
-/********************* Add to Cart Post ***********************/
-
-const addcartPost = async (req, res) => {
+/**
+ * @desc    Add to Cart (Form)
+ * @route   POST /cart
+ */
+const addToCartFromForm  = async (req, res) => {
   try {
-    if (req.query.user) {
-      const product = await productModal.findOne({ _id: req.query.id });
-      const result = await cartModal
+    const userId = req.session.login;
+    const { id } = req.query;
+    const { q } = req.body;
+    if (userId) {
+      const product = await Product.findOne({ _id: id });
+      const result = await Cart
         .findOne({
-          userId: req.query.user,
+          userId,
           products: {
             $elemMatch: {
-              productId: req.query.id,
+              productId: id,
             },
           },
         })
         .exec();
 
       if (!result) {
-        const tp = product.price * req.body.q;
+        const tp = product.price * q;
 
-        const filter = { userId: req.query.user };
+        const filter = { userId };
         const update = {
           $set: {
-            userId: req.query.user,
+            userId,
           },
           $addToSet: {
             products: {
-              productId: req.query.id,
+              productId: id,
               price: tp,
-              quantity: req.body.q,
+              quantity: q,
             },
           },
         };
@@ -137,7 +149,7 @@ const addcartPost = async (req, res) => {
           new: true,
         };
 
-        const cartSuccess = await cartModal
+        const cartSuccess = await Cart
           .findOneAndUpdate(filter, update, options)
           .exec();
 
@@ -145,13 +157,13 @@ const addcartPost = async (req, res) => {
           res.redirect(`/cart?id=${req.query.user}`);
         }
       } else {
-        const tp = product.price * req.body.q;
-        const updatedCart = await cartModal.findOneAndUpdate(
-          { userId: req.query.user, "products.productId": req.query.id },
+        const tp = product.price * q;
+        const updatedCart = await Cart.findOneAndUpdate(
+          { userId, "products.productId": id },
           {
             $set: {
               "products.$.price": tp,
-              "products.$.quantity": req.body.q,
+              "products.$.quantity": q,
             },
           },
           { new: true }
@@ -170,19 +182,23 @@ const addcartPost = async (req, res) => {
   }
 };
 
-/********************* Cart Edit Fetch ***********************/
-
-const cartEdit = async (req, res) => {
+/**
+ * @desc    Update Cart Item Quantity
+ * @route   PUT /cart-update
+ */
+const updateCartItem  = async (req, res) => {
   try {
-    const product = await productModal.findOne({ _id: req.body.i });
-    const newval = product.price * req.body.quantity;
+    const { id, productId, quantity } = req.body;
 
-    const updatedCart = await cartModal.findOneAndUpdate(
-      { _id: req.body.id, "products.productId": req.body.i },
+    const product = await Product.findOne({ _id: productId});
+    const newval = product.price * quantity;
+
+    const updatedCart = await Cart.findOneAndUpdate(
+      { _id: id, "products.productId": productId},
       {
         $set: {
           "products.$.price": newval,
-          "products.$.quantity": req.body.quantity,
+          "products.$.quantity": quantity,
         },
       },
       { new: true }
@@ -193,8 +209,8 @@ const cartEdit = async (req, res) => {
       0
     );
 
-    await cartModal.findOneAndUpdate(
-      { _id: req.body.id },
+    await Cart.findOneAndUpdate(
+      { _id: id },
       { $set: { TotalPrice: total } }
     );
 
@@ -204,21 +220,25 @@ const cartEdit = async (req, res) => {
   }
 };
 
-/********************* Cart Remove ***********************/
-
-const cartRemove = async (req, res) => {
+/**
+ * @desc    Remove Cart Item
+ * @route   DELETE /cart
+ */
+const removeCartItem  = async (req, res) => {
   try {
+    const { id, proid, tot } = req.body;
+
     console.log(req.body.tot);
-    const remove = await cartModal.updateOne(
-      { _id: req.body.id },
+    const remove = await Cart.updateOne(
+      { _id: id },
       {
-        $set: { TotalPrice: req.body.tot },
-        $pull: { products: { productId: req.body.proid } },
+        $set: { TotalPrice: tot },
+        $pull: { products: { productId: proid } },
       }
     );
     if (remove.modifiedCount === 0) {
     } else {
-      const rdata = await cartModal.findOne({ _id: req.body.id });
+      const rdata = await Cart.findOne({ _id: id });
       console.log(rdata);
       res.send({ rdata });
     }
@@ -228,9 +248,9 @@ const cartRemove = async (req, res) => {
 };
 
 module.exports = {
-  cart,
-  addcart,
-  cartEdit,
-  cartRemove,
-  addcartPost,
+  renderCartPage,
+  addToCart,
+  addToCartFromForm,
+  updateCartItem,
+  removeCartItem,
 };

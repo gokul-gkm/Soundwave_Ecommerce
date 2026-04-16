@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const chartController = require("../../controller/admin/adminChartController");
+const chartController = require("../../controller/admin/chart.controller");
 
 /**
  * @route   PUT /year

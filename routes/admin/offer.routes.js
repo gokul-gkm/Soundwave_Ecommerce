@@ -1,65 +1,65 @@
 const router = require("express").Router();
-const offerController = require("../../controller/admin/adminOfferController");
+const offerController = require("../../controller/admin/offer.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 
 /**
- * @route   GET /offer
+ * @route   GET /offers
  * @desc    Get Offer Page
  */
-router.get("/offer", adminMiddleware.adminRoute, offerController.offerPage);
+router.get("/offers", adminMiddleware.adminRoute, offerController.getOffers);
 
 /**
- * @route   GET /addOffer
+ * @route   GET /offers/new
  * @desc    Render Add Offer Page
  */
-router.get("/addOffer", adminMiddleware.adminRoute, offerController.addOfferPage);
+router.get("/offers/new", adminMiddleware.adminRoute, offerController.getCreateOfferPage);
 
 /**
- * @route   POST /offer
+ * @route   POST /offers
  * @desc    Create Offer
  */
-router.post("/offer", offerController.offerCreating);
+router.post("/offers", offerController.createOffer);
 
 /**
  * @route   PUT /offer/:id
  * @desc    Add Product to Offer
  */
-router.put("/offer/:id", offerController.offerProductAdd);
+router.put("/offers/:id/products", offerController.toggleProductOffer);
 
 /**
- * @route   PUT /offer/catOffer/:catId
+ * @route   PUT /offers/:catId/categories
  * @desc    Add Category to Offer
  */
-router.put("/offer/catOffer/:catId", offerController.offerCategoryAdd);
+router.put("/offers/:catId/categories", offerController.toggleCategoryOffer);
 
 /**
- * @route   GET /offerProduct/:id
+ * @route   GET /offers/:id/products
  * @desc    Get Offer Products
  */
-router.get("/offerProduct/:id", adminMiddleware.adminRoute, offerController.offerProduct);
+router.get("/offers/:id/products", adminMiddleware.adminRoute, offerController.getOfferProducts);
 
 /**
- * @route   GET /offerCategory/:id
+ * @route   GET /offers/:id/categories
  * @desc    Get Offer Categories
  */
-router.get("/offerCategory/:id", adminMiddleware.adminRoute, offerController.offerCategory);
+router.get("/offers/:id/categories", adminMiddleware.adminRoute, offerController.getOfferCategory);
 
 /**
- * @route   GET /offeredit/:id
+ * @route   GET /offers/:id/edit
  * @desc    Render Edit Offer Page
  */
-router.get("/offeredit/:id", adminMiddleware.adminRoute, offerController.offerEdit);
+router.get("/offers/:id/edit", adminMiddleware.adminRoute, offerController.getEditOfferPage);
 
 /**
- * @route   POST /offeredit/:id
+ * @route   POST /offers/edit/:id
  * @desc    Update Offer
  */
-router.post("/offeredit/:id", adminMiddleware.adminRoute, offerController.getOfferEdit);
+router.post("/offers/edit/:id", adminMiddleware.adminRoute, offerController.updateOffer);
 
 /**
- * @route   GET /offerRemove/:id
+ * @route   GET /offers/remove/:id
  * @desc    Delete Offer
  */
-router.get("/offerRemove/:id", adminMiddleware.adminRoute, offerController.offerRemove);
+router.get("/offers/remove/:id", adminMiddleware.adminRoute, offerController.deleteOffer);
 
 module.exports = router;

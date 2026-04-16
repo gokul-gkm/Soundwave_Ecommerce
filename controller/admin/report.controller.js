@@ -3,13 +3,15 @@ const fs = require("fs");
 const pdf = require("html-pdf");
 const { v4: uuid } = require("uuid");
 const ejs = require("ejs");
-const orderModal = require("../../models/orders");
+const Order = require("../../models/orders");
 
 const puppeteer = require("puppeteer");
 const ExcelJS = require("exceljs");
 
-//report yearly
-const report = async (req, res) => {
+/**
+ * @desc Get Report by Type
+ */
+const getReportByType = async (req, res) => {
   try {
     if (req.params.id == "weekly") {
       const currentDate = new Date();
@@ -20,7 +22,7 @@ const report = async (req, res) => {
       );
       const currentWeekEnd = new Date(currentWeekStart);
       currentWeekEnd.setDate(currentWeekEnd.getDate() + 6);
-      const report = await orderModal.find({
+      const report = await Order.find({
         orderDate: { $gte: currentWeekStart, $lte: currentWeekEnd },
       });
       res.render("admin/report", { report, data: "weekly", gg: req.params.id });
@@ -29,7 +31,7 @@ const report = async (req, res) => {
       const currentMonth = currentDate.getMonth();
       const startDate = new Date(currentDate.getFullYear(), currentMonth);
       const endDate = new Date(currentDate.getFullYear(), currentMonth + 1, 0);
-      const report = await orderModal.find({
+      const report = await Order.find({
         orderDate: { $gte: startDate, $lte: endDate },
       });
       res.render("admin/report", {
@@ -41,7 +43,7 @@ const report = async (req, res) => {
       const currentDate = new Date();
       const currentYearStart = new Date(currentDate.getFullYear(), 0, 1);
       const currentYearEnd = new Date(currentDate.getFullYear() + 1, 0, 0);
-      const report = await orderModal.find({
+      const report = await Order.find({
         orderDate: { $gte: currentYearStart, $lte: currentYearEnd },
       });
       res.render("admin/report", { report, data: "yearly", gg: req.params.id });
@@ -59,13 +61,15 @@ const report = async (req, res) => {
   }
 };
 
-//customreport
-const customreport = async (req, res) => {
+/**
+ * @desc Custom Report
+ */
+const getCustomReport = async (req, res) => {
   try {
     const start = new Date(req.body.start);
     const end = new Date(req.body.end);
     console.log(start, end);
-    const data = await orderModal.find({
+    const data = await Order.find({
       orderDate: { $gte: start, $lte: end },
     });
     res.send({ data});
@@ -74,8 +78,9 @@ const customreport = async (req, res) => {
   }
 };
 
-//report for download
-
+/**
+ * @desc Report for download
+ */
 const reportG = async (data, end) => {
   if (data == "weekly") {
     const currentDate = new Date();
@@ -86,7 +91,7 @@ const reportG = async (data, end) => {
     );
     const currentWeekEnd = new Date(currentWeekStart);
     currentWeekEnd.setDate(currentWeekEnd.getDate() + 6);
-    return await orderModal.find({
+    return await Order.find({
       orderDate: { $gte: currentWeekStart, $lte: currentWeekEnd },
     });
   } else if (data == "monthly") {
@@ -94,25 +99,27 @@ const reportG = async (data, end) => {
     const currentMonth = currentDate.getMonth();
     const startDate = new Date(currentDate.getFullYear(), currentMonth);
     const endDate = new Date(currentDate.getFullYear(), currentMonth + 1, 0);
-    return await orderModal.find({
+    return await Order.find({
       orderDate: { $gte: startDate, $lte: endDate },
     });
   } else if (data == "yearly") {
     const currentDate = new Date();
     const currentYearStart = new Date(currentDate.getFullYear(), 0, 1);
     const currentYearEnd = new Date(currentDate.getFullYear() + 1, 0, 0);
-    return await orderModal.find({
+    return await Order.find({
       orderDate: { $gte: currentYearStart, $lte: currentYearEnd },
     });
   } else {
     const start = new Date(data);
     const end1 = new Date(end);
-    return await orderModal.find({ orderDate: { $gte: start, $lte: end1 } });
+    return await Order.find({ orderDate: { $gte: start, $lte: end1 } });
   }
 };
 
-//report download
-const reportdownload = async (req, res) => {
+/**
+ * @desc Download Report (Excel / PDF)
+ */
+const downloadReport = async (req, res) => {
   try {
     if (req.body.report == "exec") {
       console.log(req.query.start, req.query.end);
@@ -194,7 +201,7 @@ const reportdownload = async (req, res) => {
 };
 
 module.exports = {
-  report,
-  reportdownload,
-  customreport,
+  getReportByType,
+  downloadReport,
+  getCustomReport,
 };

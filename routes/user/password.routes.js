@@ -1,35 +1,35 @@
 const router = require("express").Router();
-const userController = require("../../controller/users/userController");
+const passwordController = require("../../controller/users/password.controller");
 const userMiddleware = require("../../middleware/userMiddleware");
 
 /**
- * @route   GET /forgetPassword
+ * @route   GET /forget-password
  * @desc    Render Forgot Password Page
  */
-router.get("/forgetPassword", userMiddleware.loginTrue, userController.forgetPassword);
+router.get("/forget-password", userMiddleware.loginTrue, passwordController.renderForgetPasswordPage);
 
 /**
- * @route   POST /forgetPass
+ * @route   POST /forget-email-exists
  * @desc    Verify Email for Password Reset
  */
-router.post("/forgetPass", userController.forgetemailExist);
+router.post("/forget-email-exists", passwordController.forgetEmailExist);
 
 /**
- * @route   POST /forget
+ * @route   POST /forget-password
  * @desc    Process Password Reset Request (OTP Flow)
  */
-router.post("/forget", userController.forget);
+router.post("/forget-password", passwordController.forgetPassword);
 
 /**
- * @route   GET /newPass
- * @desc    Render New Password Page
+ * @route   GET /reset-password
+ * @desc    Render Reset Password Page
  */
-router.get("/newPass", userController.newPass);
+router.get("/reset-password", passwordController.renderNewPasswordPage);
 
-/**
+/** 
  * @route   POST /newPass
  * @desc    Update User Password
  */
-router.post("/newPass", userController.getNewPass);
+router.post("/newPass", passwordController.updatePassword);
 
 module.exports = router;

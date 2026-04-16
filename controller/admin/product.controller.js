@@ -1,46 +1,46 @@
-const productModal = require("../../models/products");
-const categoryModal = require("../../models/catagory");
+const Product = require("../../models/products");
+const Category = require("../../models/catagory");
 const { cloudinary } = require("../../config/cloudinary");
 const { getPublicId } = require("../../utils/cloudinaryHelper");
 const options = { day: "2-digit", month: "short", year: "numeric" };
 
-
-const productListed = async (req, res) => {
+/**
+ * @desc Render Product Page
+ */
+const getProducts = async (req, res) => {
   try {
-    const listedornot = await productModal.findOne({ _id: req.body.payload });
+    const limit = 5;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
 
-    if (listedornot.listed) {
-      const listtrue = await productModal.findOneAndUpdate(
-        { _id: req.body.payload },
-        { $set: { listed: false } }
-      );
+    const totalProductsCount = await Product.countDocuments({});
 
-      if (listtrue._id) {
-        const updatedData = await productModal.findOne({ _id: listtrue._id });
+    const totalPages = Math.ceil(totalProductsCount / limit);
 
-        res.send({ updatedData, blocked: "is blocked" });
-      }
-    } else {
-      const listtrue = await productModal.findOneAndUpdate(
-        { _id: req.body.payload },
-        { $set: { listed: true } }
-      );
-
-      if (listtrue._id) {
-        const updatedData = await productModal.findOne({ _id: listtrue._id });
-
-        res.send({ updatedData });
-      }
-    }
+    const products = await Product
+      .find({ isDeleted: false })
+      .populate("category")
+      .skip(skip)
+      .limit(limit);
+    const ca = await Category.find({});
+    res.render("admin/products", {
+      admin: req.session.admin,
+      product: products,
+      ca,
+      currentPage: page,
+      totalPages,
+    });
   } catch (err) {
-    console.log(err.message + "       product listed");
+    console.log(err.message + "        product dets showing page err");
   }
 };
 
-// product add page
-const productAdd = async (req, res) => {
+/**
+ * @desc Render Add Product Page
+ */
+const getCreateProductPage = async (req, res) => {
   try {
-    const category = await categoryModal.find({
+    const category = await Category.find({
       listed: true,
       isDeleted: false,
     });
@@ -54,8 +54,10 @@ const productAdd = async (req, res) => {
   }
 };
 
-//getting product details
-const getproduct = async (req, res) => {
+/**
+ * @desc Create Product
+ */
+const createProduct = async (req, res) => {
   try {
     let imgeArray = [];
     const images = req.files;
@@ -66,13 +68,13 @@ const getproduct = async (req, res) => {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString("en-US", options);
 
-    const category_id = await categoryModal.findOne({
+    const category_id = await Category.findOne({
       name: req.body.category,
     });
 
     const tags = req.body.tags.split(",").map((tag) => tag.trim());
 
-    const product = await productModal.create({
+    const product = await Product.create({
       name: req.body.name,
       description: req.body.des,
       price: req.body.price,
@@ -86,46 +88,23 @@ const getproduct = async (req, res) => {
       actualPrice: req.body.price,
     });
 
-    res.redirect("/admin/product");
+    res.redirect("/admin/products");
   } catch (err) {
     console.log(err.message + "         product add");
   }
 };
 
-//product dets page rendering
-const productDetails = async (req, res) => {
+
+
+/**
+ * @desc Update Product
+ */
+const updateProduct = async (req, res) => {
   try {
-    const limit = 5;
-    const page = parseInt(req.query.page) || 1;
-    const skip = (page - 1) * limit;
-
-    const totalProductsCount = await productModal.countDocuments({});
-
-    const totalPages = Math.ceil(totalProductsCount / limit);
-
-    const products = await productModal
-      .find({ isDeleted: false })
-      .populate("category")
-      .skip(skip)
-      .limit(limit);
-    const ca = await categoryModal.find({});
-    res.render("admin/products", {
-      admin: req.session.admin,
-      product: products,
-      ca,
-      currentPage: page,
-      totalPages,
-    });
-  } catch (err) {
-    console.log(err.message + "        product dets showing page err");
-  }
-};
-
-//product edit page
-const editProduct = async (req, res) => {
-  try {
+      const productId = req.params.id;
+      console.log("productId: ",productId);
     const elementsToRemove = req.body.pe;
-    const currentProduct = await productModal.findOne({ _id: req.query.id });
+    const currentProduct = await Product.findOne({ _id: productId });
     
     if (elementsToRemove) {
       const imagesToDelete = Array.isArray(elementsToRemove) ? elementsToRemove : [elementsToRemove];
@@ -138,15 +117,15 @@ const editProduct = async (req, res) => {
         }
       }
       
-      await productModal.findOneAndUpdate(
-        { _id: req.query.id },
+      await Product.findOneAndUpdate(
+        { _id: productId },
         { $pull: { images: { $in: imagesToDelete } } },
         { new: true }
       );
     }
 
-    const updatedOldData = await productModal.findOne({ _id: req.query.id });
-    const category_id = await categoryModal.findOne({
+    const updatedOldData = await Product.findOne({ _id: productId });
+    const category_id = await Category.findOne({
       name: req.body.category,
     });
 
@@ -175,8 +154,8 @@ const editProduct = async (req, res) => {
 
     const newArray = imgeArray.filter(Boolean);
 
-    const done = await productModal.findOneAndUpdate(
-      { _id: req.query.id },
+    const done = await Product.findOneAndUpdate(
+      { _id: productId },
       {
         $set: {
           name: req.body.name,
@@ -188,8 +167,10 @@ const editProduct = async (req, res) => {
       }
     );
     if (done) {
-      res.redirect("/admin/product");
+        console.log("✅Updated")
+      res.redirect("/admin/products");
     } else {
+        console.log("❌Update failed")
       res.send("Update failed");
     }
   } catch (err) {
@@ -197,10 +178,13 @@ const editProduct = async (req, res) => {
   }
 };
 
-// dlt product
-const dltPro = async (req, res) => {
+/**
+ * @desc Delete Product
+ */
+const deleteProduct = async (req, res) => {
   try {
-    const product = await productModal.findOne({ _id: req.query.id });
+    const productId = req.params.id;
+    const product = await Product.findOne({ _id: productId });
     
     if (product && product.images) {
         for (const imgUrl of product.images) {
@@ -213,8 +197,8 @@ const dltPro = async (req, res) => {
         }
     }
 
-    const delPro = await productModal.findOneAndUpdate(
-      { _id: req.query.id },
+    const delPro = await Product.findOneAndUpdate(
+      { _id: productId },
       { $set: { isDeleted: true, images: [] } }
     );
 
@@ -229,11 +213,47 @@ const dltPro = async (req, res) => {
   }
 };
 
+/**
+ * @desc Toggle Product Status
+ */
+const toggleProductStatus = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const listedornot = await Product.findOne({ _id: productId });
+
+    if (listedornot.listed) {
+      const listtrue = await Product.findOneAndUpdate(
+        { _id: productId },
+        { $set: { listed: false } }
+      );
+
+      if (listtrue._id) {
+        const updatedData = await Product.findOne({ _id: listtrue._id });
+
+        res.send({ updatedData, blocked: "is blocked" });
+      }
+    } else {
+      const listtrue = await Product.findOneAndUpdate(
+        { _id: productId },
+        { $set: { listed: true } }
+      );
+
+      if (listtrue._id) {
+        const updatedData = await Product.findOne({ _id: listtrue._id });
+
+        res.send({ updatedData });
+      }
+    }
+  } catch (err) {
+    console.log(err.message + "       product listed");
+  }
+};
+
 module.exports = {
-  productAdd,
-  productDetails,
-  getproduct,
-  editProduct,
-  dltPro,
-  productListed,
+  getProducts,
+  getCreateProductPage,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  toggleProductStatus,
 };

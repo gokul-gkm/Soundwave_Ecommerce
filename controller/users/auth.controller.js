@@ -1,10 +1,10 @@
 const User = require("../../models/userSchema");
-const bcrypt = require("bcrypt");
 const hashPassword = require("../../utils/hashPassword");
 const { validationResult, check } = require("express-validator");
 const generateOTP = require("../../utils/generateOTP");
 const sendEmail = require("../../config/sendEmail");
 const userSchema = require("../../models/userSchema");
+const matchPassword = require("../../utils/matchPassword");
 
 /**
  * @desc    Render Login / Signup Page
@@ -115,13 +115,12 @@ const loginUser = async (req, res, next) => {
 
     const user = await User.findOne({ email, is_block: false , isDeleted: false});
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await matchPassword(password, user.password))) {
       req.session.err1 = "Email or password is incorrect";
       return res.redirect("/login");
     }
 
       req.session.login = user._id;
-      console.log(user)
       if (user.is_admin === 1) {
         req.session.admin = user;
         res.redirect("/admin");
@@ -137,7 +136,7 @@ const loginUser = async (req, res, next) => {
 
 /**
  * @desc    Check Email Exists
- * @route   POST /login
+ * @route   POST /check-email
  */
 const emailExist = async (req, res, next) => {
   try {

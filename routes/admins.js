@@ -44,13 +44,13 @@ router.post('/user', adminUserController.userBlock)
 router.get('/catagory',adminMidleware.adminRoute,adminCategoryController.category)
 
 // /categoryFetch 
-router.post('/categoryFetch',adminMidleware.adminRoute,adminCategoryController.categoryFetch)
+router.post('/categories/check',adminMidleware.adminRoute,adminCategoryController.categoryFetch)
 
 // catgory add page rendering
 router.get('/catagoryAdd',adminMidleware.adminRoute,adminCategoryController.catgoryAdd)
 
 // getting category dets
-router.post('/catgoryAdd',adminMidleware.adminRoute,adminCategoryController.getcatgoryAdd);
+router.post('/categories',adminMidleware.adminRoute,adminCategoryController.getcatgoryAdd);
 
 // remove category
 router.get('/Catremove',adminMidleware.adminRoute,adminCategoryController.categorydlt);
@@ -64,16 +64,16 @@ router.post('/activeOrnot', adminCategoryController.catgoryActive);
 router.get('/product',adminMidleware.adminRoute,adminProductController.productDetails)
 
 //product add route
-router.get('/productAdd',adminMidleware.adminRoute,adminProductController.productAdd);
+router.get('/products/new',adminMidleware.adminRoute,adminProductController.productAdd);
 
 //getting product
-router.post('/productAdd',upload.array('images', 3),adminProductController.getproduct)
+router.post('/products',upload.array('images', 3),adminProductController.getproduct)
 
 // edi route
 router.post('/edit',upload.fields([{ name: 'images0', maxCount: 1 },{ name: 'images1', maxCount: 1 },{ name: 'images2', maxCount: 1 }]),adminProductController.editProduct)
 
 //dlt product
-router.get('/dltProduct', adminProductController.dltPro);
+router.delete('/products/:id', adminProductController.dltPro);
 
 //list product
 router.post('/listedOrnot', adminProductController.productListed)
@@ -93,7 +93,7 @@ router.put('/removeorder',adminOrderController.removeorder)
 router.patch('/removeorder',adminOrderController.removeordeFull)
 
 //order view
-router.get('/ordersView/:id',adminMidleware.adminRoute,adminOrderController.orderView)
+router.get('/orders/:id',adminMidleware.adminRoute,adminOrderController.orderView)
 
 
 //peyment chart fetching
@@ -123,18 +123,18 @@ router.post('/coupenEdit/:id', upload.array('images'), adminCoupenController.cou
 router.get('/offer', adminMidleware.adminRoute, adminOfferController.offerPage);
 
 //add offer get
-router.get('/addOffer', adminMidleware.adminRoute, adminOfferController.addOfferPage);
+router.get('/offers/new', adminMidleware.adminRoute, adminOfferController.addOfferPage);
 
 //offer creating post
 router.post('/offer', adminOfferController.offerCreating);
 
 router.put('/offer/:id', adminOfferController.offerProductAdd)
 
-router.put('/offer/catOffer/:catId', adminOfferController.offerCategoryAdd)
+router.put('/offers/:catId/categories', adminOfferController.offerCategoryAdd)
 
-router.get('/offerProduct/:id', adminMidleware.adminRoute, adminOfferController.offerProduct);
+router.get('/offers/:id/products', adminMidleware.adminRoute, adminOfferController.offerProduct);
 
-router.get('/offerCategory/:id', adminMidleware.adminRoute, adminOfferController.offerCategory);
+router.get('/offers/:id/categories', adminMidleware.adminRoute, adminOfferController.offerCategory);
 
 //offer edit get
 router.get('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.offerEdit);
@@ -143,7 +143,7 @@ router.get('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.off
 router.post('/offeredit/:id', adminMidleware.adminRoute, adminOfferController.getOfferEdit);
 
 //offerRemove
-router.get('/offerRemove/:id', adminMidleware.adminRoute, adminOfferController.offerRemove);
+router.get('/offers/remove/:id', adminMidleware.adminRoute, adminOfferController.offerRemove);
 
 /************Report************/
 

@@ -113,7 +113,7 @@
 														</button>
 														<!-- End .custom-checkbox -->
 
-														<a href="/forgetPassword" class="forgot-link">Forgot Your Password?</a>
+														<a href="/forget-password" class="forgot-link">Forgot Your Password?</a>
 													</div><!-- End .form-footer -->
 										</form>
 
@@ -198,7 +198,7 @@
 			const input = document.querySelector('#register-email');
 			const submit = document.querySelector('.submit');
 				function emailChecking(e) {
-					fetch('login', {
+					fetch('/check-email', {
 						method: 'POST',
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ payload: e.value })

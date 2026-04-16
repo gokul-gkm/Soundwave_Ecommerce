@@ -1,23 +1,23 @@
 const router = require("express").Router();
-const adminUserController = require("../../controller/admin/adminUserController");
+const adminUserController = require("../../controller/admin/user.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 
 /**
- * @route   GET /users
+ * @route   GET /admin/users
  * @desc    Get All Users
  */
-router.get("/users", adminMiddleware.adminRoute, adminUserController.users);
+router.get("/users", adminMiddleware.adminRoute, adminUserController.getUsers);
 
 /**
- * @route   GET /userRemove
+ * @route   GET /admin/users/:id
  * @desc    Remove User
  */
-router.get("/userRemove", adminMiddleware.adminRoute, adminUserController.userRemove);
+router.delete("/users/:id", adminMiddleware.adminRoute, adminUserController.deleteUser);
 
 /**
- * @route   POST /user
+ * @route   POST /admin/users/:id/block
  * @desc    Block/Unblock User
  */
-router.post("/user", adminUserController.userBlock);
+router.post("/users/:id/block", adminUserController.toggleUserBlock);
 
 module.exports = router;

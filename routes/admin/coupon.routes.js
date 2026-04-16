@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const couponController = require("../../controller/admin/adminCoupenController");
+const couponController = require("../../controller/admin/coupon.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 const multer = require("multer");
 const { storage } = require("../../config/cloudinary");
@@ -7,27 +7,27 @@ const { storage } = require("../../config/cloudinary");
 const upload = multer({ storage });
 
 /**
- * @route   GET /coupon
+ * @route   GET /coupons
  * @desc    Get Coupon Page
  */
-router.get("/coupen", adminMiddleware.adminRoute, couponController.coupenPage);
+router.get("/coupons", adminMiddleware.adminRoute, couponController.getCouponsPage);
 
 /**
- * @route   POST /coupon
+ * @route   POST /coupons
  * @desc    Add Coupon
  */
-router.post("/coupen", upload.array("images"), couponController.addCoupen);
+router.post("/coupons", upload.array("images"), couponController.createCoupon);
 
 /**
- * @route   DELETE /coupon/:id
+ * @route   DELETE /coupons/:id
  * @desc    Delete Coupon
  */
-router.delete("/coupenRemove/:id", couponController.coupenRemove);
+router.delete("/coupons/:id", couponController.deleteCoupon);
 
 /**
- * @route   POST /coupon/:id
+ * @route   POST /coupons/:id
  * @desc    Edit Coupon
  */
-router.post("/coupenEdit/:id", upload.array("images"), couponController.coupenEdit);
+router.post("/coupons/:id", upload.array("images"), couponController.updateCoupon);
 
 module.exports = router;

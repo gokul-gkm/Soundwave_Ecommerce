@@ -1,41 +1,43 @@
 const router = require("express").Router();
-const orderController = require("../../controller/admin/adminOrderController");
+const orderController = require("../../controller/admin/order.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 
 /**
  * @route   GET /orders
  * @desc    Get All Orders
  */
-router.get("/orders", adminMiddleware.adminRoute, orderController.order);
+router.get("/orders", adminMiddleware.adminRoute, orderController.getOrders);
 
 /**
- * @route   PUT /orderStatus
- * @desc    Update Order Status
- */
-router.put("/orderStatus", orderController.orderProstatus);
-
-/**
- * @route   PUT /removeorder
- * @desc    Remove Product from Order
- */
-router.put("/removeorder", orderController.removeorder);
-
-/**
- * @route   PATCH /removeorder
- * @desc    Remove Entire Order
- */
-router.patch("/removeorder", orderController.removeordeFull);
-
-/**
- * @route   GET /ordersView/:id
+ * @route   GET /orders/:id
  * @desc    Get Order Details
  */
-router.get("/ordersView/:id", adminMiddleware.adminRoute, orderController.orderView);
+router.get("/orders/:id", adminMiddleware.adminRoute, orderController.getOrderById);
+
 
 /**
- * @route   POST /returnManage
+ * @route   PATCH /orders/:orderId/items/:productId
+ * @desc    Update Order Status
+ */
+router.patch("/orders/:orderId/items/:productId", orderController.updateOrderItemStatus);
+
+/**
+ * @route   PUT /orders/:orderId/items/:productId
+ * @desc    Remove Product from Order
+ */
+router.delete("/orders/:orderId/items/:productId", orderController.removeOrderItem);
+
+/**
+ * @route   PATCH /orders/:orderId
+ * @desc    Remove Entire Order
+ */
+router.delete("/orders/:orderId", orderController.deleteOrder);
+
+
+/**
+ * @route   POST /orders/:orderId/returns
  * @desc    Manage Return Requests
  */
-router.post("/returnManage", orderController.returnManaging);
+router.post("/orders/:orderId/returns", orderController.handleReturnRequest);
 
 module.exports = router;

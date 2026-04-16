@@ -1,89 +1,92 @@
 const router = require("express").Router();
-const orderController = require("../../controller/users/userOrderController");
+const orderController = require("../../controller/users/order.controller");
+const walletController = require("../../controller/users/wallet.controller");
+const reviewController = require("../../controller/users/review.controller");
+const paymentController = require("../../controller/users/payment.controller");
 const userMiddleware = require("../../middleware/userMiddleware");
 
 /**
- * @route   GET /checkoutPage
+ * @route   GET /checkout
  * @desc    Render Checkout Page
  */
-router.get("/checkoutPage", userMiddleware.userbloack, userMiddleware.user, orderController.checkoutPage);
+router.get("/checkout", userMiddleware.userbloack, userMiddleware.user, orderController.getCheckoutPage);
 
 /**
- * @route   GET /order
+ * @route   GET /orders
  * @desc    Get User Orders
  */
-router.get("/order", userMiddleware.userbloack, userMiddleware.user, orderController.orderDetails);
+router.get("/orders", userMiddleware.userbloack, userMiddleware.user, orderController.getOrders);
 
 /**
- * @route   GET /orderView/:id
- * @desc    Get Order Details by ID
- */
-router.get("/orderView/:id", userMiddleware.userbloack, userMiddleware.user, orderController.orderView);
-
-/**
- * @route   PUT /editOrder
+ * @route   PUT /orders/cancel
  * @desc    Cancel Order
  */
-router.put("/editOrder", orderController.cancelOrder);
+router.put("/orders/cancel", orderController.cancelOrderItem);
 
 /**
- * @route   PUT /returnOrder
+ * @route   PUT /orders/return
  * @desc    Return Order
  */
-router.put("/returnOrder", orderController.returnOrder);
+router.put("/orders/return", orderController.returnOrderItem);
 
 /**
- * @route   GET /success
+ * @route   GET /orders/success
  * @desc    Render Order Success Page
  */
-router.get("/success", userMiddleware.userbloack, userMiddleware.user, orderController.success);
+router.get("/orders/success", userMiddleware.userbloack, userMiddleware.user, orderController.getOrderSuccessPage);
 
 /**
- * @route   POST /success
+ * @route   POST /orders
  * @desc    Handle Successful Order Placement
  */
-router.post("/success", orderController.postSucces);
+router.post("/orders", orderController.createOrder);
 
 /**
- * @route   POST /razor
+ * @route   GET /orders/:id
+ * @desc    Get Order Details by ID
+ */
+router.get("/orders/:id", userMiddleware.userbloack, userMiddleware.user, orderController.getOrderById);
+
+/**
+ * @route   POST /payments/razorpay
  * @desc    Handle Razorpay Payment
  */
-router.post("/razor", orderController.razor);
+router.post("/payments/razorpay", paymentController.createRazorpayOrder);
 
 /**
- * @route   POST /failedpayment
+ * @route   POST /payments/failure
  * @desc    Handle Payment Failure
  */
-router.post("/failedpayment", orderController.razorFailure);
+router.post("/payments/failure", paymentController.handlePaymentFailure);
 
 /**
- * @route   POST /failedPaymentRetry
+ * @route   POST /payments/retry
  * @desc    Retry Failed Payment
  */
-router.post("/failedPaymentRetry", orderController.failedPaymentRetry);
+router.post("/payments/retry", paymentController.retryPayment);
 
 /**
- * @route   POST /changeStatusRetry
+ * @route   POST /payments/retry-status
  * @desc    Update Order Status After Retry
  */
-router.post("/changeStatusRetry", orderController.changeStatusRetry);
+router.post("/payments/retry-status", paymentController.updateRetryStatus);
 
 /**
- * @route   GET /walletHistory
+ * @route   GET /wallet
  * @desc    Get User Wallet History
  */
-router.get("/walletHistory", userMiddleware.userbloack, userMiddleware.user, orderController.walletHistory);
+router.get("/wallet", userMiddleware.userbloack, userMiddleware.user, walletController.getWalletHistory);
 
 /**
  * @route   GET /invoice/:id
  * @desc    Download Invoice by Order ID
  */
-router.get("/invoice/:id", orderController.invoice);
+router.get("/invoice/:id", orderController.downloadInvoice);
 
 /**
- * @route   POST /submit-review/:proId
+ * @route   POST /reviews/:proId
  * @desc    Submit Product Review
  */
-router.post("/submit-review/:proId", orderController.reviewPost);
+router.post("/reviews/:proId", reviewController.createReview);
 
 module.exports = router;

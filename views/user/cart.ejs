@@ -86,7 +86,7 @@
 
                                         <div class="cart-bottom">
                                             <div class="cart-discount">
-                                                <form action="/coupenCode/<%=locals.login  %>" method="post">
+                                                <form action="/coupons/apply" method="post">
                                                     <div class="input-group">
                                                         <input type="text" name="id"  class="form-control" required
                                                             placeholder="coupon code" oninput="check(this)">
@@ -148,7 +148,7 @@
                                                 </tbody>
                                             </table><!-- End .table table-summary -->
                                             <% if(locals.cartCount > 0){ %>
-                                            <a href="/checkoutPage"
+                                            <a href="/checkout"
                                                 class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
                                                 CHECKOUT</a>
                                             <% } else { %>
@@ -189,15 +189,15 @@
                     }
                 }
 
-                function stock(e,price,i,id){
-                    const Tprice= document.getElementById(`price${i}`)
+                function stock(e,price,productId,id){
+                    const Tprice= document.getElementById(`price${productId}`)
                     const Total= document.getElementById(`total`)
                     const sub= document.getElementById(`sub-total`)
                   
-                   fetch('/cartUpdate',{
+                   fetch('/cart-update',{
                     method: 'PUT',
 						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ quantity: e.value,id,i })
+						body: JSON.stringify({ quantity: e.value,id,productId })
                    }).then(res=>res.json()).then(data=>{
                     if(data.su){
                         Tprice.textContent=`₹${e.value*price}`;
@@ -214,7 +214,7 @@
                     const sub= document.getElementById(`sub-total`)
                   
                     const cartDet= document.getElementById(`c${proid}`)
-                    fetch('/cartremove',{
+                    fetch('/cart',{
                     method: 'delete',
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({proid,id,tot})

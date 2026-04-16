@@ -25,10 +25,10 @@
                   <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between ">
                       <h4 class="card-title">offer product adding Status</h4>
-                      <a href="/admin/offer" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">back to offer</a>
+                      <a href="/admin/offers" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">back to offer</a>
                     </div>
                     <div class="table-responsive">
-                        <form action="/admin/offer" method="post">
+                        <form action="/admin/offers" method="post">
                       <table class="table">
                         <thead>
                           <tr>
@@ -78,7 +78,7 @@
         console.log('add');
         const add=e.checked?true:false
         console.log(add);
-        fetch(`/admin/offer/${offerId}`,{
+        fetch(`/admin/offers/${offerId}/products`,{
             method:'put',
             headers:{ "Content-Type": "application/json" },
             body:JSON.stringify({id,add,offer})

@@ -34,7 +34,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="tab-orders-link" href="/order">Orders</a>
+              <a class="nav-link" id="tab-orders-link" href="/orders">Orders</a>
             </li>
 
             <li class="nav-item">
@@ -50,9 +50,9 @@
               <a
                 class="nav-link"
                 id="tab-account-link"         
-                href="/coupen"
+                href="/coupon"
                 aria-selected="false"
-                >Coupens</a
+                >Coupons</a
               >
             </li>
             <li class="nav-item">
@@ -89,7 +89,7 @@
                 <div class=" gap-5">
                   <p>Wallet :₹<%= locals.walletAmount  %></p>
                   <% if(locals.wallet1) { %>
-                  <a class=" btn btn-outline-dark" style="margin-left: 1rem;" href="/walletHistory">
+                  <a class=" btn btn-outline-dark" style="margin-left: 1rem;" href="/wallet">
                     Wallet History<i class=" ri-history-line"></i></a>
                     <% } %>
                 </div>
@@ -182,7 +182,7 @@
               <button type="button" class="btn-close btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              <form action="/editProfile?userId=<%= user._id %>" method="post" id="editProfileForm" class="px-5" enctype="application/x-www-form-urlencoded">
+              <form action="/profile?userId=<%= user._id %>" method="post" id="editProfileForm" class="px-5" enctype="application/x-www-form-urlencoded">
                   <div class="mb-3">
                       <label for="userName" class="col-form-label">Name</label>
                       <input type="text" class="form-control" name="name" id="userName" value="<%= user.name %>">
@@ -305,7 +305,7 @@ function submitEditProfileForm(id) {
 
 
     // Send a POST request to the server
-    fetch(`/editProfile?userId=${id}`, {
+    fetch(`/profile?userId=${id}`, {
         method: 'POST',
         // body: formData
         headers: {
@@ -479,7 +479,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', submitC
 
     function editProfile(id,name,email){
       let editForm= document.getElementById('editProfileForm');
-      editForm.action = `/editProfile?id=${id}`;
+      editForm.action = `/profile?id=${id}`;
       // userName.value = name;
       // userEmail.value = email;
 

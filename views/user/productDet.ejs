@@ -124,7 +124,7 @@
                                                     </div><!-- End .product-nav -->
                                                 </div><!-- End .details-filter-row -->
                                                 
-                                                <form action="/addcart?id=<%=productDet._id %>&user=<%=locals.login  %>" method="post">
+                                                <form action="/cart?id=<%=productDet._id %>&user=<%=locals.login  %>" method="post">
                                                     <div class="details-filter-row details-row-size">
                                                         <label for="qty">Qty:</label>
                                                         <div class="product-details-quantity">
@@ -276,7 +276,7 @@
                                     <div class="product product-7 text-center">
                                         <figure class="product-media">
                                             <span class="product-label label-new">New</span>
-                                            <a href="/product?proId=<%=e._id  %>">
+                                            <a href="/product/<%=e._id  %>">
                                                 <img src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>" alt="Product image"
                                                     class="product-image">
                                             </a>
@@ -424,7 +424,7 @@
       if (user === "false") {
         window.location.href = "/login";
       } else {
-        fetch("/addToWishlist", {
+        fetch("/wishlist", {
           method: "post",
           headers: { "Content-type": "application/json" },
           body: JSON.stringify({ id, user, q }),

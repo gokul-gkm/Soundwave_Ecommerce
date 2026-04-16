@@ -1,35 +1,35 @@
 const router = require("express").Router();
-const cartController = require("../../controller/users/userCartController");
+const cartController = require("../../controller/users/cart.controller");
 const userMiddleware = require("../../middleware/userMiddleware");
 
 /**
  * @route   GET /cart
  * @desc    Get User Cart Page
  */
-router.get("/cart", userMiddleware.userbloack, userMiddleware.user, cartController.cart);
+router.get("/cart", userMiddleware.userbloack, userMiddleware.user, cartController.renderCartPage);
 
 /**
- * @route   PUT /addcart
+ * @route   PUT /cart
  * @desc    Add Item to Cart (API)
  */
-router.put("/addcart", cartController.addcart);
+router.put("/cart", cartController.addToCart);
 
 /**
- * @route   POST /addcart
+ * @route   POST /cart
  * @desc    Add Item to Cart (Form Submission)
  */
-router.post("/addcart", cartController.addcartPost);
+router.post("/cart", cartController.addToCartFromForm);
 
 /**
- * @route   PUT /cartUpdate
+ * @route   PUT /cart-update
  * @desc    Update Cart Item Quantity
  */
-router.put("/cartUpdate", cartController.cartEdit);
+router.put("/cart-update", cartController.updateCartItem);
 
 /**
- * @route   DELETE /cartremove
+ * @route   DELETE /cart
  * @desc    Remove Item from Cart
  */
-router.delete("/cartremove", cartController.cartRemove);
+router.delete("/cart", cartController.removeCartItem);
 
 module.exports = router;

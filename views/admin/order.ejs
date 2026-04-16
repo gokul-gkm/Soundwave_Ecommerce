@@ -159,8 +159,8 @@
       select.classList.add('badge-outline-success');
     }
 
-  fetch('/admin/orderStatus', {
-  method: 'PUT',
+  fetch(`/admin/orders/${id}/items/${proId}`, {
+  method: 'PATCH',
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ val:e.value,id,proId})
 
@@ -169,8 +169,8 @@
   function removeorder(id,pro){
     const tr = document.getElementById(`c${id}`)
     
-    fetch('/admin/removeorder', {
-  method: 'PUT',
+    fetch(`/admin/orders/${id}/items/${pro}`, {
+  method: 'DELETE',
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ id ,pro})
 
@@ -190,7 +190,7 @@ const orderId = document.getElementById('oderId').textContent
 
 function acceptReturn(){
     console.log("accept fetch")
-    fetch(`/admin/returnManage?id=${orderId}` , {method : 'POST'})
+    fetch(`/admin/orders/${orderId}/returns` , {method : 'POST'})
     
 }
 </script>

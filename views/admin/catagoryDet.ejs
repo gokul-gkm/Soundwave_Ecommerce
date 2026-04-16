@@ -24,7 +24,7 @@
                   <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between ">
                       <h4 class="card-title">category </h4>
-                      <a href="/admin/catagoryAdd" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">Add category</a>
+                      <a href="/admin/categories/new" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">Add category</a>
                     </div>
                     <div class="table-responsive">
                       <table class="table">
@@ -97,8 +97,8 @@
         // Display a confirmation dialog before proceeding
         if (confirm('Are you sure you want to remove this category?')) {
             // Send an AJAX request to delete the user
-            fetch('/admin/Catremove?id=' + catId, {
-                method: 'GET',
+            fetch('/admin/categories/' + catId, {
+                method: 'DELETE',
             })
             .then(response => response.json())
             .then(data => {
@@ -123,8 +123,8 @@ function active(id) {
 const status = document.getElementById(`status${id}`)
 const btn = document.getElementById(`b${id}`)
 
-fetch('/admin/activeOrnot', {
-  method: 'POST',
+fetch(`/admin/categories/${id}/status`, {
+  method: 'PATCH',
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ payload: id})
 

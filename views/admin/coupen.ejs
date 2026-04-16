@@ -8,12 +8,12 @@
           <div class="row">
             <input type="text" hidden oninput="from2(this)" name="" id="">
             <input type="text" hidden oninput="to2(this)" name="" id="">
-            <% if( coupen.length==0) {%>
+            <% if( coupon.length==0) {%>
               <div class="col-md-6 col-xl-4 grid-margin stretch-card">
                 <div class="card" style="border-radius: 15px;">
-                  <form id="myform" action="/admin/coupen" method="post" enctype="multipart/form-data">
+                  <form id="myform" action="/admin/coupons" method="post" enctype="multipart/form-data">
                     <div class="card-body">
-                      <h4 class="card-title">Add coupen+</h4>
+                      <h4 class="card-title">Add coupon+</h4>
 
                       <% for(let i=0;i<1;i++) {%>
                         <label for="images<%=i  %>"
@@ -116,13 +116,13 @@
                 </div>
               </div>
               <% }else{ %>
-                <% coupen.forEach((e,j)=>{ %>
+                <% coupon.forEach((e,j)=>{ %>
                   <% if( j==0) {%>
                     <div class="col-md-6 col-xl-4 grid-margin stretch-card">
                       <div class="card" style="border-radius: 15px;">
-                        <form id="myform" action="/admin/coupen" method="post" enctype="multipart/form-data">
+                        <form id="myform" action="/admin/coupons" method="post" enctype="multipart/form-data">
                           <div class="card-body">
-                            <h4 class="card-title">Add coupen+</h4>
+                            <h4 class="card-title">Add coupon+</h4>
 
                             <% for(let i=0;i<1;i++) {%>
                               <label for="images<%=i  %>"
@@ -227,7 +227,7 @@
                     <% } %>
                       <div id="c<%=e._id%>" class="col-md-6 col-xl-4 grid-margin stretch-card">
                         <div class="card hh" id="hh<%=e._id  %>" style="border-radius: 15px;">
-                          <form action="/admin/coupen" method="post" enctype="multipart/form-data">
+                          <form action="/admin/coupons" method="post" enctype="multipart/form-data">
                             <div class="card-body">
                               <h4 class="card-title">
                                 <%= e.name %>
@@ -353,9 +353,9 @@
       const old = card.innerHTML;
 
       card.innerHTML = `  <div class="card" style="border-radius: 15px;">
-                        <form id="myform" action="/admin/coupenEdit/${id}" method="post" enctype="multipart/form-data">
+                        <form id="myform" action="/admin/coupons/${id}" method="post" enctype="multipart/form-data">
                           <div class="card-body">
-                            <h4 class="card-title">edit coupen</h4>
+                            <h4 class="card-title">edit coupon</h4>
 
                            
                               <label for="images${i+1}"
@@ -500,7 +500,7 @@ document.getElementById(`can${id}`).addEventListener('click',()=>{
         confirmButtonText: "Yes, delete it!"
       }).then((result) => {
         if (result.isConfirmed) {
-          fetch(`/admin/coupenRemove/${id}`, { method: 'delete' }).then(res => res.json()).then(data => {
+          fetch(`/admin/coupons/${id}`, { method: 'delete' }).then(res => res.json()).then(data => {
             if (data.set) {
               document.getElementById(`c${id}`).remove()
               Swal.fire({

@@ -1,11 +1,14 @@
-const orderModal = require("../../models/orders");
+const Order = require("../../models/orders");
 
-//year chart fetching
+/**
+ * @desc    Get Yearly Chart Data
+ * @route   PUT /year
+ */
 const year = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
 
-    const year = await orderModal.aggregate([
+    const year = await Order.aggregate([
       {
         $match: {
           orderDate: {
@@ -46,13 +49,15 @@ const monthNames = [
   "December",
 ];
 
-//monthly chart
-
+/**
+ * @desc    Get Monthly Chart Data
+ * @route   PUT /monthly
+ */
 const monthlySales = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
 
-    const monthlyData = await orderModal.aggregate([
+    const monthlyData = await Order.aggregate([
       {
         $match: {
           orderDate: {

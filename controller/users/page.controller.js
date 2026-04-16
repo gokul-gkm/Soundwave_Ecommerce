@@ -1,32 +1,32 @@
 const { StatusCodes } = require("http-status-codes");
-const categoryModel = require("../../models/catagory");
-const productModel = require("../../models/products");
+const Category = require("../../models/catagory");
+const Product = require("../../models/products");
 const { getCartCount, getWishlistCount } = require("../../utils/count");
 
 /**
  * @desc    Home Page
  */
-const homePage = async (req, res, next) => {
+const renderHomePage = async (req, res, next) => {
   const limit = 4;
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
   try {
-    const category = await categoryModel.find({ isDeleted: false, listed: true }); 
+    const category = await Category.find({ isDeleted: false, listed: true }); 
 
-    const totalProductsCount = await productModel.countDocuments({
+    const totalProductsCount = await Product.countDocuments({
       stock: { $gt: 0 },
       listed: true,
     });
 
     const totalPages = Math.ceil(totalProductsCount / limit);
 
-    const Allproduct = await productModel
+    const Allproduct = await Product
       .find({ stock: { $gt: 0 }, listed: true })
       .populate("category")
       .skip(skip)
       .limit(limit);
       
-    const catCount = await productModel.aggregate([
+    const catCount = await Product.aggregate([
       {
          $group: {
            _id: "$category", 
@@ -88,7 +88,7 @@ const homePage = async (req, res, next) => {
  */
 const aboutPage = async (req, res, next) => {
   try {
-    const categories = await categoryModel.find({ isDeleted: false, listed: true });
+    const categories = await Category.find({ isDeleted: false, listed: true });
     res.render("user/about", { category: categories });
   } catch (error) {
     next(error)
@@ -100,7 +100,7 @@ const aboutPage = async (req, res, next) => {
  */
 const notFoundPage = async (req, res) => {
   try {
-      const category = await categoryModel.find({ isDeleted: false, listed: true });
+      const category = await Category.find({ isDeleted: false, listed: true });
       if (req.session.login) {
           res.render('user/404', { login: req.session.login , category})
       }
@@ -113,7 +113,7 @@ const notFoundPage = async (req, res) => {
 };
 
 module.exports = {
-  homePage,
+  renderHomePage,
   aboutPage,
   notFoundPage
 };

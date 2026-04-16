@@ -1,41 +1,41 @@
 const router = require("express").Router();
-const categoryController = require("../../controller/admin/adminCategoryController");
+const categoryController = require("../../controller/admin/category.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 
 /**
- * @route   GET /category
+ * @route   GET /categories
  * @desc    Get Category Page
  */
-router.get("/catagory", adminMiddleware.adminRoute, categoryController.category);
+router.get("/categories", adminMiddleware.adminRoute, categoryController.getCategories);
 
 /**
- * @route   POST /categoryFetch
+ * @route   POST /categories/check
  * @desc    Fetch Categories
  */
-router.post("/categoryFetch", adminMiddleware.adminRoute, categoryController.categoryFetch);
+router.post("/categories/check", adminMiddleware.adminRoute, categoryController.checkCategoryExists);
 
 /**
- * @route   GET /categoryAdd
+ * @route   GET /categories/new
  * @desc    Render Add Category Page
  */
-router.get("/catagoryAdd", adminMiddleware.adminRoute, categoryController.catgoryAdd);
+router.get("/categories/new", adminMiddleware.adminRoute, categoryController.getAddCategoryPage);
 
 /**
- * @route   POST /categoryAdd
+ * @route   POST /admin/categories
  * @desc    Add New Category
  */
-router.post("/catgoryAdd", adminMiddleware.adminRoute, categoryController.getcatgoryAdd);
+router.post("/categories", adminMiddleware.adminRoute, categoryController.createCategory);
 
 /**
- * @route   GET /categoryRemove
+ * @route   GET /admin/categories/:id
  * @desc    Delete Category
  */
-router.get("/Catremove", adminMiddleware.adminRoute, categoryController.categorydlt);
+router.delete("/categories/:id", adminMiddleware.adminRoute, categoryController.deleteCategory);
 
 /**
- * @route   POST /categoryStatus
+ * @route   POST /admin/categories/:id/status
  * @desc    Activate/Deactivate Category
  */
-router.post("/activeOrnot", categoryController.catgoryActive);
+router.patch("/categories/:id/status", categoryController.toggleCategoryStatus);
 
 module.exports = router;

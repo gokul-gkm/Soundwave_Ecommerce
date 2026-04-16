@@ -1,11 +1,13 @@
-const offerSchema = require("../../models/offer");
-const productModal = require("../../models/products");
-const categoryModal = require("../../models/catagory");
-const { category } = require("./adminCategoryController");
+const Offer = require("../../models/offer");
+const Product = require("../../models/products");
+const Category = require("../../models/catagory");
 
-const offerPage = async (req, res) => {
+/**
+ * @desc Get Offers Page
+ */
+const getOffers  = async (req, res) => {
   try {
-    const offer = await offerSchema.find({});
+    const offer = await Offer.find({});
     res.render("admin/offer", {
       admin: req.session.admin,
       offer,
@@ -16,24 +18,30 @@ const offerPage = async (req, res) => {
   }
 };
 
-const addOfferPage = async (req, res) => {
+/**
+ * @desc Render Create Offer Page
+ */
+const getCreateOfferPage  = async (req, res) => {
   try {
     res.render("admin/addOffer", {
       admin: req.session.admin,
-      creat: "offer",
+      creat: "offers",
       offers: true,
     });
   } catch (err) {}
 };
 
-const offerCreating = async (req, res) => {
+/**
+ * @desc Create Offer 
+ */
+const createOffer = async (req, res) => {
   try {
-    const offerCreate = await offerSchema.create({
+    const offerCreate = await Offer.create({
       name: req.body.name,
       offer: req.body.offer,
     });
     if (offerCreate) {
-      res.redirect("/admin/offer");
+      res.redirect("/admin/offers");
     } else {
       res.send("Something issue there. offer didn't created");
     }
@@ -42,12 +50,15 @@ const offerCreating = async (req, res) => {
   }
 };
 
-const offerEdit = async (req, res) => {
+/**
+ * @desc Render Edit Offer Page
+ */
+const getEditOfferPage = async (req, res) => {
   try {
-    const data = await offerSchema.findOne({ _id: req.params.id });
+    const data = await Offer.findOne({ _id: req.params.id });
     res.render("admin/addOffer", {
       admin: req.session.admin,
-      edit: "offeredit",
+      edit: "offers/edit",
       data,
       id: data._id,
       offers: true,
@@ -56,45 +67,55 @@ const offerEdit = async (req, res) => {
     console.log(err.message + "offer Edit page");
   }
 };
-const getOfferEdit = async (req, res) => {
+
+/**
+ * @desc Update Offer
+ */
+const updateOffer = async (req, res) => {
   try {
     const { name, offer } = req.body;
-    const data = await offerSchema.findOneAndUpdate(
+    const data = await Offer.findOneAndUpdate(
       { _id: req.params.id },
       { $set: { name, offer } }
     );
-    res.redirect("/admin/offer");
+    res.redirect("/admin/offers");
   } catch (err) {
     console.log(err.message + "getofferEdit");
   }
 };
 
-const offerRemove = async (req, res) => {
+/**
+ * @desc Delete Offer
+ */
+const deleteOffer = async (req, res) => {
   try {
-    const products = await productModal.find({ offer: req.params.id });
+    const products = await Product.find({ offer: req.params.id });
     products.forEach(async (e) => {
-      await productModal.findOneAndUpdate(
+      await Product.findOneAndUpdate(
         { _id: e._id },
         { $unset: { offer: "" }, $set: { price: e.actualPrice } }
       );
     });
-    const done = await offerSchema.findOneAndDelete({ _id: req.params.id });
-    res.redirect("/admin/offer");
+    const done = await Offer.findOneAndDelete({ _id: req.params.id });
+    res.redirect("/admin/offers");
   } catch (err) {
     console.log(err.message + "offer Remove");
   }
 };
 
-const offerProduct = async (req, res) => {
+/**
+ * @desc Get Offer Products
+ */
+const getOfferProducts = async (req, res) => {
   try {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalProductsCount = await productModal.countDocuments({});
+    const totalProductsCount = await Product.countDocuments({});
     const totalPages = Math.ceil(totalProductsCount / limit);
     
-    const offer = await offerSchema.findOne({ _id: req.params.id });
-    const product = await productModal.find({}).skip(skip).limit(limit);
+    const offer = await Offer.findOne({ _id: req.params.id });
+    const product = await Product.find({}).skip(skip).limit(limit);
 
     res.render("admin/offerProduct", {
       admin: req.session.admin,
@@ -110,17 +131,19 @@ const offerProduct = async (req, res) => {
   }
 };
 
-
-const offerCategory = async (req, res) => {
+/**
+ * @desc Get Offer Category
+ */
+const getOfferCategory = async (req, res) => {
   try {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalCatCount = await categoryModal.countDocuments({});
+    const totalCatCount = await Category.countDocuments({});
     const totalPages = Math.ceil(totalCatCount / limit);
 
-    const offer = await offerSchema.findOne({ _id: req.params.id });
-    const category = await categoryModal.find({}).skip(skip).limit(limit);
+    const offer = await Offer.findOne({ _id: req.params.id });
+    const category = await Category.find({}).skip(skip).limit(limit);
 
     res.render("admin/offerCategory", {
       admin: req.session.admin,
@@ -136,21 +159,24 @@ const offerCategory = async (req, res) => {
   }
 };
 
-const offerProductAdd = async (req, res) => {
+/**
+ * @desc Toggle Product Offer
+ */
+const toggleProductOffer  = async (req, res) => {
   try {
-    await offerSchema.findOne({ _id: req.params.id });
+    await Offer.findOne({ _id: req.params.id });
     if (req.body.add) {
-      const data = await productModal.findOne({ _id: req.body.id });
+      const data = await Product.findOne({ _id: req.body.id });
       const offerPrice = ((data.price / 100) * (100 - req.body.offer)).toFixed(
         2
       );
-      await productModal.findOneAndUpdate(
+      await Product.findOneAndUpdate(
         { _id: req.body.id },
         { $set: { offer: req.params.id, price: offerPrice } }
       );
     } else {
-      const data = await productModal.findOne({ _id: req.body.id });
-      await productModal.findOneAndUpdate(
+      const data = await Product.findOne({ _id: req.body.id });
+      await Product.findOneAndUpdate(
         { _id: req.body.id },
         { $unset: { offer: 1 }, $set: { price: data.actualPrice } }
       );
@@ -160,29 +186,32 @@ const offerProductAdd = async (req, res) => {
   }
 };
 
-const offerCategoryAdd = async (req, res) => {
+/**
+ * @desc Toggle Category Offer
+ */
+const toggleCategoryOffer = async (req, res) => {
   try {
     const { id: categoryId, offer, add } = req.body;
     const offerPercentage = parseInt(req.body.offer);
 
-    const products = await productModal.find({ category: categoryId });
-    await offerSchema.findOne({ _id: req.params.catId });
+    const products = await Product.find({ category: categoryId });
+    await Offer.findOne({ _id: req.params.catId });
 
     if (req.body.add) {
 
       for (const product of products) {
         const offerPrice = product.price - (product.price * offerPercentage) / 100;
-        await productModal.findByIdAndUpdate(product._id, { $set: { offer: req.params.catId, price: offerPrice } });
+        await Product.findByIdAndUpdate(product._id, { $set: { offer: req.params.catId, price: offerPrice } });
       }
 
-      await categoryModal.findOneAndUpdate({_id: categoryId},{$set:{isOffer: true}})
+      await Category.findOneAndUpdate({_id: categoryId},{$set:{isOffer: true}})
       
     } else {
 
       for (const product of products) {
-        await productModal.findByIdAndUpdate(product._id, { $unset: { offer: 1 }, $set: { price: product.actualPrice } });
+        await Product.findByIdAndUpdate(product._id, { $unset: { offer: 1 }, $set: { price: product.actualPrice } });
       }
-      await categoryModal.findOneAndUpdate({_id: categoryId},{$set:{isOffer: false}})
+      await Category.findOneAndUpdate({_id: categoryId},{$set:{isOffer: false}})
      
     }
   } catch (err) {
@@ -190,17 +219,15 @@ const offerCategoryAdd = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
-  offerPage,
-  addOfferPage,
-  offerCreating,
-  offerEdit,
-  getOfferEdit,
-  offerRemove,
-  offerProduct,
-  offerCategory,
-  offerProductAdd,
-  offerCategoryAdd
+  getOffers,
+  getCreateOfferPage,
+  createOffer,
+  getEditOfferPage,
+  updateOffer,
+  deleteOffer,
+  getOfferProducts,
+  getOfferCategory,
+  toggleProductOffer,
+  toggleCategoryOffer,
 };

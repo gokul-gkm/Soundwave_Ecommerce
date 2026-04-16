@@ -89,7 +89,7 @@
                                             <div class="product product-7 text-center">
                                                 <figure class="product-media">
                                                     <span class="product-label label-new">New</span>
-                                                    <a href="/product?proId=<%=e._id  %>">
+                                                    <a href="/product/<%=e._id  %>">
                                                         <img src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>" alt="Product image"
                                                             class="product-image">
                                                         <img src="<%= (e.images[1] ? e.images[1] : e.images[0]).startsWith('http') ? (e.images[1] ? e.images[1] : e.images[0]) : '/productImage/' + (e.images[1] ? e.images[1] : e.images[0]) %>"
@@ -170,7 +170,7 @@
                         window.location.href = '/login'
                     } else {
 
-                        fetch('/addcart', {
+                        fetch('/cart', {
                             method: 'put',
                             headers: { 'Content-type': 'application/json' },
                             body: JSON.stringify({ id, user, q })
@@ -190,7 +190,7 @@
                   if (user === "false") {
                     window.location.href = "/login";
                   } else {
-                    fetch("/addToWishlist", {
+                    fetch("/wishlist", {
                       method: "post",
                       headers: { "Content-type": "application/json" },
                       body: JSON.stringify({ id, user, q }),

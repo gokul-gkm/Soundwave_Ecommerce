@@ -1,24 +1,26 @@
-const userSchema = require("../../models/userSchema");
-const productModal = require("../../models/products");
-const orderModal = require("../../models/orders");
+const User = require("../../models/userSchema");
+const Product = require("../../models/products");
+const Order = require("../../models/orders");
 
-//admin page rendering
-const adminPage = async (req, res) => {
+/**
+ * @desc    Get Admin Dashboard
+ */
+const getDashboard = async (req, res) => {
   try {
-    const orderList1 = await orderModal
+    const orderList1 = await Order
       .find({orderStatus: { $ne: "payment pending" }})
       .sort({ _id: -1 })
       .populate("userId")
       .limit(10);
 
-    const productCount = await productModal.find({});
-    const userCount = await userSchema.find({}).sort({ date: -1 });
+    const productCount = await Product.find({});
+    const userCount = await User.find({}).sort({ date: -1 });
     const recentUser = userCount.slice(0, 3);
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const startDate = new Date(currentDate.getFullYear(), currentMonth);
     const endDate = new Date(currentDate.getFullYear(), currentMonth + 1, 0);
-    const month = await orderModal.aggregate([
+    const month = await Order.aggregate([
       {
         $match: {
           orderDate: {
@@ -35,7 +37,7 @@ const adminPage = async (req, res) => {
       },
     ]);
     const monthSale = month.reduce((acc, val) => acc + val.sale, 0);
-    const orderList = await orderModal.aggregate([
+    const orderList = await Order.aggregate([
       {
         $group: {
           _id: "$peyment",
@@ -45,11 +47,11 @@ const adminPage = async (req, res) => {
       },
     ]);
 
-    const op = await orderModal
+    const op = await Order
       .find({ peyment: "online peyment", orderStatus: { $ne: "payment pending" } })
       .sort({ _id: -1 })
       .limit(1);
-    const cod = await orderModal
+    const cod = await Order
       .find({ peyment: "cod" })
       .sort({ _id: -1 })
       .limit(1);
@@ -58,7 +60,7 @@ const adminPage = async (req, res) => {
       count += e.totalCount;
     });
 
-    const most = await orderModal.aggregate([
+    const most = await Order.aggregate([
       {
         $unwind: "$OrderedItems",
       },
@@ -84,7 +86,7 @@ const adminPage = async (req, res) => {
         $limit: 5,
       },
     ]);
-    const daily = await orderModal.aggregate([
+    const daily = await Order.aggregate([
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
@@ -95,7 +97,7 @@ const adminPage = async (req, res) => {
         $sort: { _id: -1 },
       },
     ]);
-    const yearly = await orderModal.aggregate([
+    const yearly = await Order.aggregate([
       {
         $group: {
           _id: { $year: "$orderDate" },
@@ -107,7 +109,7 @@ const adminPage = async (req, res) => {
       },
     ]);
 
-    const topTenCategory = await orderModal.aggregate([
+    const topTenCategory = await Order.aggregate([
       {
         $unwind: "$OrderedItems",
       },
@@ -194,10 +196,12 @@ const adminPage = async (req, res) => {
   }
 };
 
-//peyment chart fetching
-const peyment = async (req, res) => {
+/**
+ * @desc    Get Payment Summary
+ */
+const getPaymentSummary  = async (req, res) => {
   try {
-    const orderList = await orderModal.aggregate([
+    const orderList = await Order.aggregate([
       {
         $group: {
           _id: "$peyment",
@@ -218,6 +222,6 @@ const peyment = async (req, res) => {
 };
 
 module.exports = {
-  adminPage,
-  peyment,
+  getDashboard,
+  getPaymentSummary,
 };

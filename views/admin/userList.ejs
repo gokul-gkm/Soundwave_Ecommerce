@@ -101,8 +101,8 @@
         
         if (confirm('Are you sure you want to remove this user?')) {
 
-            fetch('/admin/userRemove?id=' + userId, {
-                method: 'GET',
+            fetch('/admin/users' + userId, {
+                method: 'DELETE',
             })
             .then(response => response.json())
             .then(data => {
@@ -127,7 +127,7 @@ function is_block(id, block) {
   const status = document.getElementById(`status${id}`)
   const btn = document.getElementById(`b${id}`)
 
-  fetch('/admin/user', {
+  fetch(`/admin/users/${id}/block`, {
     method: 'POST',
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ payload: id, block })

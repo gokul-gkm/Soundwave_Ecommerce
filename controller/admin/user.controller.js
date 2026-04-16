@@ -1,15 +1,18 @@
-const userSchema = require("../../models/userSchema");
+const User = require("../../models/userSchema");
 
-//userList page rendering
-const users = async (req, res) => {
+/**
+ * @desc    Get All Users (Paginated)
+ * @route   GET /admin/users
+ */
+const getUsers = async (req, res) => {
   try {
     const limit = 4;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalProductsCount = await userSchema.countDocuments({ is_admin: 0 });
+    const totalProductsCount = await User.countDocuments({ is_admin: 0 });
     const totalPages = Math.ceil(totalProductsCount / limit);
 
-    const users = await userSchema
+    const users = await User
       .find({ is_admin: 0, isDeleted: false })
       .skip(skip)
       .limit(limit);
@@ -26,10 +29,13 @@ const users = async (req, res) => {
   }
 };
 
-// user remove
-const userRemove = async (req, res) => {
+/**
+ * @desc    Soft Delete User
+ * @route   DELETE /admin/users/:id
+ */
+const deleteUser = async (req, res) => {
   try {
-    const dltUser = await userSchema.findOneAndUpdate(
+    const dltUser = await User.findOneAndUpdate(
       { _id: req.query.id },
       { $set: { isDeleted: true } }
     );
@@ -48,30 +54,33 @@ const userRemove = async (req, res) => {
   }
 };
 
-//is block or not fetching
-const userBlock = async (req, res) => {
+/**
+ * @desc    Toggle Block / Unblock User
+ * @route   PATCH /admin/users/:id/block
+ */
+const toggleUserBlock  = async (req, res) => {
   try {
-    const blockornot = await userSchema.findOne({ _id: req.body.payload });
+    const blockornot = await User.findOne({ _id: req.body.payload });
 
     if (blockornot.is_block) {
-      const blockTrue = await userSchema.findOneAndUpdate(
+      const blockTrue = await User.findOneAndUpdate(
         { _id: req.body.payload },
         { $set: { is_block: false } }
       );
 
       if (blockTrue._id) {
-        const updatedData = await userSchema.findOne({ _id: blockTrue._id });
+        const updatedData = await User.findOne({ _id: blockTrue._id });
 
         return res.send({ updatedData, blocked: "is blocked" });
       }
     } else {
-      const blockTrue = await userSchema.findOneAndUpdate(
+      const blockTrue = await User.findOneAndUpdate(
         { _id: req.body.payload },
         { $set: { is_block: true } }
       );
 
       if (blockTrue._id) {
-        const updatedData = await userSchema.findOne({ _id: blockTrue._id });
+        const updatedData = await User.findOne({ _id: blockTrue._id });
 
         return res.send({ updatedData });
       }
@@ -82,7 +91,7 @@ const userBlock = async (req, res) => {
 };
 
 module.exports = {
-  users,
-  userRemove,
-  userBlock,
+  getUsers,
+  deleteUser,
+  toggleUserBlock,
 };

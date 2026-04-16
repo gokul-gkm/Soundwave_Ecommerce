@@ -1,17 +1,17 @@
 const router = require("express").Router();
-const couponController = require("../../controller/users/userCoupenController");
+const couponController = require("../../controller/users/coupon.controller");
 const userMiddleware = require("../../middleware/userMiddleware");
 
 /**
- * @route   GET /coupen
+ * @route   GET /coupon
  * @desc    Get Available Coupons Page
  */
-router.get("/coupen", userMiddleware.userbloack, userMiddleware.user, couponController.coupenView);
+router.get("/coupon", userMiddleware.userbloack, userMiddleware.user, couponController.getCouponsPage);
 
 /**
- * @route   POST /coupenCode/:id
+ * @route   POST /coupons/apply
  * @desc    Apply Coupon Code
  */
-router.post("/coupenCode/:id", couponController.coupenCode);
+router.post("/coupons/apply", couponController.applyCoupon);
 
 module.exports = router;

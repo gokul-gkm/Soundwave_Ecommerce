@@ -26,14 +26,14 @@
                   <a class="nav-link " id="tab-dashboard-link" href="/profile" aria-selected="false">Profile</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="tab-orders-link" href="/order" aria-selected="false">Orders</a>
+                  <a class="nav-link" id="tab-orders-link" href="/orders" aria-selected="false">Orders</a>
                 </li>
 
                 <li class="nav-item">
                   <a class="nav-link active" id="tab-address-link" href="/address" aria-selected="true">Addresses</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" id="tab-account-link" href="/coupen" aria-selected="false">Coupens</a>
+                  <a class="nav-link" id="tab-account-link" href="/coupon" aria-selected="false">Coupons</a>
                 </li>
                 <li class="nav-item">
                   <form action="/logout" method="post">
@@ -251,7 +251,7 @@
           })
         }
         function change(id,uid){
-          fetch('/Defaddress', {
+          fetch('/address/default', {
             method: 'PUT',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({  id,uid })

@@ -25,7 +25,7 @@
                             <a href="/cart">have coupen?</a> 
                         </div><!-- End .checkout-discount -->
                         <%let b=cart.products.map(e=> e.productId._id).join(','); %>
-                            <form action="/success?p=<%=cart._id  %> %>" id="myForm" method="post">
+                            <form action="/orders?p=<%=cart._id  %> %>" id="myForm" method="post">
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h2 class="checkout-title">address</h2><!-- End .checkout-title -->
@@ -274,7 +274,7 @@
 
                     const Radio = document.querySelector('input[name="peyment"]:checked');
                     if(Radio.value == 'online peyment'){
-                        fetch('/razor',{
+                        fetch('/payments/razorpay',{
                             method: 'POST',
                             headers: { 'Content-type': 'application/json'},
                             body: JSON.stringify({userId, amount})
@@ -301,7 +301,7 @@
                                 let razorpayObject = new Razorpay(options);
                                 razorpayObject.on('payment.failed',(response)=>{
                                     alert('payment failed');
-                                    form.action = "/failedpayment"
+                                    form.action = "/payments/failure"
                                     form.submit()
                                 });
                                 razorpayObject.open();

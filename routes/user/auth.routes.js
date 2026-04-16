@@ -7,7 +7,7 @@ const pageController = require("../../controller/users/page.controller");
  * @route   GET /
  * @desc    Render Home Page
  */
-router.get("/", userMiddleware.userbloack, pageController.homePage);
+router.get("/", userMiddleware.userbloack, pageController.renderHomePage);
 
 /**
  * @route   GET /login
@@ -28,10 +28,10 @@ router.post("/sign-in", authController.loginUser);
 router.post("/sign-up", authController.registerUser);
 
 /**
- * @route   POST /login
+ * @route   POST /check-email
  * @desc    Check Email Exists
  */
-router.post("/login", authController.emailExist);
+router.post("/check-email", authController.emailExist);
 
 /**
  * @route   POST /logout

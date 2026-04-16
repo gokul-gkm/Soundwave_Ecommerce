@@ -26,7 +26,7 @@
               <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
 
                 <li class="nav-item">
-                  <a class="nav-link active" id="tab-orders-link" href="/order" aria-selected="true">Back to Orders</a>
+                  <a class="nav-link active" id="tab-orders-link" href="/orders" aria-selected="true">Back to Orders</a>
                 </li>
 
               </ul>
@@ -87,7 +87,7 @@
                             <td class="product-col">
 
                               <figure class="product-media">
-                                <a href="/product?proId=<%= product.productId._id %>">
+                                <a href="/product/<%= product.productId._id %>">
                                   <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="Product image">
                                 </a>
                               </figure>
@@ -95,7 +95,7 @@
                             </td>
                             <td>
 
-                              <a href="/product?proId=<%= product.productId._id %>">
+                              <a href="/product/<%= product.productId._id %>">
                                 <%= product.productId.name %>
                               </a>
 
@@ -156,7 +156,7 @@
                             <div class="modal-content">
                               <span class="close text-right" onclick="closeModal()">&times;</span>
                               <h2>Add Review</h2>
-                              <form id="reviewForm" action="/submit-review/<%=product.productId._id %>" method="post">
+                              <form id="reviewForm" action="/reviews/<%=product.productId._id %>" method="post">
                                 <label for="rating">Rating:</label>
                                 <select id="rating" name="rating">
                                   <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
@@ -282,7 +282,7 @@ margin: 0.5rem 0;
   function failedPaymentRetry( ordId , amount){
     console.log(ordId , amount);
 
-    fetch('/failedPaymentRetry',{
+    fetch('/payments/retry',{
         method:"POST",
         headers:{'Content-type':'application/json'},
         body: JSON.stringify({ amount })
@@ -297,7 +297,7 @@ margin: 0.5rem 0;
                                     "order_id": `${data.order_id}`,
                                     "handler": function (response) {
                                         // Call the second fetch on successful payment
-                                        fetch('/changeStatusRetry', {
+                                        fetch('/payments/retry-status', {
                                             method: 'POST',
                                             headers: { 'Content-type': 'application/json' },
                                             body: JSON.stringify({ ordId })
@@ -346,7 +346,7 @@ margin: 0.5rem 0;
   
   // Function to open the modal
   function openModal(productId) {
-    document.getElementById('reviewForm').action = "/submit-review/" + productId;
+    document.getElementById('reviewForm').action = "/reviews/" + productId;
     modal.style.display = "block";
   }
   
@@ -394,7 +394,7 @@ margin: 0.5rem 0;
   function edit(id,orderId, user, price,cancelReason) {
     const status = document.getElementById(`st${id}`);
     const btn = document.getElementById(`bt${id}`);
-    fetch('/editOrder', {
+    fetch('/order/cancel', {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id,orderId, user,price,cancelReason})
@@ -460,7 +460,7 @@ if(cancelReason){
 
 function editReturnOrd(proId , ordId , price , reason){
 
-fetch('/returnOrder' , {method : 'put' , headers : {'Content-Type': 'application/json'} , body : JSON.stringify({proId , ordId , price , reason})})
+fetch('/orders/return' , {method : 'put' , headers : {'Content-Type': 'application/json'} , body : JSON.stringify({proId , ordId , price , reason})})
 
 .then(res => res.json())
 

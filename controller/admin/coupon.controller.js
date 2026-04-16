@@ -1,25 +1,33 @@
-const coupenSchema = require("../../models/coupen");
-const userSchema = require("../../models/userSchema");
+const Coupon = require("../../models/coupen");
+const User = require("../../models/userSchema");
 const coupenId = require("../../config/coupenId");
 const { cloudinary } = require("../../config/cloudinary");
 const { getPublicId } = require("../../utils/cloudinaryHelper");
 
-const coupenPage = async (req, res) => {
-  const coupen = (await coupenSchema.find({})) || [];
+/**
+ * @desc    Render Coupon Page
+ * @route   GET /admin/coupons
+ */
+const getCouponsPage  = async (req, res) => {
+  const coupon = (await Coupon.find({})) || [];
 
   res.render("admin/coupen", {
     admin: req.session.admin,
-    coupen,
+    coupon,
     coupens: true,
   });
 };
 
-const addCoupen = async (req, res) => {
+/**
+ * @desc    Create New Coupon
+ * @route   POST /admin/coupons
+ */
+const createCoupon  = async (req, res) => {
   try {
     let id = coupenId.generateRandomId();
     let flag = 0;
     while (flag == 1) {
-      let data = await coupenSchema.findOneAndDelete({ ID: id });
+      let data = await Coupon.findOneAndDelete({ ID: id });
 
       if (!data) {
         flag = 1;
@@ -30,7 +38,7 @@ const addCoupen = async (req, res) => {
     
     const imagePath = req.files && req.files[0] ? req.files[0].path : null;
 
-    const coupen1 = await coupenSchema.create({
+    const coupen1 = await Coupon.create({
       name: req.body.name,
       offer: req.body.offer,
       from: req.body.from,
@@ -41,7 +49,7 @@ const addCoupen = async (req, res) => {
 
     console.log(coupen1);
 
-    const coupenSet = await userSchema.updateMany(
+    const coupenSet = await User.updateMany(
       {},
       {
         $push: {
@@ -54,7 +62,7 @@ const addCoupen = async (req, res) => {
     );
 
     if (coupen1) {
-      res.redirect("/admin/coupen");
+      res.redirect("/admin/coupons");
     } else {
       res.send("something wrong");
     }
@@ -63,9 +71,13 @@ const addCoupen = async (req, res) => {
   }
 };
 
-const coupenRemove = async (req, res) => {
+/**
+ * @desc    Delete Coupon
+ * @route   DELETE /admin/coupons/:id
+ */
+const deleteCoupon = async (req, res) => {
   try {
-    const coupen = await coupenSchema.findOneAndDelete({ _id: req.params.id });
+    const coupen = await Coupon.findOneAndDelete({ _id: req.params.id });
     
     if (coupen && coupen.image) {
       try {
@@ -84,15 +96,18 @@ const coupenRemove = async (req, res) => {
   }
 };
 
-const coupenEdit = async (req, res) => {
+/**
+ * @desc    Update Coupon
+ * @route   PUT /admin/coupons/:id
+ */
+const updateCoupon  = async (req, res) => {
   try {
-    const coupen = await coupenSchema.findOne({ _id: req.params.id });
+    const coupen = await Coupon.findOne({ _id: req.params.id });
     let image = coupen.image;
 
     if (req.files && req.files[0]) {
       image = req.files[0].path;
       
-      // Delete old image from Cloudinary
       if (coupen.image) {
         try {
           const publicId = getPublicId(coupen.image);
@@ -103,7 +118,7 @@ const coupenEdit = async (req, res) => {
       }
     }
 
-    const coupenNew = await coupenSchema.findOneAndUpdate(
+    const coupenNew = await Coupon.findOneAndUpdate(
       { _id: req.params.id },
       {
         $set: {
@@ -117,7 +132,7 @@ const coupenEdit = async (req, res) => {
     );
 
     if (coupenNew) {
-      res.redirect("/admin/coupen");
+      res.redirect("/admin/coupons");
     } else {
       res.send("something issue");
     }
@@ -127,9 +142,9 @@ const coupenEdit = async (req, res) => {
 };
 
 module.exports = {
-  coupenPage,
-  addCoupen,
-  coupenRemove,
-  coupenEdit,
+  getCouponsPage,
+  createCoupon,
+  deleteCoupon,
+  updateCoupon,
 };
 

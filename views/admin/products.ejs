@@ -138,7 +138,7 @@
                   <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between ">
                       <h4 class="card-title">products</h4>
-                      <a href="/admin/productAdd" class="btn btn-primary text-white "
+                      <a href="/admin/products/new" class="btn btn-primary text-white "
                         style="outline: 0; border:0; margin-top: -1rem;">Add product</a>
                     </div>
 
@@ -259,8 +259,8 @@
         // Display a confirmation dialog before proceeding
         if (confirm('Are you sure you want to remove this product?')) {
             // Send an AJAX request to delete the user
-            fetch('/admin/dltProduct?id=' + proId, {
-                method: 'GET',
+            fetch('/admin/products/' + proId, {
+                method: 'DELETE',
             })
             .then(response => response.json())
             .then(data => {
@@ -286,7 +286,7 @@
     const btn = document.getElementById(`b${id}`)
 
 
-    fetch('/admin/listedOrnot', {
+    fetch(`/admin/products/${id}/status`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ payload: id})
@@ -346,7 +346,7 @@
 
     function edit(image, id, name, stock, price, catName,desc, tags) {
       let myForm = document.getElementById('myForm1');
-      myForm.action = `/admin/edit?id=${id}`;
+      myForm.action = `/admin/products/${id}`;
       const im = JSON.parse(image)
       name1.value = name
       price1.value = price

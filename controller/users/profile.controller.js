@@ -1,7 +1,7 @@
-const categoryModel = require("../../models/catagory");
+const Category = require("../../models/catagory");
 const { getCartCount, getWishlistCount } = require("../../utils/count");
-const wallet = require("../../models/wallet");
-const userSchema = require("../../models/userSchema");
+const Wallet = require("../../models/wallet");
+const User = require("../../models/userSchema");
 
 /**
  * @desc    Render Profile Page
@@ -13,7 +13,7 @@ const getProfile = async (req, res, next) => {
         "Your password has been changed successfully.";
     }
 
-    const category = await categoryModel.find({
+    const category = await Category.find({
       isDeleted: false,
       listed: true,
     });
@@ -23,9 +23,9 @@ const getProfile = async (req, res, next) => {
 
     
 
-    const user = await userSchema.findOne({ _id: req.session.login });
+    const user = await User.findOne({ _id: req.session.login });
 
-    const wallet1 = await wallet.findOne({ userId: req.session.login });
+    const wallet1 = await Wallet.findOne({ userId: req.session.login });
     const walletAmount = wallet1?.amount || 0;
 
     if (user.is_admin === 0) { 
@@ -56,7 +56,7 @@ const updateProfile = async (req, res, next) => {
 
     const { name, phone } = req.body;
 
-    const updatedUser = await userSchema.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       { $set: { name, phone } },
       { new: true }

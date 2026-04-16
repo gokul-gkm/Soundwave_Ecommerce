@@ -6,13 +6,13 @@
       <div class="row">
         <div class="circle position-absolute " style="background-color: rebeccapurple; filter: blur(136px); width: 13rem; height: 10rem; border-radius: 50%; transform: translate(57rem, 23rem);"></div>
         <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589); filter: blur(136px); width: 13rem; height: 10rem; border-radius: 50%;"></div>
-        <a href="/admin/product" class="btn btn-outline-primary btn-rounded mb-3">← Back to products</a>
+        <a href="/admin/products" class="btn btn-outline-primary btn-rounded mb-3">← Back to products</a>
         <div class="col-12 grid-margin stretch-card">
           <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
             <div class="card-body">
               <h4 class="card-title">Add product</h4>
               <p class="card-description"> </p>
-              <form class="forms-sample" id="myForm" action="/admin/productAdd" method="post" enctype="multipart/form-data">
+              <form class="forms-sample" id="myForm" action="/admin/products" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                   <label for="exampleInputName1">Name</label>
                   <input type="text" class="text form-control text-white " name="name" style="color:white;" id="exampleInputName1" placeholder="Name" required>
@@ -96,7 +96,7 @@
                   <p id="err2" class="text-danger "></p>
                 </div>
                 <button type="submit" class="btn submit btn-primary mr-2">Submit</button>
-                <a href="/admin/product" class="btn btn-dark">Cancel</a>
+                <a href="/admin/products" class="btn btn-dark">Cancel</a>
               </form>
             </div>
           </div>

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const productController = require("../../controller/admin/adminProductController");
+const productController = require("../../controller/admin/product.controller");
 const adminMiddleware = require("../../middleware/adminMiddleware");
 const multer = require("multer");
 const { storage } = require("../../config/cloudinary");
@@ -7,47 +7,50 @@ const { storage } = require("../../config/cloudinary");
 const upload = multer({ storage });
 
 /**
- * @route   GET /product
+ * @route   GET /products
  * @desc    Get Product List
  */
-router.get("/product", adminMiddleware.adminRoute, productController.productDetails);
+router.get("/products", adminMiddleware.adminRoute, productController.getProducts);
 
 /**
- * @route   GET /productAdd
+ * @route   GET /products/new
  * @desc    Render Add Product Page
  */
-router.get("/productAdd", adminMiddleware.adminRoute, productController.productAdd);
+router.get("/products/new", adminMiddleware.adminRoute, productController.getCreateProductPage);
+
+
+
 
 /**
- * @route   POST /productAdd
+ * @route   POST /products
  * @desc    Add New Product
  */
-router.post("/productAdd", upload.array("images", 3), productController.getproduct);
+router.post("/products", upload.array("images", 3), productController.createProduct);
 
 /**
- * @route   POST /edit
+ * @route   POST /products/:id
  * @desc    Edit Product
  */
 router.post(
-  "/edit",
+  "/products/:id",
   upload.fields([
     { name: "images0", maxCount: 1 },
     { name: "images1", maxCount: 1 },
     { name: "images2", maxCount: 1 },
   ]),
-  productController.editProduct
+  productController.updateProduct
 );
 
 /**
- * @route   GET /dltProduct
+ * @route   DELETE /products/:id
  * @desc    Delete Product
  */
-router.get("/dltProduct", productController.dltPro);
+router.delete("/products/:id", productController.deleteProduct);
 
 /**
- * @route   POST /listedOrnot
+ * @route   POST /products/:id/status
  * @desc    Toggle Product Listing
  */
-router.post("/listedOrnot", productController.productListed);
+router.post("/products/:id/status", productController.toggleProductStatus);
 
 module.exports = router;

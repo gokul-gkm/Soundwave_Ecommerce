@@ -67,7 +67,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >
-                               <a href="/admin/ordersView/<%=elem._id  %>" class="btn bg-primary ">Details</a>
+                               <a href="/admin/orders/<%=elem._id  %>" class="btn bg-primary ">Details</a>
 
                                 <i class="ri-delete-bin-3-line" onclick="removeorder('<%= elem._id %>')">
                                 </i>
@@ -96,8 +96,8 @@
   function removeorder(id){
     const tr = document.getElementById(`c${id}`)
     
-    fetch('/admin/removeorder', {
-  method: 'PATCH',
+    fetch(`/admin/orders/${id}`, {
+  method: 'DELETE',
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ id })
 

@@ -166,7 +166,7 @@
                 <div class="product product-7 text-center">
                   <figure class="product-media">
                     <span class="product-label label-new">New</span>
-                    <a href="/product?proId=<%=e._id  %>">
+                    <a href="/product/<%=e._id  %>">
                       <img
                         src="<%= e.images[0].startsWith('http') ? e.images[0] : '/productImage/' + e.images[0] %>"
                         alt="Product image"
@@ -288,7 +288,7 @@ function filterProducts() {
     console.log(colors);
 
     // Make AJAX request
-    fetch('/filter-products', {
+    fetch('/products/filter', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -331,7 +331,7 @@ function updateProductList(products) {
             <div class="product product-7 text-center">
                 <figure class="product-media">
                     <span class="product-label label-new">New</span>
-                    <a href="/product?proId=${product._id}">
+                    <a href="/product/${product._id}">
                         <img src="${product.images[0].startsWith('http') ? product.images[0] : '/productImage/' + product.images[0]}" alt="Product image" class="product-image" />
                         <img src="${(product.images[1] ? product.images[1] : product.images[0]).startsWith('http') ? (product.images[1] ? product.images[1] : product.images[0]) : '/productImage/' + (product.images[1] ? product.images[1] : product.images[0])}" alt="Product image" class="product-image-hover" />
                     </a>
@@ -404,7 +404,7 @@ document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(elemen
         console.log("hello");
         window.location.href = "/login";
       } else {
-        fetch("/addcart", {
+        fetch("/cart", {
           method: "put",
           headers: { "Content-type": "application/json" },
           body: JSON.stringify({ id, user, q }),
@@ -425,7 +425,7 @@ document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(elemen
       if (user === "false") {
         window.location.href = "/login";
       } else {
-        fetch("/addToWishlist", {
+        fetch("/wishlist", {
           method: "post",
           headers: { "Content-type": "application/json" },
           body: JSON.stringify({ id, user, q }),

@@ -1,17 +1,22 @@
-const categoryModal = require("../../models/catagory");
-const productModal = require("../../models/products");
+const Category = require("../../models/catagory");
+const Product = require("../../models/products");
 const reviews = require("../../models/reviews");
 const { getWishlistCount ,getCartCount} = require('../../utils/count');
 
-const products = async (req, res) => {
+/**
+ * @desc    Get All Products
+ * @route   GET /products
+ */
+const getProducts = async (req, res) => {
     const limit = 4;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
     const searchQuery = req.query.product_search;
     const sortOption = req.query.sortby || "newArrivals";
+    const userId = req.session.login;
   
     try {
-      const category = await categoryModal.find({
+      const category = await Category.find({
         isDeleted: false,
         listed: true,
       });
@@ -29,7 +34,7 @@ const products = async (req, res) => {
         query.name = { $regex: new RegExp(searchQuery, "i") };
       }
   
-      const totalProductsCount = await productModal.countDocuments(query);
+      const totalProductsCount = await Product.countDocuments(query);
   
       const totalPages = Math.ceil(totalProductsCount / limit);
   
@@ -62,7 +67,7 @@ const products = async (req, res) => {
           break;
       }
   
-      const Allproduct = await productModal
+      const Allproduct = await Product
         .find(query)
         .populate("category")
         .sort(sortCriteria)
@@ -70,11 +75,11 @@ const products = async (req, res) => {
         .limit(limit);
       
   
-      if (req.session.login) {
-        const cartCount = await getCartCount(req.session.login);
-        const wishlistCount = await getWishlistCount(req.session.login)
+      if (userId) {
+        const cartCount = await getCartCount(userId);
+        const wishlistCount = await getWishlistCount(userId)
         res.render("user/shop", {
-          login: req.session.login,
+          login: userId,
           Allproduct,
           category,
           currentPage: page,
@@ -101,21 +106,25 @@ const products = async (req, res) => {
     }
   };
   
-  const category = async (req, res) => {
+  /**
+   * @desc    Get Products by Category
+   * @route   GET /products/category
+  */
+  const getProductsByCategory = async (req, res) => {
     try {
       const catName = req.query.catName;
       const limit = 4;
       const page = parseInt(req.query.page) || 1;
       const skip = (page - 1) * limit;
   
-      const category = await categoryModal.find({
+      const category = await Category.find({
         isDeleted: false,
         listed: true,
       });
   
-      const categoryObj = await categoryModal.findOne({ name: catName });
+      const categoryObj = await Category.findOne({ name: catName });
   
-      const catProducts = await productModal
+      const catProducts = await Product
         .find({
           stock: { $gt: 0 },
           listed: true,
@@ -126,7 +135,7 @@ const products = async (req, res) => {
         .limit(limit)
         .exec();
   
-      const totalProductsCount = await productModal.countDocuments({
+      const totalProductsCount = await Product.countDocuments({
         stock: { $gt: 0 },
         listed: true,
         category: categoryObj._id,
@@ -134,12 +143,12 @@ const products = async (req, res) => {
       });
   
       const totalPages = Math.ceil(totalProductsCount / limit);
-  
-      if (req.session.login) {
-        const cartCount = await getCartCount(req.session.login);
-        const wishlistCount = await getWishlistCount(req.session.login)
+        const userId = req.session.login;
+      if (userId) {
+        const cartCount = await getCartCount(userId);
+        const wishlistCount = await getWishlistCount(userId)
         res.render("user/category", {
-          login: req.session.login,
+          login: userId,
           catProduct: catProducts,
           category: category,
           categoryName: categoryObj.name,
@@ -166,32 +175,37 @@ const products = async (req, res) => {
     }
 };
   
-const productDetails = async (req, res) => {
+/**
+ * @desc    Get Product Details
+ *  @route   GET /product/:id
+ */
+const getProductDetails = async (req, res) => {
     try {
-      if (req.query.proId) {
-        const category = await categoryModal.find({
+        const productId = req.params.id;
+      if (productId) {
+        const category = await Category.find({
           isDeleted: false,
           listed: true,
         });
   
         const review = await reviews
-          .find({ productId: req.query.proId })
+          .find({ productId })
           .populate("userId")
           .populate("productId");
   
-        const likeproduct = await productModal
+        const likeproduct = await Product
           .find({ stock: { $gt: 0 }, listed: true })
           .populate("category");
-  
-        if (req.session.login) {
-          const cartCount = await getCartCount(req.session.login);
-          const wishlistCount = await getWishlistCount(req.session.login)
-          const productDet = await productModal
-            .findOne({ _id: req.query.proId })
+        const userId = req.session.login;
+        if (userId) {
+          const cartCount = await getCartCount(userId);
+          const wishlistCount = await getWishlistCount(userId)
+          const productDet = await Product
+            .findOne({ _id: productId })
             .populate("category");
   
           res.render("user/productDet", {
-            login: req.session.login,
+            login: userId,
             productDet,
             category,
             review,
@@ -200,8 +214,8 @@ const productDetails = async (req, res) => {
             wishlistCount
           });
         } else {
-          const productDet = await productModal
-            .findOne({ _id: req.query.proId })
+          const productDet = await Product
+            .findOne({ _id: productId })
             .populate("category");
   
           res.render("user/productDet", {
@@ -219,13 +233,17 @@ const productDetails = async (req, res) => {
     }
 };
   
+/**
+ * @desc    Filter Products
+ * @route   POST /products/filter
+ */
 const filterProducts = async (req, res) => {
     try {
        const selectedCategories = req.body.categories;
        const selectedColors = req.body.colors;
        const page = parseInt(req.body.page) || 1; 
-       const limit = parseInt(req.body.limit) || 4; 
-  
+       const limit = parseInt(req.body.limit) || 4;
+       const userId = req.session.login;
    
        let query = {
          stock: { $gt: 0 },
@@ -243,14 +261,14 @@ const filterProducts = async (req, res) => {
    
        const skip = (page - 1) * limit;
    
-       const filteredProducts = await productModal.find(query)
+       const filteredProducts = await Product.find(query)
          .skip(skip)
          .limit(limit);
   
-       const totalProductsCount = await productModal.countDocuments(query);
+       const totalProductsCount = await Product.countDocuments(query);
        const totalPages = Math.ceil(totalProductsCount / limit);
-       const cartCount = await getCartCount(req.session.login);
-        const wishlistCount = await getWishlistCount(req.session.login)
+       const cartCount = await getCartCount(userId);
+       const wishlistCount = await getWishlistCount(userId);
        res.status(200).json({
          products:filteredProducts,
          page,
@@ -267,8 +285,8 @@ const filterProducts = async (req, res) => {
 };
   
 module.exports = {
-    products,
-    category,
-    productDetails,
+    getProducts,
+    getProductsByCategory,
+    getProductDetails,
     filterProducts,
   };

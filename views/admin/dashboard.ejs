@@ -321,7 +321,7 @@
                           </td>
                           <td>
                               <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >
-                             <a href="/admin/ordersView/<%=elem._id  %>" class="btn bg-primary ">Details</a>
+                             <a href="/admin/orders/<%=elem._id  %>" class="btn bg-primary ">Details</a>
                            
                           </div>
                             </td>
@@ -442,7 +442,7 @@
     const cod = document.getElementById('cod')
     const opTime = document.getElementById('op_time')
     const codTime = document.getElementById('cod_time')
-    fetch('/admin/peyment', {
+    fetch('/admin/payments/summary', {
       method: 'put',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({})

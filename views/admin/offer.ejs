@@ -25,11 +25,11 @@
                   <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between ">
                       <h4 class="card-title">offers</h4>
-                      <a href="/admin/addOffer" class="btn btn-primary text-white "
+                      <a href="/admin/offers/new" class="btn btn-primary text-white "
                         style="outline: 0; border:0; margin-top: -1rem;">Add offer</a>
                     </div>
                     <div class="table-responsive">
-                      <form action="/admin/offer" method="post">
+                      <form action="/admin/offers" method="post">
                         <table class="table">
                           <thead>
                             <tr>
@@ -57,11 +57,11 @@
                                 <td>
                                   <%=e.offer %>%
                                 </td>
-                                <td> <a href="/admin/offerProduct/<%=e._id  %>" class=" ">add product</a> </td>
-                                <td> <a href="/admin/offerCategory/<%=e._id  %>" class=" ">add category</a> </td>
+                                <td> <a href="/admin/offers/<%=e._id  %>/products" class=" ">add product</a> </td>
+                                <td> <a href="/admin/offers/<%=e._id  %>/categories" class=" ">add category</a> </td>
                                 <td>
                                   <div class="d-flex justify-content-start  align-items-center  " style="gap: 1rem;">
-                                    <h4><a href="/admin/offeredit/<%=e._id  %>" class="text-white text-decoration-none "><i
+                                    <h4><a href="/admin/offers/<%=e._id  %>/edit" class="text-white text-decoration-none "><i
                                           class="ri-edit-circle-fill" style="cursor: pointer;"></i></a></h4>
                                           <h4><a onclick="gg('<%=e._id%>')" class="text-white text-decoration-none "><i class="ri-delete-bin-line" style="cursor: pointer;"></i></a></h4>
                                   </div>
@@ -97,7 +97,7 @@
       }).then((result) => {
         if (result.isConfirmed){
 
-          window.location.href=`/admin/offerRemove/${id}`;
+          window.location.href=`/admin/offers/remove/${id}`;
         }})
     }
   </script>

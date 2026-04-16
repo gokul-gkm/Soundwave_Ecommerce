@@ -43,8 +43,8 @@ router.post("/sign-in", userController.getLogin);
 
 /********************* Password ***********************/
 
-//forgetPassword
-router.get("/forgetPassword", userMidleware.loginTrue, userController.forgetPassword);
+//forget-password
+router.get("/forget-password", userMidleware.loginTrue, userController.forgetPassword);
 
 //forgetpass fetching
 router.post("/forgetPass", userController.forgetemailExist);
@@ -53,7 +53,7 @@ router.post("/forgetPass", userController.forgetemailExist);
 router.post("/forget", userController.forget);
 
 // enter the new password and upadating
-router.get("/newPass", userController.newPass);
+router.get("/reset-password", userController.newPass);
 
 // get new pass
 router.post("/newPass", userController.getNewPass);
@@ -80,7 +80,7 @@ router.post('/filter-products', userProductController.filterProducts);
 router.get("/profile", userMidleware.userbloack, userMidleware.user, userController.profile);
 
 //Edit profile post
-router.post("/editProfile", userController.editProfile);
+router.post("/profile", userController.editProfile);
 
 
 /********************* Cart  ***********************/
@@ -89,16 +89,16 @@ router.post("/editProfile", userController.editProfile);
 router.get("/cart", userMidleware.userbloack, userMidleware.user, userCartController.cart);
 
 // add cart fetching
-router.put("/addcart", userCartController.addcart);
+router.put("/cart", userCartController.addcart);
 
 //add cart on post requuser
-router.post("/addcart", userCartController.addcartPost);
+router.post("/cart", userCartController.addcartPost);
 
 //cart stock increasing fetching
-router.put("/cartUpdate", userCartController.cartEdit);
+router.put("/cart-update", userCartController.cartEdit);
 
 //deleate cart
-router.delete("/cartremove", userCartController.cartRemove);
+router.delete("/cart", userCartController.cartRemove);
 
 /********************* wishlist ***********************/
 
@@ -106,10 +106,10 @@ router.delete("/cartremove", userCartController.cartRemove);
 router.get("/wishlist", userMidleware.userbloack, userMidleware.user, userWishlistController.wishlist);
 
 //add to wishlist post
-router.post("/addToWishList", userWishlistController.addToWishlist);
+router.post("/wishlist", userWishlistController.addToWishlist);
 
 //remove from wishlist
-router.delete("/wishlistremove", userWishlistController.wishlistRemove);
+router.delete("/wishlist", userWishlistController.wishlistRemove);
 
 /***************Address***************/
 
@@ -130,50 +130,50 @@ router.put("/Defaddress", userAddressController.Defaddress);
 
 /***************Order***************/
 
-router.get("/checkoutPage", userMidleware.userbloack, userMidleware.user, userOrderController.checkoutPage);
+router.get("/checkout", userMidleware.userbloack, userMidleware.user, userOrderController.checkoutPage);
 
 //  order det page rendering
 router.get("/order", userMidleware.userbloack, userMidleware.user, userOrderController.orderDetails);
 
 //  order det page rendering
-router.get("/orderView/:id", userMidleware.userbloack, userMidleware.user, userOrderController.orderView);
+router.get("/orders/:id", userMidleware.userbloack, userMidleware.user, userOrderController.orderView);
 
 //order canceling
-router.put("/editOrder", userOrderController.cancelOrder);
+router.put("/orders/cancel", userOrderController.cancelOrder);
 
 //  returnOrder (post)
-router.put('/returnOrder', userOrderController.returnOrder);
+router.put('/orders/return', userOrderController.returnOrder);
 
 // succes msg rendering
-router.get("/success", userMidleware.userbloack, userMidleware.user, userOrderController.success);
+router.get("/orders/success", userMidleware.userbloack, userMidleware.user, userOrderController.success);
 
 //succes post route
-router.post("/success", userOrderController.postSucces);
+router.post("/orders", userOrderController.postSucces);
 
 //razorpay
-router.post("/razor", userOrderController.razor);
+router.post("/payments/razorpay", userOrderController.razor);
 
-router.get("/walletHistory", userMidleware.userbloack, userMidleware.user, userOrderController.walletHistory);
+router.get("/wallet", userMidleware.userbloack, userMidleware.user, userOrderController.walletHistory);
 
 //invoice download
 router.get("/invoice/:id", userOrderController.invoice);
 
 //review
-router.post("/submit-review/:proId", userOrderController.reviewPost);
+router.post("/reviews/:proId", userOrderController.reviewPost);
 
-router.post("/failedpayment", userOrderController.razorFailure)
+router.post("/payments/failure", userOrderController.razorFailure)
 
-router.post('/failedPaymentRetry', userOrderController.failedPaymentRetry)
+router.post('/payments/retry', userOrderController.failedPaymentRetry)
 
-router.post('/changeStatusRetry',userOrderController.changeStatusRetry)
+router.post('/payments/retry-status',userOrderController.changeStatusRetry)
 
 /*****************Coupens***************** */
 
 //  order det page rendering
-router.get("/coupen", userMidleware.userbloack, userMidleware.user, userCoupenController.coupenView);
+router.get("/coupons", userMidleware.userbloack, userMidleware.user, userCoupenController.coupenView);
 
-//coupen code posting
-router.post("/coupenCode/:id", userCoupenController.coupenCode);
+//coupon code posting
+router.post("/coupons/apply", userCoupenController.coupenCode);
 
 //logout
 router.post("/logout", userController.logout);

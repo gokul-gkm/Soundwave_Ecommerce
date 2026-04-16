@@ -9,9 +9,9 @@ const userMiddleware = require("../../middleware/userMiddleware");
 router.get("/profile", userMiddleware.userbloack, userMiddleware.user, profileController.getProfile);
 
 /**
- * @route   POST /editProfile
+ * @route   POST /profile
  * @desc    Update User Profile Information
  */
-router.post("/editProfile", profileController.updateProfile);
+router.post("/profile", profileController.updateProfile);
 
 module.exports = router;
