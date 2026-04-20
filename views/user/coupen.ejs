@@ -18,76 +18,177 @@
 
 
             <section class="">
-                <div class="container-fluid  py-5 h-100 position-relative ">
-                    <div class="row d-flex    align-items-start  h-100" style="gap: 10rem;">
-                        <%- include('../layout/profileSidebar', { activePage: 'coupon' }) %>
-                        <aside class="col col-lg-8 mb-4 mb-lg-0">
-                            <div class="row w-100" style="gap: 2rem;">
-
-                                <div class="container">
-                                    <div class="row">
-                                        <% coupen.forEach((e,i)=>{%>
-                                            <div class="col-md-3" style="width: 30rem;">
-                                                <div class="banner" style='border-radius: 15px; '>
-                                                    <a href="#" style=" overflow: hidden;
-                            border-radius: 10px; height: 20rem;">
-                                                        <img 
-                                                            
-                                                            src="<%= e.coupenId.image.startsWith('http') ? e.coupenId.image : '/productImage/' + e.coupenId.image %>" 
-                                                            style="width: 100%; height: 100%; object-fit: cover;"
-                                                            alt="Banner">
-                                                    </a>
-
-                                                    <div class="banner-content text-white ">
-                                                        <h4 class="banner-subtitle  text-white "
-                                                            style='    text-shadow: -2px 0px 7px black'>
-                                                            <%=e.coupenId.name %>
-                                                        </h4>
-                                                        <h2 class="  text-white"
-                                                            style='    text-shadow: -2px 0px 7px black;   mix-blend-mode: difference !important;'>
-                                                            <%= e.coupenId.offer %>% offer
-                                                        </h2>
-                                                        <h4 class="banner-subtitle  text-white  text-body-emphasis  "
-                                                            style='    text-shadow: -2px 0px 7px black'><span
-                                                                class="bg-primary ">coupen Id:</span> <span
-                                                                style="background-color:transparent ;"
-                                                                class="bg-transparent  text-white">
-                                                                <input  style="background-color:transparent ; border: 0px !important; outline: 0px !important; color: #fff; pointer-events: none; cursor: none;"  type="text" id="<%= e.ID  %>"
-                                                                value="<%= e.ID  %> " name="" >
-                                                               
-                                                            </span></h4>
-                                                      
-                                                        <a  data-swal-toast-template="#my-template"
-                                                            onclick="copy(`<%= e.ID  %>`)"
-                                                            class="banner-link text-white " style="cursor: pointer;"> click,copy the code</a>
-                                                    </div><!-- End .banner-content -->
-                                                </div><!-- End .banner -->
-                                            </div><!-- End .col-md-6 -->
-                                            <% }) %>
-                                    </div>
-
+        <div class="container-fluid py-5 h-100 position-relative">
+            <div class="row d-flex align-items-start h-100 gy-4">
+                <aside class="col-lg-3 col-md-4 col-12">
+                    <%- include('../layout/profileSidebar', { activePage: 'coupon' }) %>
+                </aside>
+                
+                <aside class="col-lg-9 col-md-8 col-12 mb-4 mb-lg-0">
+                    <div class="w-100">
+                        <div class="row g-4 m-0">
+                            <% if (locals.coupen && coupen.length > 0) { %>
+                                <% coupen.forEach((e,i)=>{ %>
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-12">
+                                                <div class="amz-ticket">
+                                                    <!-- Left Side: Image & details -->
+                                                    <div class="ticket-left">
+                                                        <div class="ticket-img-wrapper">
+                                                            <img src="<%= e.coupenId.image.startsWith('http') ? e.coupenId.image : '/productImage/' + e.coupenId.image %>" alt="Coupon">
+                                                        </div>
+                                                        <div class="ticket-info">
+                                                            <h4 class="offer-title"><%= e.coupenId.offer %>% OFF</h4>
+                                                            <p class="offer-desc"><%= e.coupenId.name %></p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Right Side: Scratch Code -->
+                                                    <div class="ticket-right">
+                                                        <div class="scratch-container" id="scratch-container-<%= i %>">
+                                                            <div class="code-revealed" id="code-<%= i %>"><%= e.ID %></div>
+                                                            <canvas class="scratch-canvas" id="canvas-<%= i %>" width="160" height="60"></canvas>
+                                                        </div>
+                                                        <p class="text-muted small mt-2 text-center" style="font-size: 0.75rem;">Scratch to reveal & copy</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                 </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No coupons available right now.</h4>
                             </div>
-                        </aside>
+                        <% } %>
+                        </div>
                     </div>
-
-                </div>
-            </section>
+                </aside>
+            </div>
+        </div>
+    </section>
 
             <script>
-                function copy(id) {
-                    const fild = document.getElementById(`${id}`);
+                document.addEventListener("DOMContentLoaded", function() {
+                    const canvases = document.querySelectorAll('.scratch-canvas');
+                    canvases.forEach((canvas, index) => {
+                        const ctx = canvas.getContext('2d');
+                        const codeElement = document.getElementById('code-' + index);
+                        const codeText = codeElement.textContent.trim();
+                        let isDrawing = false;
+                        let isScratched = false;
 
-                    const g=fild.select();
-                    fild.setSelectionRange(0, 99999);
-                    document.execCommand('copy');
-                    Swal.fire({
+                        // Fill gold overlay
+                        ctx.fillStyle = '#c96';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
                         
-                  title: "succes",
-                  text: "code is copied "+fild.value,
-                  icon: "success"
+                        // Add subtle pattern/text
+                        ctx.font = "bold 14px Arial";
+                        ctx.fillStyle = "#ffffff";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("SCRATCH ME", canvas.width / 2, canvas.height / 2);
+
+                        function getPosition(e) {
+                            const rect = canvas.getBoundingClientRect();
+                            const scaleX = canvas.width / rect.width;
+                            const scaleY = canvas.height / rect.height;
+                            
+                            let clientX = e.clientX;
+                            let clientY = e.clientY;
+                            
+                            if(e.touches && e.touches.length > 0) {
+                                clientX = e.touches[0].clientX;
+                                clientY = e.touches[0].clientY;
+                            }
+                            
+                            return {
+                                x: (clientX - rect.left) * scaleX,
+                                y: (clientY - rect.top) * scaleY
+                            };
+                        }
+
+                        function scratch(x, y) {
+                            ctx.globalCompositeOperation = 'destination-out';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 15, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                        function startInteraction(e) {
+                            isDrawing = true;
+                            const pos = getPosition(e);
+                            scratch(pos.x, pos.y);
+                        }
+
+                        function moveInteraction(e) {
+                            if (!isDrawing) return;
+                            const pos = getPosition(e);
+                            scratch(pos.x, pos.y);
+                            checkScratchedPercent();
+                        }
+
+                        function endInteraction(e) {
+                            isDrawing = false;
+                        }
+
+                        canvas.addEventListener('mousedown', startInteraction);
+                        canvas.addEventListener('mousemove', moveInteraction);
+                        canvas.addEventListener('mouseup', endInteraction);
+                        canvas.addEventListener('mouseleave', endInteraction);
+                        
+                        // Optional touch support (Passive false to prevent scroll not standard here, so check bounds)
+                        canvas.addEventListener('touchstart', startInteraction, {passive: true});
+                        canvas.addEventListener('touchmove', moveInteraction, {passive: true});
+                        canvas.addEventListener('touchend', endInteraction);
+
+                        function checkScratchedPercent() {
+                            if(isScratched) return;
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const pixels = imageData.data;
+                            let transparentPixels = 0;
+                            
+                            for (let i = 3; i < pixels.length; i += 4) {
+                                if (pixels[i] === 0) transparentPixels++;
+                            }
+                            
+                            const totalPixels = pixels.length / 4;
+                            const clearedPercentage = (transparentPixels / totalPixels) * 100;
+                            
+                            if (clearedPercentage > 45) {
+                                isScratched = true;
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                canvas.style.display = 'none'; // hide canvas completely
+                                copyToClipboard(codeText);
+                            }
+                        }
+                    });
+
+                    function copyToClipboard(text) {
+                        if(navigator.clipboard && window.isSecureContext) {
+                            navigator.clipboard.writeText(text).then(() => {
+                                fireSwal(text);
+                            });
+                        } else {
+                            const temp = document.createElement("input");
+                            temp.value = text;
+                            document.body.appendChild(temp);
+                            temp.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(temp);
+                            fireSwal(text);
+                        }
+                    }
+
+                    function fireSwal(text) {
+                        Swal.fire({
+                            title: "Code Revealed!",
+                            text: "Coupon code copied: " + text,
+                            icon: "success",
+                            confirmButtonColor: "#c96",
+                            timer: 3000
+                        });
+                    }
                 });
-                }
             </script>
 
             <%- include('../layout/mobMenu.ejs') -%>
@@ -96,6 +197,113 @@
                     <style>
                         *::-webkit-scrollbar {
                             width: 0;
+                        }
+
+                        /* Ticket Layout */
+                        .amz-ticket {
+                            display: flex;
+                            background: #fff;
+                            border-radius: 12px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+                            overflow: hidden;
+                            position: relative;
+                            border: 1px solid #eaeaec;
+                            height: 100%;
+                            min-height: 140px;
+                        }
+                        .ticket-left {
+                            display: flex;
+                            flex: 65%;
+                            align-items: center;
+                            padding: 1.5rem 1rem;
+                            border-right: 2px dashed #d5d5d5;
+                            position: relative;
+                            background: #fafafa;
+                        }
+                        /* Cutout effect mimicking actual tickets */
+                        .ticket-left::after, .ticket-left::before {
+                            content: '';
+                            position: absolute;
+                            right: -12px;
+                            width: 24px;
+                            height: 24px;
+                            background: #fff; /* matching page body */
+                            border-radius: 50%;
+                            border: 1px solid #eaeaec;
+                            z-index: 2;
+                        }
+                        .ticket-left::after { top: -13px; border-top: none; border-left: none; border-right: none;}
+                        .ticket-left::before { bottom: -13px; border-bottom: none; border-left: none; border-right: none;}
+
+                        .ticket-img-wrapper {
+                            width: 80px;
+                            height: 80px;
+                            border-radius: 8px;
+                            overflow: hidden;
+                            flex-shrink: 0;
+                            margin-right: 15px;
+                            background: #fff;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                            border: 1px solid #eee;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        .ticket-img-wrapper img {
+                            max-width: 100%;
+                            max-height: 100%;
+                            object-fit: contain;
+                        }
+                        .ticket-info { display: flex; flex-direction: column; justify-content: center; }
+                        .offer-title { color: #c96; font-weight: 800; font-size: 1.5rem; margin-bottom: 5px; line-height: 1; }
+                        .offer-desc { color: #555; font-size: 0.95rem; margin-bottom: 0; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+                        .ticket-right {
+                            flex: 35%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 1rem;
+                            background: #fff;
+                        }
+                        .scratch-container {
+                            position: relative;
+                            width: 150px;
+                            height: 55px;
+                            border-radius: 6px;
+                            overflow: hidden;
+                            background: #fdfaf6;
+                            border: 2px dashed #c96;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: auto;
+                        }
+                        .code-revealed {
+                            font-size: 1.1rem;
+                            font-weight: bold;
+                            letter-spacing: 2px;
+                            color: #333;
+                            user-select: all;
+                            z-index: 1;
+                        }
+                        .scratch-canvas {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            z-index: 2;
+                            cursor: crosshair;
+                        }
+                        @media (max-width: 768px) {
+                            .amz-ticket { flex-direction: column; }
+                            .ticket-left { border-right: none; border-bottom: 2px dashed #d5d5d5; }
+                            .ticket-left::after, .ticket-left::before { right: auto; left: 50%; transform: translateX(-50%); }
+                            .ticket-left::after { bottom: -13px; top: auto; border: 1px solid #eaeaec; border-top: none; }
+                            .ticket-left::before { top: auto; bottom: auto; display: none; } /* simplify mobile cutout */
+                            .ticket-right { padding: 1.5rem 1rem; }
                         }
 
                         input[type="number"]::-webkit-inner-spin-button,

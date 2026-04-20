@@ -20,186 +20,134 @@
 
       <section class="">
         <div class="container-fluid  py-5 h-100 position-relative ">
-          <div class="row d-flex    align-items-start  h-100" style="gap: 3rem;">
-            <aside class="col-md-2 col-lg-3  ">
-              <!-- profile nave -->
+          <div class="row d-flex align-items-start h-100 gy-4">
+            <aside class="col-lg-3 col-md-4 col-12">
               <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-
                 <li class="nav-item">
-                  <a class="nav-link active" id="tab-orders-link" href="/orders" aria-selected="true">Back to Orders</a>
+                  <a class="nav-link active" id="tab-orders-link" href="/orders" aria-selected="true"><i class="icon-arrow-left"></i> Back to Orders</a>
                 </li>
-
               </ul>
-              <br>
-
-              <div class="card" style="border: .1rem solid #ebebeb !important; border-radius: 10px;">
-                <div class="address-container hh">        
-                  <article class="address-card" id="card">
-                     <div class="card-header">
-                      
-                       <h3 class="card-title">Shipping Address</h3>
-                       
-                     </div>
-                     <div class="card-body">
-                       <figure>
-                         <figcaption>
-                           <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> <%=order.deliveryAddress.name %></p>
-                           <p><i class="fas fa-city"></i> <strong>City:</strong> <%=order.deliveryAddress.city %></p>
-                           <p><i class="fas fa-map-marked-alt"></i> <strong>State:</strong> <%=order.deliveryAddress.state %></p>
-                           <p><i class="fas fa-map-pin"></i> <strong>Pincode:</strong> <%=order.deliveryAddress.pincode %></p>
-                         </figcaption>
-                       </figure>
-                     </div>
-                  </article>
-                
-                 </div>
-                <div class="card-body">
-
-                  
-                  
-                  <% if (order.orderStatus === 'delivered') { %>
-                    <a href="/invoice/<%= order._id %>" class="btn text-white text-capitalize bg-primary" style="cursor: pointer;">Download Invoice Bill</a>
-                <% } %>
-                </div>
-              </div>
-              
             </aside>
-            <aside class="col col-lg-6 mb-4 mb-lg-0">
-              <div class="row w-100" style="gap: 2rem;">
-                <div class="container">
-                  <table class="table table-wishlist table-mobile " style="width: 920px;">
-                    <thead>
-                      <tr>
-                        <th>Product</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Quantity </th>
-                        <th>Delivery </th>
-                        <th>Total Price</th>
-                        <th>Options</th>
-                      </tr>
-                    </thead>
 
-                    <tbody>
-                      <% if(locals.order) { %>
-                        <% order.OrderedItems.forEach((product, index)=>{ %>
-                          <tr>
-                            <td class="product-col">
-
-                              <figure class="product-media">
-                                <a href="/product/<%= product.productId._id %>">
-                                  <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="Product image">
-                                </a>
-                              </figure>
-
-                            </td>
-                            <td>
-
-                              <a href="/product/<%= product.productId._id %>">
-                                <%= product.productId.name %>
-                              </a>
-
-                              <!-- End .product -->
-                            </td>
-                            <td class="stock-col ms-3 ">₹<%=product.productId.price %>
-                            </td>
-                            <td class="stock-col"><span class="in-stock">
-                                <%=product.quantity %>
-                              </span></td>
-                            <td class="stock-col <%=product.orderProStatus=='canceled'? 'text-danger' :''%>" id="st<%=product.productId._id  %>">
-                              <%=product.orderProStatus%>
-                            </td>
-
-                            <td class="price-col">
-                              ₹<%=product.price %>
-                            </td>
-                            <td>
-                              <div class="d-flex align-items-center justify-content-between w-100">
-
-                                <% if(product.orderProStatus=='shipped' ){%>
-
-                                   <button type="submit"
-                                  onclick="cancel('<%=product.productId._id %>','<%=locals.order._id%>','<%=locals.login%>','<%=product.price %>')"
-                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
-                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
-                                  Cancel</button>
-                                  <% } else if(product.orderProStatus=='delivered') { %>
-
-                                    <button type="submit"
-                                  onclick="returnOrder('<%=product.productId._id %>','<%= locals.order._id %>' , '<%= product.price %>')"
-                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
-                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
-                                  Return</button>
-
-                                  <%}else{ %>
-                                    <button type="submit"
-                                  onclick="cancel('<%=product.productId._id %>', '<%=locals.order._id%>','<%=locals.login%>','<%=product.price %>')"
-                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96; pointer-events: none; opacity: .5;"
-                                  class="p-3 rounded-2  border-0 text-white " id="bt<%=product.productId._id  %>">
-                                  Cancel</button>
-
-                                    <%}%>
-
-                                    
-                              </div>
-                            </td>
-
-                            <% if(product.orderProStatus == 'delivered') {%>
-                              <td><button class="btn btn-outline-success" onclick="openModal('<%=product.productId._id %>')">Add Review</button></td>
-                              <% } %>
-
-                          </tr>
-
-                          <div id="myModal" class="modal">
-
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                              <span class="close text-right" onclick="closeModal()">&times;</span>
-                              <h2>Add Review</h2>
-                              <form id="reviewForm" action="/reviews/<%=product.productId._id %>" method="post">
-                                <label for="rating">Rating:</label>
-                                <select id="rating" name="rating">
-                                  <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
-                                  <option value="4">4 Stars ⭐⭐⭐⭐</option>
-                                  <option value="3">3 Stars ⭐⭐⭐</option>
-                                  <option value="2">2 Stars ⭐⭐</option>
-                                  <option value="1">1 Star  ⭐</option>
-                                </select><br><br>
-                                <label for="review">Review:</label><br>
-                                <textarea id="review" name="review" rows="4" cols="50" onclick="check(this)"></textarea><br><br>
-                                <button type="submit" id="submitReview" >Submit Review</button>
-                              </form>
-                            </div>
-                          
-                          </div>
-                          <% })} %>
-
-                    </tbody>
-                  </table>
-                  <% if(locals.order) {%>
-                    <div class="wishlist-share">
-                      <div class="social-icons social-icons-sm mb-2">
-                        <label class="social-label">Total:</label>
-                        ₹<%=locals.order.orderAmount %>
-                      </div><!-- End .soial-icons -->
-                    </div>
+            <aside class="col-lg-9 col-md-8 col-12 mb-4 mb-lg-0">
+              
+              <% if(locals.order) { %>
+              <!-- Order Header & Address Card -->
+              <div class="amz-card">
+                <div class="amz-card-header">
+                  <div class="amz-header-item">
+                    <span class="amz-header-label">Order Placed</span>
+                    <span class="amz-header-value"><%= order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'}) : 'N/A' %></span>
+                  </div>
+                  <div class="amz-header-item">
+                    <span class="amz-header-label">Total Amount</span>
+                    <span class="amz-header-value">₹<%= order.orderAmount %></span>
+                  </div>
+                  <div class="amz-header-item">
+                    <span class="amz-header-label">Order ID</span>
+                    <span class="amz-header-value">#<%= order._id %></span>
+                  </div>
+                  <div class="amz-header-item" style="align-items: flex-end; flex: 1;">
+                    <% if (order.orderStatus === 'delivered') { %>
+                      <a href="/invoice/<%= order._id %>" class="amz-btn amz-btn-secondary"><i class="icon-download"></i> Download Invoice</a>
                     <% } %>
+                    <% if(order.orderStatus == 'payment pending') { %>
+                      <button type="button" onclick="failedPaymentRetry('<%= order._id %>','<%= order.orderAmount %>')" class="amz-btn amz-btn-primary" id="retrybtn"><i class="icon-refresh"></i> Retry Payment</button>
+                    <% } %>
+                  </div>
                 </div>
-
-                <% if(locals.order) { %>
-
-                  <% if(order.orderStatus == 'payment pending') {%>
-                  <button type="button"
-                    onclick="failedPaymentRetry('<%= order._id %>','<%= order.orderAmount %>')"
-                                  style="border-radius: 5px; transition: all ease 0.5s; background-color: #c96;"
-                                  class="p-3 rounded-2  border-0 text-white col-md-3" id="retrybtn">
-                                  Retry payment</button>
-
-                  <% } %>
-                  <% } %>
-                
-
+                <div class="amz-card-body">
+                  <div class="amz-grid-2">
+                    <div class="amz-address-box">
+                      <h3>Shipping Address</h3>
+                      <p><strong><%= order.deliveryAddress.name %></strong></p>
+                      <p><%= order.deliveryAddress.state %>, <%= order.deliveryAddress.city %></p>
+                      <p>Pin: <%= order.deliveryAddress.pincode %></p>
+                    </div>
+                    <div class="amz-address-box">
+                      <h3>Order Status</h3>
+                      <span class="amz-item-status status-<%= order.orderStatus %>"><%= order.orderStatus %></span>
+                      <% if(order.coupen) { %>
+                        <p style="margin-top: 10px;"><strong>Coupon Applied:</strong> -<%= order.coupen %>% Off</p>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              <!-- Ordered Items List -->
+              <div class="amz-card">
+                <div class="amz-card-header" style="background:#fff; border-bottom:1px solid #eee;">
+                  <h3 style="margin:0; font-size:1.25rem; font-weight:700;">Items in this order</h3>
+                </div>
+                <div class="amz-card-body">
+                  <% order.OrderedItems.forEach((product, index) => { %>
+                    <div class="amz-item">
+                      <div class="amz-item-img-wrapper">
+                        <a href="/product/<%= product.productId._id %>">
+                          <img src="<%= product.productId.images[0].startsWith('http') ? product.productId.images[0] : '/productImage/' + product.productId.images[0] %>" alt="<%= product.productId.name %>">
+                        </a>
+                      </div>
+                      <div class="amz-item-details">
+                        <a href="/product/<%= product.productId._id %>" class="amz-item-title"><%= product.productId.name %></a>
+                        <div class="amz-item-price">₹<%= product.price %></div>
+                        <div class="amz-item-meta">Quantity: <strong><%= product.quantity %></strong></div>
+                        <div class="amz-item-meta">Original Price: ₹<%= product.productId.price %></div>
+                        
+                        <div class="amz-item-status status-<%= product.orderProStatus %>" id="st<%= product.productId._id %>">
+                          <%= product.orderProStatus %>
+                        </div>
+                      </div>
+                      <div class="amz-item-actions">
+                        <% if(product.orderProStatus == 'shipped' || product.orderProStatus == 'pending' || product.orderProStatus == 'processing') { %>
+                          <button type="button" class="amz-btn amz-btn-secondary" id="bt<%= product.productId._id %>"
+                            onclick="cancel('<%=product.productId._id %>','<%=locals.order._id%>','<%=locals.login%>','<%=product.price %>')">
+                            Cancel Item
+                          </button>
+                        <% } else if(product.orderProStatus == 'delivered') { %>
+                          <button type="button" class="amz-btn amz-btn-secondary" id="bt<%= product.productId._id %>"
+                            onclick="returnOrder('<%=product.productId._id %>', '<%= locals.order._id %>', '<%= product.price %>')">
+                            Return Item
+                          </button>
+                          <button type="button" class="amz-btn amz-btn-primary" onclick="openModal('<%=product.productId._id %>')">
+                            Write a Review
+                          </button>
+                        <% } else { %>
+                          <button type="button" class="amz-btn amz-btn-secondary disabled" id="bt<%= product.productId._id %>" disabled>
+                            Cancel Item
+                          </button>
+                        <% } %>
+                      </div>
+                    </div>
+
+                    <!-- Review Modal for this specific item -->
+                    <div id="myModal" class="modal">
+                      <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <h2>Add Review</h2>
+                        <form id="reviewForm" action="/reviews/<%=product.productId._id %>" method="post">
+                          <label for="rating">Rating:</label>
+                          <select id="rating" name="rating">
+                            <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
+                            <option value="4">4 Stars ⭐⭐⭐⭐</option>
+                            <option value="3">3 Stars ⭐⭐⭐</option>
+                            <option value="2">2 Stars ⭐⭐</option>
+                            <option value="1">1 Star ⭐</option>
+                          </select>
+                          <label for="review">Review:</label>
+                          <textarea id="review" name="review" rows="4" placeholder="What did you like or dislike about this product?" onclick="check(this)"></textarea>
+                          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                            <button type="button" class="amz-btn amz-btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button type="submit" id="submitReview" class="amz-btn amz-btn-primary">Submit Review</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <% } %>
+
             </aside>
           </div>
 

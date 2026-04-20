@@ -1,110 +1,278 @@
+/* ==============================================
+   Order Details Light Theme (#c96) CSS
+   ============================================== */
+
+.amz-card {
+    background: #fff;
+    border: 1px solid #eaeaec;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.amz-card-header {
+    background: #f7f7f8;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eaeaec;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.amz-header-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.amz-header-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.amz-header-value {
+    font-size: 0.95rem;
+    color: #222;
+    font-weight: 600;
+}
+
+.amz-card-body {
+    padding: 20px;
+}
+
+/* Item Specific Layout */
+.amz-item {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+}
+.amz-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.amz-item-img-wrapper {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f9f9f9;
+    border: 1px solid #f0f0f0;
+}
+.amz-item-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.amz-item-details {
+    flex: 1;
+    min-width: 200px;
+}
+.amz-item-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: inline-block;
+}
+.amz-item-title:hover {
+    color: #c96;
+}
+.amz-item-price {
+    font-size: 1.15rem;
+    color: #111;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.amz-item-meta {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 4px;
+}
+.amz-item-meta strong {
+    color: #333;
+}
+
+.amz-item-status {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-top: 8px;
+    text-transform: capitalize;
+}
+.status-delivered { background-color: #e6f4ea; color: #1e8e3e; border: 1px solid #ceead6;}
+.status-canceled { background-color: #fce8e6; color: #d93025; border: 1px solid #fad2cf;}
+.status-returned { background-color: #fce8e6; color: #d93025; border: 1px solid #fad2cf;}
+.status-shipped { background-color: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc;}
+.status-pending { background-color: #fef7e0; color: #f29900; border: 1px solid #fce8b2;}
+
+.amz-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+}
+
+/* Buttons */
+.amz-btn {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.amz-btn-primary {
+    background-color: #c96;
+    color: #fff;
+}
+.amz-btn-primary:hover {
+    background-color: #b85;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(204, 153, 102, 0.3);
+}
+.amz-btn-secondary {
+    background-color: #fff;
+    border-color: #d5d5d5;
+    color: #333;
+}
+.amz-btn-secondary:hover {
+    background-color: #f7f7f8;
+    border-color: #c96;
+    color: #c96;
+}
+.amz-btn:disabled, .amz-btn.disabled, button[style*="pointer-events: none"] {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #eee !important;
+    border-color: #ddd !important;
+    color: #888 !important;
+}
+
+/* Address Grid */
+.amz-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.amz-address-box {
+    margin-bottom: 0;
+}
+.amz-address-box h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #222;
+}
+.amz-address-box p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+/* Review Modal (Light Theme) */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.8); /* Darker background with opacity */
-   }
-   
-   /* Modal content */
-   .modal-content {
-    background-color: #f9f9f9; /* Light grey background */
-    margin: 15% auto; /* Center the modal vertically */
-    padding: 20px;
-    border: 1px solid #e0e0e0; /* Light grey border */
-    width: 60%; /* Set the width of the modal */
-    max-width: 400px; /* Maximum width of the modal */
-    position: relative; /* Ensure the modal content is positioned relatively */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); /* Shadow for depth */
-    animation: fadeIn 0.5s; /* Fade-in animation */
-   }
-   
-   /* Fade-in animation */
-   @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-   }
-   
-   /* Close button */
-   .close {
-    color: #888;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border: 1px solid #eaeaec;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    position: relative;
+    animation: slideDownFade 0.4s ease;
+}
+
+@keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 28px;
+    top: 15px;
+    right: 20px;
+    color: #999;
+    font-size: 24px;
     font-weight: bold;
     cursor: pointer;
-   }
-   
-   .close:hover,
-   .close:focus {
-    color: #555; /* Darker color on hover */
-    text-decoration: none;
-    cursor: pointer;
-   }
-   
-   /* Style form elements */
-   #reviewForm label {
+    transition: color 0.2s;
+    line-height: 1;
+}
+.close:hover { color: #c96; }
+
+.modal h2 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+#reviewForm label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold; /* Bold labels */
-    color: #333; /* Darker text color */
-   }
-   
-   #reviewForm select,
-   #reviewForm textarea {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+#reviewForm select,
+#reviewForm textarea {
     width: 100%;
-    padding: 10px; /* Increased padding for better appearance */
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0; /* Light grey border */
-    border-radius: 4px; /* Rounded corners */
-    box-sizing: border-box;
-    font-size: 16px; /* Adjust font size as needed */
-   }
-   
-   /* Custom styles for select box */
-   #reviewForm select {
-    background-color: #f8f8f8; /* Light grey background */
-    color: #333; /* Darker text color */
-   }
-   
-   /* Custom styles for textarea */
-   #reviewForm textarea {
-    resize: vertical; /* Allow vertical resizing only */
-    overflow: auto; /* Add scrollbar if content overflows */
-   }
-   
-   /* Hover effects */
-   #reviewForm select:hover,
-   #reviewForm textarea:hover {
-    border-color: #b3b3b3; /* Slightly darker border on hover */
-   }
-   
-   /* Focus effects */
-   #reviewForm select:focus,
-   #reviewForm textarea:focus {
-    border-color: #4caf50; /* Green border on focus */
-    outline: none; /* Remove default outline */
-   }
-   
-   /* Style submit button */
-   #submitReview {
-    background-color: #4caf50; /* Green */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
-    margin-top: 10px; /* Add some space above the button */
-    transition: background-color 0.3s ease; /* Smooth transition for hover */
-   }
-   
-   #submitReview:hover {
-    background-color: #45a049; /* Darker green when hovering */
-   }
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+#reviewForm select:focus,
+#reviewForm textarea:focus {
+    border-color: #c96;
+    box-shadow: 0 0 0 3px rgba(204, 153, 102, 0.15);
+    outline: none;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .amz-grid-2 { grid-template-columns: 1fr; }
+    .amz-item { flex-direction: column; }
+    .amz-item-actions { width: 100%; }
+    .amz-card-header { flex-direction: column; align-items: flex-start; }
+}
