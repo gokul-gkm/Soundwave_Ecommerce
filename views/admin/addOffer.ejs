@@ -3,71 +3,81 @@
 
     <%- include('../layout/adminnav.ejs') -%>
 
+      <link rel="stylesheet" href="/css/admin/addCategory.css">
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="col-12 grid-margin stretch-card">
-            <div class="circle position-absolute " style="background-color: rebeccapurple;
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-            transform: translate(57rem, 0rem);"></div>
-            <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589);
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-         "></div>
-            <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-              <div class="card-body">
-                <h4 class="card-title">offer</h4>
-                    <% const editOrCreat=locals.creat ?locals.creat:locals.edit; const name=locals.data?.name ?locals.data?.name:''; const offer=locals.data?.offer ?locals.data?.offer:'';  %>
-                    <%const id=locals.id ?locals.id:null;  %>
-                <form class="forms-sample" action="/admin/<%=editOrCreat%>/<%=id  %>" method="post" id="myForm">
-                  <div class="form-group">
-                    <label for="exampleInputName1">offer Name</label>
-                    <input value="<%=name  %>" type="text" class="form-control text-white text" oninput='check(this)' name="name"
-                      style="color:white;" id="exampleInputName1" placeholder="Name" required>
-                  </div>
-                  <p class="text-danger err"></p>
-                  <div class="form-group">
-                    <label for="exampleInputName1">offer</label>
-                    <div class="input-group mb-2 mr-sm-2">
+          <div class="pa-glass-container">
+            <div class="pa-glass-card">
+              <% const isEdit = locals.edit ? true : false; %>
+              <% const editOrCreat=locals.creat ? locals.creat : locals.edit; const name=locals.data?.name ? locals.data?.name : ''; const offer=locals.data?.offer ? locals.data?.offer : '';  %>
+              <% const id=locals.id ? locals.id : null;  %>
+              <h4 class="pa-card-title"><i class="mdi <%= isEdit ? 'mdi-pencil-circle-outline' : 'mdi-tag-plus' %>"></i> <%= isEdit ? 'Edit Offer' : 'Add New Offer' %></h4>
 
-                        <input value="<%=offer  %>" type="number" class="form-control" name="offer" oninput='check(this)' id="inlineFormInputGroupUsername2"
-                          placeholder="Price" min="0" max="100">
-                        <div class="input-group-prepend">
+              <form class="forms-sample" action="/admin/<%=editOrCreat%>/<%=id  %>" method="post" id="myForm">
+                <div class="pa-form-group">
+                  <label class="pa-form-label" for="exampleInputName1"><i class="mdi mdi-format-title"></i> Offer Name</label>
+                  <input value="<%=name  %>" type="text" class="pa-form-control text" oninput='checkForm()' name="name" id="exampleInputName1" placeholder="e.g. Summer Sale" required>
+                  <div class="error-msg-box err" id="nameError"></div>
+                </div>
 
-                          <div class="input-group-text">%</div>
-                        </div>
-                      </div>
+                <div class="pa-form-group">
+                  <label class="pa-form-label" for="offerAmount"><i class="mdi mdi-percent"></i> Offer Percentage</label>
+                  <div style="position: relative; display: flex; align-items: center;">
+                    <input value="<%=offer  %>" type="number" class="pa-form-control offer-val" name="offer" oninput='checkForm()' id="offerAmount" placeholder="Percentage (0-100)" min="0" max="100" required>
+                    <span style="position: absolute; right: 18px; color: rgba(255,255,255,0.4); font-weight: 700;">%</span>
                   </div>
+                  <div class="error-msg-box errVal" id="valError"></div>
+                </div>
                   
-
-             
-                  <button type="submit" id="submit" class="btn submit btn-primary mr-2">Submit</button>
-                  <button type="reset" class="btn btn-dark"><a href="/admin/offers">cancel</a></button>
-                </form>
-              </div>
+                <div class="pa-actions">
+                  <a href="/admin/offers" class="pa-btn-cancel">Cancel</a>
+                  <button type="submit" id="submitBtn" class="pa-btn-submit submit"><i class="mdi mdi-check-circle-outline"></i> <%= isEdit ? 'Update Offer' : 'Save Offer' %></button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
   </div>
-  </div>
 
   <script>
-   const submit= document.getElementById('submit')
-    function check(e){
-        if(e.value.trim()==''){
-            submit.style.pointerEvents='none';
-            submit.style.opacity=.6;
-        }else{
-            submit.style.pointerEvents='all';
-            submit.style.opacity=1;
-            
-        }
-    }
+   const submitBtn = document.getElementById('submitBtn');
+   const textInput = document.querySelector('.text');
+   const offerInput = document.querySelector('.offer-val');
+   const errVal = document.querySelector('.errVal');
+
+   function checkForm() {
+       let isValid = true;
+       const nameVal = textInput.value.trim();
+       const offVal = offerInput.value;
+
+       if(nameVal === '') {
+           isValid = false;
+       }
+
+       if(offVal !== '') {
+          if(offVal < 0 || offVal > 100) {
+              isValid = false;
+              errVal.textContent = 'Percentage must be between 0 and 100.';
+              offerInput.style.borderColor = '#fc4b6c';
+          } else {
+              errVal.textContent = '';
+              offerInput.style.borderColor = 'rgba(255,255,255,0.1)';
+          }
+       } else {
+          isValid = false;
+       }
+
+       if(!isValid) {
+           submitBtn.classList.add('btn-disabled');
+           submitBtn.disabled = true;
+       } else {
+           submitBtn.classList.remove('btn-disabled');
+           submitBtn.disabled = false;
+       }
+   }
+   
+   document.addEventListener('DOMContentLoaded', checkForm);
   </script>
   <script src="/vendors/js/vendor.bundle.base.js"></script>
 

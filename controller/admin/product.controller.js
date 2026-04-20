@@ -1,5 +1,6 @@
 const Product = require("../../models/products");
 const Category = require("../../models/catagory");
+const Review = require("../../models/reviews");
 const { cloudinary } = require("../../config/cloudinary");
 const { getPublicId } = require("../../utils/cloudinaryHelper");
 const options = { day: "2-digit", month: "short", year: "numeric" };
@@ -249,6 +250,35 @@ const toggleProductStatus = async (req, res) => {
   }
 };
 
+/**
+ * @desc Get Product Details by ID
+ */
+const getProductById = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findOne({ _id: productId, isDeleted: false })
+      .populate("category")
+      .populate("offer");
+
+    if (!product) {
+      return res.redirect("/admin/products");
+    }
+
+    const reviews = await Review.find({ productId: productId }).populate("userId");
+    const categories = await Category.find({ listed: true, isDeleted: false });
+
+    res.render("admin/productDetails", {
+      admin: req.session.admin,
+      product,
+      reviews,
+      categories,
+    });
+  } catch (err) {
+    console.log(err.message + "    product details page");
+    res.redirect("/admin/products");
+  }
+};
+
 module.exports = {
   getProducts,
   getCreateProductPage,
@@ -256,4 +286,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   toggleProductStatus,
+  getProductById,
 };

@@ -3,110 +3,117 @@
 
     <%- include('../layout/adminnav.ejs') -%>
 
+      <link rel="stylesheet" href="/css/admin/addCategory.css">
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="col-12 grid-margin stretch-card">
-            <div class="circle position-absolute " style="background-color: rebeccapurple;
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-            transform: translate(57rem, 0rem);"></div>
-            <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589);
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-         "></div>
-            <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-              <div class="card-body">
-                <h4 class="card-title">Category</h4>
+          <div class="pa-glass-container">
+            <div class="pa-glass-card">
+              <h4 class="pa-card-title"><i class="mdi mdi-tag-plus"></i> Add New Category</h4>
 
-                <form class="forms-sample" action="/admin/categories" method="post" id="myForm">
-                  <div class="form-group">
-                    <label for="exampleInputName1">Category Name</label>
-                    <input type="text" class="form-control text-white text" oninput='category(this)' name="name"
-                      style="color:white;" id="exampleInputName1" placeholder="Name" required>
+              <form class="forms-sample" action="/admin/categories" method="post" id="myForm">
+                <div class="pa-form-group">
+                  <label class="pa-form-label" for="exampleInputName1"><i class="mdi mdi-format-title"></i> Category Name</label>
+                  <input type="text" class="pa-form-control text" oninput="category(this)" name="name" id="exampleInputName1" placeholder="Enter Category Name" required>
+                  <div class="error-msg-box err" id="nameError"></div>
+                </div>
+
+                <div class="pa-form-group">
+                  <label class="pa-form-label"><i class="mdi mdi-eye-outline"></i> Visibility Status</label>
+                  <div class="pa-radio-group">
+                    <label class="pa-radio-item">
+                      <input type="radio" name="active" value="true" checked>
+                      Listed
+                    </label>
+                    <label class="pa-radio-item">
+                      <input type="radio" name="active" value="false">
+                      Unlisted
+                    </label>
                   </div>
-                  <p class="text-danger err"></p>
+                </div>
 
-
-                  <div class="form-group row">
-
-                    <div class="col-sm-2">
-                      <div class="form-check">
-                        <label class="form-check-label">
-                          <input type="radio" class="form-check-input" name="active" id="membershipRadios1" value="true"
-                            checked> Listed </label>
-                      </div>
-                    </div>
-                    <div class="col-sm-5">
-                      <div class="form-check">
-                        <label class="form-check-label">
-                          <input type="radio" class="form-check-input" name="active" id="membershipRadios2"
-                            value="false"> Unlisted </label>
-                      </div>
-                    </div>
-                  </div>
-                  <button type="submit" class="btn submit btn-primary mr-2">Submit</button>
-                  <a href="/admin/categories" class="btn btn-dark">Cancel</a>
-                </form>
-              </div>
+                <div class="pa-actions">
+                  <a href="/admin/categories" class="pa-btn-cancel">Cancel</a>
+                  <button type="submit" class="pa-btn-submit submit" id="submitBtn"><i class="mdi mdi-check-circle-outline"></i> Save Category</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
   </div>
-  </div>
 
   <script>
 
-    const textInput = document.getElementsByClassName('text')[0];
+    const textInput = document.querySelector('.text');
     const err = document.querySelector('.err');
+    const submitBtn = document.getElementById('submitBtn');
     const regex = /^[a-zA-Z-]+$/;
+
+    function setInvalid(msg) {
+      err.textContent = msg;
+      textInput.style.borderColor = '#fc4b6c';
+      textInput.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,0.1), 0 0 0 3px rgba(252, 75, 75, 0.15)';
+      submitBtn.classList.add('btn-disabled');
+      submitBtn.disabled = true;
+    }
+
+    function setValid() {
+      err.textContent = '';
+      textInput.style.borderColor = '#00d25b';
+      textInput.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,0.1), 0 0 0 3px rgba(0, 210, 91, 0.15)';
+      submitBtn.classList.remove('btn-disabled');
+      submitBtn.disabled = false;
+    }
+
+    function setNeutral() {
+      err.textContent = '';
+      textInput.style.borderColor = 'rgba(255,255,255,0.1)';
+      textInput.style.boxShadow = 'none';
+      submitBtn.classList.add('btn-disabled');
+      submitBtn.disabled = true;
+    }
 
     document.getElementById('myForm').addEventListener('submit', function (e) {
       const textInputValue = textInput.value.trim();
-
-      const regex = /^[a-zA-Z-]+$/;
-
       if (!regex.test(textInputValue)) {
-        err.textContent = 'only contains alphabets no space or no numbers and signs ';
-        textInput.style.borderColor = 'red'
+        setInvalid('Category name can only contain letters and hyphens (no spaces, numbers, or symbols).');
         e.preventDefault();
       }
     });
     
     function category(e) {
-    
+      const inputValue = e.value.trim();
+      
+      if(inputValue.length === 0) {
+        setNeutral();
+        return;
+      }
+
       fetch('/admin/categories/check', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: e.value })
+        body: JSON.stringify({ name: inputValue })
       }).then(res => res.json()).then(data => {
         
         if (data.exist === true) {
-          err.textContent = 'there is already a category on this name';
-          textInput.style.borderColor = 'red'
-        } else if (data.exist === false) {
-          textInput.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            const sanitizedValue = inputValue.replace(/\d/g, '');
-            const sanitized2Value = inputValue.replace(/\s/g, '-');
-            event.target.value = sanitizedValue;
-            event.target.value = sanitized2Value;
+          setInvalid('There is already a category with this name.');
+        } else {
+          // Standard validation
+          const sanitizedValue = inputValue.replace(/\d/g, '').replace(/\s/g, '-');
+          if(inputValue !== sanitizedValue) {
+             // Force sanitize visually
+             e.value = sanitizedValue;
+          }
 
-            if (regex.test(event.target.value)) {
-              err.textContent = ' ';
-              textInput.style.borderColor = 'green'
-
-            } else {
-              err.textContent = 'only contains alphabets no space or no numbers and signs ';
-              textInput.style.borderColor = 'red'
-            }
-          });
+          if (regex.test(sanitizedValue)) {
+            setValid();
+          } else {
+            setInvalid('Category name can only contain letters and hyphens (no spaces, numbers, or symbols).');
+          }
         }
-      })
+      }).catch(error => {
+         console.error("Error checking category", error);
+      });
     }
 
   </script>

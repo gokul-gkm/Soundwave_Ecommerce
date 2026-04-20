@@ -50,13 +50,10 @@
                     </thead>
 
                     <tbody>
-                      <% if(locals.wallet) { %>
-                        <% const transactionArray=wallet?.transaction?.reverse() %>
-                        <% transactionArray?.forEach((elam, index)=>{ %>
-                          <tr>
-                         
-                            <td class="stock-col ms-3 "><%=index+1  %>
-                            </td>
+                        <% if (wallet && wallet.transaction) { %>
+                          <% wallet.transaction.forEach((elam, index) => { %>
+                            <tr>
+                              <td class="stock-col ms-3 "><%= skip + index + 1 %></td>
                             <td class="stock-col ms-3 ">₹<%=elam.amount %>
                             </td>
                             <td class="stock-col"><span class="">
@@ -75,6 +72,11 @@
 
                     </tbody>
                   </table>
+                  
+                  <div class="mt-4">
+                    <%- include('../layout/pagination.ejs') -%>
+                  </div>
+
                   <% if(locals.order) {%>
                     <div class="wishlist-share">
                       <div class="social-icons social-icons-sm mb-2">

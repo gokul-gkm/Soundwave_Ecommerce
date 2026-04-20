@@ -18,7 +18,11 @@ router.get("/products", adminMiddleware.adminRoute, productController.getProduct
  */
 router.get("/products/new", adminMiddleware.adminRoute, productController.getCreateProductPage);
 
-
+/**
+ * @route   GET /products/:id
+ * @desc    Get Product Details Page
+ */
+router.get("/products/:id", adminMiddleware.adminRoute, productController.getProductById);
 
 
 /**

@@ -20,34 +20,7 @@
             <section class="">
                 <div class="container-fluid  py-5 h-100 position-relative ">
                     <div class="row d-flex    align-items-start  h-100" style="gap: 10rem;">
-                        <aside class="col-md-4 col-lg-3  ">
-                            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link " id="tab-dashboard-link" href="/profile"
-                                        aria-selected="false">Profile</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="tab-orders-link" href="/orders"
-                                        aria-selected="false">Orders</a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link " id="tab-address-link" href="/adress"
-                                        aria-selected="true">Adresses</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="tab-account-link" href="/coupon"
-                                        aria-selected="false">Coupons</a>
-                                </li>
-                                <li class="nav-item">
-                                    <form action="/logout" method="post">
-                                        <a class="nav-link" href="#">
-                                            <button type="submit" class=" border-0 bg-transparent ">Sign
-                                                Out</button></a>
-                                    </form>
-                                </li>
-                            </ul>
-                        </aside>
+                        <%- include('../layout/profileSidebar', { activePage: 'coupon' }) %>
                         <aside class="col col-lg-8 mb-4 mb-lg-0">
                             <div class="row w-100" style="gap: 2rem;">
 

@@ -5,117 +5,66 @@
 
       <div class="main-panel ">
         <div class="content-wrapper  d-flex flex-column  align-items-center">
-          <div class=" gg d-flex align-items-center  justify-content-center "
-            style="width: 100%; margin-top: -2rem; height: 100%; backdrop-filter: blur(2px); opacity: 0;  background-color: rgb(0 0 0 / 70%); position:absolute; ">
-            <div class="col-lg-6 grid-margin edit-product-card">
-              <div class="card edit" style=" border-radius: 15px;
-              ">
-                <form id="myForm1" method="post" enctype="multipart/form-data">
-                  <div class="card-body edit-page">
-                    <div class="d-flex flex-column align-items-center w-100 justify-content-center ">
-                      <h3 class="text-center  text-white text-uppercase ">Edit Product</h3>
-                      <div class="lin w-75 " style=" height: 1px; background-color: rgba(119, 119, 119, 0.363)"></div>
+          <!-- Edit Product Modal (Glassmorphism) -->
+          <link rel="stylesheet" href="/css/admin/productsEditModal.css" />
+          <div class="edit-modal-overlay" id="editProductModal">
+            <div class="edit-modal-card">
+              <form id="myForm1" method="post" enctype="multipart/form-data">
+                
+                <div class="edit-modal-header">
+                  <h3 class="edit-modal-title"><i class="mdi mdi-pencil-circle-outline"></i> Edit Product</h3>
+                  <button type="button" class="btn-close-modal" aria-label="Close" onclick="closeEditModal()"><i class="mdi mdi-close"></i></button>
+                </div>
+                
+                <div class="edit-modal-body">
+                  <div class="edit-img-grid img-row">
+                    <!-- Dynamic images go here -->
+                  </div>
+
+                  <div class="edit-form-group">
+                    <label class="edit-form-label"><i class="mdi mdi-format-title"></i> Name</label>
+                    <input type="text" class="edit-form-control name" name="name" required placeholder="Product Name">
+                    <p id="err1" class="text-danger mt-1 mb-0" style="font-size: 12px;"></p>
+                  </div>
+
+                  <div class="edit-form-row">
+                    <div class="edit-form-group">
+                      <label class="edit-form-label"><i class="mdi mdi-currency-usd"></i> Price (₹)</label>
+                      <input type="number" class="edit-form-control price" min="0" name="price" required placeholder="0.00">
                     </div>
-                    <br>
-                    <div class="row img-row d-flex align-items-center justify-content-center gap-2 w-100 "
-                      style="gap: 1rem;">
-
-                      <div
-                        class="imcircle d-flex align-items-center justify-content-center  overflow-hidden position-relative  "
-                        style="width: 4.5rem; height: 4.5rem;   border-radius: 50%;  ">
-
-                        <label for="image" id="imageL"
-                          class="w-100   position-absolute fs-3 mt-1 d-flex align-items-center justify-content-center      pointer-event "
-                          style="    background-color: rgb(24 23 23 / 11%);
-                       backdrop-filter: blur(2px);
-                       height: 5rem;
-                       transition: all ease 0.3s;
-                       cursor: pointer;
-                       
-                       ">
-                          Edit
-                        </label>
-                        <input type="file" id="image" accept="image/jpeg, image/png, image/jpg" name="images"
-                          style="display: none;" value="">
-                        <img class="w-100 h-100  " style="object-fit: cover;"
-                          src="/productImage/1705419439038 - ec70ef4be1a9d2ddf1ba1cfaabdb3e2f.jpg" alt="">
-
-                      </div>
-
-                    </div>
-                    <br>
-                    <div class="form-group">
-                      <label for="exampleInputName1">Name</label>
-                      <div class="dname">
-                        <input type="text" class="text name form-control text-white " style="letter-spacing: 1px;"
-                          name="name" style="color:white;" id="exampleInputName1" value="" placeholder="Name" required>
-                        <p id="err1" class="text-danger "></p>
-                      </div>
-                    </div>
-
-                    <div class=" w-100  d-flex align-items-center  "
-                      style="display: flex; gap:.5rem;">
-                      <div class="form-group">
-                        <label for="exampleInputPassword4">Price</label>
-                        <div class="input-group mb-2 mr-sm-2">
-
-                          <div class="input-group-prepend">
-                            <div class="input-group-text">₹</div>
-                          </div>
-                          <input type="number" class="form-control price" min="0" name="price"
-                            style="letter-spacing: 1px;" id="price inlineFormInputGroupUsername2" placeholder="Price">
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="exampleInputPassword4">Stock</label>
-                        <div class="input-group mb-2 mr-sm-2">
-
-
-                          <input type="number" class="form-control stock" min="0" name="stock"
-                            style="letter-spacing: 1px;" id=" stock inlineFormInputGroupUsername2" placeholder="Price">
-                        </div>
-                      </div>
-                    </div>
-                    <div class=" w-100  d-flex align-items-center  "
-                      style="display: flex; gap:1rem;">
-                      <div class="form-group" style="    width: 18rem;">
-
-                        <label for="exampleSelectGender">Category</label>
-                        <div class="input-group mb-2 mr-sm-2">
-                          <select class="form-control text-white flex-grow-1 category" name="category"
-                            style="letter-spacing: 1px; width: 100%;  color:white;" id="exampleSelectGender" required>
-                            <% locals.ca.forEach(e=>{ %>
-                              <option>
-                                <%=e.name %>
-                              </option>
-
-                              <% }) %>
-
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="tags">Tags</label>
-                        <input type="text" class="form-control text-white tags" name="tags" style="color:white;" id="tags" placeholder="Enter tags separated by commas">
-                    </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="exampleTextarea1">Description</label>
-                      <textarea class=" text form-control text-white description" name="des" style="color:white;" id="exampleTextarea1"
-                        rows="4" required></textarea>
-                      <!-- <p id="err2" class="text-danger "></p> -->
-                    </div>
-                    
-                    <div class="row w-100 d-flex align-items-center justify-content-center gap-3 " style="gap:1rem">
-                      <button type="submit" class="btn bg-primary text-white border-0 "
-                        style="letter-spacing: 1px;">submit</button>
-                      <button type="button" onclick="backDash()" style="letter-spacing: 1px; background-color: #777;"
-                        class="btn  text-white border-0 ">cancel</button>
+                    <div class="edit-form-group">
+                      <label class="edit-form-label"><i class="mdi mdi-package-variant-closed"></i> Stock</label>
+                      <input type="number" class="edit-form-control stock" min="0" name="stock" required placeholder="0">
                     </div>
                   </div>
-                </form>
-              </div>
+
+                  <div class="edit-form-row">
+                    <div class="edit-form-group">
+                      <label class="edit-form-label"><i class="mdi mdi-tag-outline"></i> Category</label>
+                      <select class="edit-form-control category" name="category" required>
+                        <% locals.ca.forEach(e=>{ %>
+                          <option><%= e.name %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="edit-form-group">
+                      <label class="edit-form-label"><i class="mdi mdi-label-multiple-outline"></i> Tags</label>
+                      <input type="text" class="edit-form-control tags" name="tags" placeholder="e.g. tech, wireless">
+                    </div>
+                  </div>
+
+                  <div class="edit-form-group mb-0">
+                    <label class="edit-form-label"><i class="mdi mdi-text-box-outline"></i> Description</label>
+                    <textarea class="edit-form-control description" name="des" rows="3" required></textarea>
+                  </div>
+                </div>
+
+                <div class="edit-modal-footer">
+                  <button type="button" class="em-btn-cancel" onclick="closeEditModal()">Cancel</button>
+                  <button type="submit" class="em-btn-submit"><i class="mdi mdi-check-circle-outline"></i> Update Product</button>
+                </div>
+
+              </form>
             </div>
           </div>
 
@@ -209,7 +158,7 @@
                               </td>
                               <!-- New -->
 
-                              <td class=" dropdown"> <a href="#" id="profile-dropdown" data-toggle="dropdown"><i
+                                <td class=" dropdown"> <a href="#" id="profile-dropdown" data-toggle="dropdown"><i
                                     class="mdi mdi-dots-vertical"></i></a>
                                 <div style="min-width: 5rem; padding: .9rem 0; height: max-content; "
                                   class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list   overflow-hidden "
@@ -217,6 +166,14 @@
                                   <div
                                     class="edit d-flex flex-column gap-2  h-100 w-100 justify-content-center align-items-center ">
                                     <% let b=[]; locals.ca.forEach(e=>{ b.push(e.name) }) %>
+                                      <a href="/admin/products/<%=e._id %>" class="fs-5"
+                                        style="line-height: 0; margin-bottom: 0; color:#6c7293; text-decoration: none;">
+                                        view&nbsp;<i class="ri-eye-line"></i></a>
+                                      <br>
+                                      <div class="d "
+                                        style="width: 100%; height: 1px; background-color: rgba(77, 75, 75, 0.5);">
+                                      </div>
+                                      <br>
                                       <p onclick="edit('<%=JSON.stringify(e.images)%>','<%= e._id%>','<%= e.name %>','<%=e.stock  %>','<%=e.price  %>','<%=e.category.name  %>','<%= e.description%>','<%= e.tags%>')"
                                         class="fs-5 "
                                         style="cursor: pointer; line-height: 0; margin-bottom: 0; color:#6c7293;">
@@ -228,7 +185,7 @@
                                       <br>
                                       <a href="#"  onclick="deleteProduct('<%= e._id %>')" class="fs-5 "
                                         style="line-height: 0; margin-bottom: 0; color:#6c7293;">
-                                        dlt&nbsp;<i class="ri-delete-bin-3-line  "></i></a>
+                                        delete&nbsp;<i class="ri-delete-bin-3-line  "></i></a>
                                   </div>
 
 
@@ -326,93 +283,125 @@
     const tags1 = document.querySelector('.tags');
     const gg = document.querySelector('.gg');
     const dname = document.querySelector('.dname');
-    function removeP(i,im) {
-
-      const pi = document.getElementById(`p${i}`);
+    function removeP(i, im) {
+      const wrap = document.getElementById(`imgBoxWrap${i}`);
       const myForm = document.getElementById('myForm1');
-      const hiddenInput = document.createElement('input');
-      const Input = document.createElement('input');
-      Input.type = 'hidden';
-      Input.name = `pe${i}`;
-      Input.value = 'true';
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = `pe`;
-      hiddenInput.value = im;
-      myForm.appendChild(hiddenInput);
-      myForm.appendChild(Input);
+      const peFlag = document.createElement('input');
+      peFlag.type = 'hidden'; peFlag.name = `pe${i}`; peFlag.value = 'true';
+      const peVal = document.createElement('input');
+      peVal.type = 'hidden'; peVal.name = `pe`; peVal.value = im;
+      myForm.appendChild(peFlag);
+      myForm.appendChild(peVal);
 
-      pi.remove()
+      wrap.innerHTML = `
+        <label for="image${i}" class="edit-img-circle empty-state">
+          <input type="file" class="file" data-index="${i}" id="image${i}" accept="image/jpeg, image/png, image/jpg" name="images${i}" style="display: none;">
+          <img id="im${i}" style="display:none;" src="" alt="">
+          <div class="empty-icon"><i class="mdi mdi-plus"></i><span>Add</span></div>
+          <div class="edit-img-overlay" style="display:none;"><i class="mdi mdi-camera"></i><span>Change</span></div>
+        </label>
+        <button type="button" style="display:none;" class="remove-btn-circular" id="removeBtn${i}" onclick="removeNewlyAddedP('${i}')" title="Remove"><i class="mdi mdi-close"></i></button>
+      `;
+      document.getElementById(`image${i}`).addEventListener('change', () => fileeObj(i));
     }
 
-    function edit(image, id, name, stock, price, catName,desc, tags) {
-      let myForm = document.getElementById('myForm1');
+    function removeNewlyAddedP(i) {
+      const wrap = document.getElementById(`imgBoxWrap${i}`);
+      const fileInput = document.getElementById(`image${i}`);
+      if(fileInput) fileInput.value = '';
+      wrap.innerHTML = `
+        <label for="image${i}" class="edit-img-circle empty-state">
+          <input type="file" class="file" data-index="${i}" id="image${i}" accept="image/jpeg, image/png, image/jpg" name="images${i}" style="display: none;">
+          <img id="im${i}" style="display:none;" src="" alt="">
+          <div class="empty-icon"><i class="mdi mdi-plus"></i><span>Add</span></div>
+          <div class="edit-img-overlay" style="display:none;"><i class="mdi mdi-camera"></i><span>Change</span></div>
+        </label>
+        <button type="button" style="display:none;" class="remove-btn-circular" id="removeBtn${i}" onclick="removeNewlyAddedP('${i}')" title="Remove"><i class="mdi mdi-close"></i></button>
+      `;
+      document.getElementById(`image${i}`).addEventListener('change', () => fileeObj(i));
+    }
+
+    function edit(image, id, name, stock, price, catName, desc, tags) {
+      const myForm = document.getElementById('myForm1');
+      const editModal = document.getElementById('editProductModal');
       myForm.action = `/admin/products/${id}`;
-      const im = JSON.parse(image)
-      name1.value = name
-      price1.value = price
-      stock1.value = stock
-      catName1.value = catName
-      desc1.value = desc      
-      tags1.value = tags; 
+      
+      const imgs = JSON.parse(image);
+      document.querySelector('.name').value = name;
+      document.querySelector('.price').value = price;
+      document.querySelector('.stock').value = stock;
+      document.querySelector('.category').value = catName;
+      document.querySelector('.description').value = desc;      
+      document.querySelector('.tags').value = tags; 
     
-      imageRow.innerHTML = `${im.map((im, i) => `     <div class="d-flex flex-column " id='p${i}'>
-                          <div
-                        class="imcircle d-flex align-items-center justify-content-center  overflow-hidden position-relative  "
-                        style="width: 4.5rem; height: 4.5rem;   border-radius: 50%;  ">
-                        <label for="image${i}"    id="imageL"
-                          class="w-100   position-absolute fs-3 mt-1 d-flex align-items-center justify-content-center      pointer-event "
-                          style="    background-color: rgb(24 23 23 / 11%);
-                       backdrop-filter: blur(2px);
-                       height: 5rem;
-                       transition: all ease 0.3s;
-                       cursor: pointer;
-                       
-                       ">
-                          Edit
-                        </label>
-                        <input type="file" class='file' data-index='${i}' id="image${i}" accept="image/jpeg, image/png, image/jpg" name="images${i}"
-                          style="display: none;" value='${im}'>
-                        <img class="w-100 h-100 " id='im${i}' style="object-fit: cover;"
-                          src="${im.startsWith('http') ? im : '/productImage/' + im}" alt="">
-                          </div>
-                          
-                        <div id='d${i}'></div>
-                          <p style='cursor: pointer;'  onclick="removeP('${i}','${im}')" class='mt-1 text-white  '>remove</p>
-                        </div>
-                      `).join('')}`;
+      let html = '';
+      for(let i=0; i<3; i++) {
+        let im = imgs[i];
+        if(im && im !== null && im !== '') {
+           let imgSrc = im.startsWith('http') ? im : '/productImage/' + im;
+           html += `
+            <div id="imgBoxWrap${i}" class="edit-img-wrap">
+              <label for="image${i}" class="edit-img-circle">
+                <input type="file" class="file" data-index="${i}" id="image${i}" accept="image/jpeg, image/png, image/jpg" name="images${i}" style="display: none;" value="${im}">
+                <img id="im${i}" src="${imgSrc}" alt="">
+                <div class="edit-img-overlay">
+                  <i class="mdi mdi-camera"></i>
+                  <span>Change</span>
+                </div>
+              </label>
+              <button type="button" class="remove-btn-circular" onclick="removeP('${i}', '${im}')" title="Remove"><i class="mdi mdi-close"></i></button>
+            </div>`;
+        } else {
+           html += `
+            <div id="imgBoxWrap${i}" class="edit-img-wrap">
+              <label for="image${i}" class="edit-img-circle empty-state">
+                <input type="file" class="file" data-index="${i}" id="image${i}" accept="image/jpeg, image/png, image/jpg" name="images${i}" style="display: none;">
+                <img id="im${i}" style="display:none;" src="" alt="">
+                <div class="empty-icon"><i class="mdi mdi-plus"></i><span>Add</span></div>
+                <div class="edit-img-overlay" style="display:none;">
+                  <i class="mdi mdi-camera"></i>
+                  <span>Change</span>
+                </div>
+              </label>
+              <button type="button" style="display:none;" class="remove-btn-circular" id="removeBtn${i}" onclick="removeNewlyAddedP('${i}')" title="Remove"><i class="mdi mdi-close"></i></button>
+            </div>`;
+        }
+      }
+      document.querySelector('.img-row').innerHTML = html;
+      editModal.classList.add('active');
 
-      gg.style.opacity = 1;
-      gg.style.zIndex = 9;
       for (let i = 0; i < 3; i++) {
-        document.getElementById(`image${i}`).addEventListener('click', () => {
-          filee(i)
-        })
-      }
-
-    }
-
-    function filee(i) {
-  let file = document.getElementById(`image${i}`);
-  file.onchange = () => {
-    let img = document.getElementById(`im${i}`);
-    let uploadedFile = file.files[0];
-    if (uploadedFile) {
-      if (['image/png', 'image/jpeg', 'image/jpg'].includes(uploadedFile.type)) {
-        img.src = URL.createObjectURL(uploadedFile);
-      } else {
-        alert("Please upload only PNG, JPEG, or JPG files.");
-        file.value = null;
+        const fileInput = document.getElementById(`image${i}`);
+        if(fileInput) { fileInput.addEventListener('change', () => fileeObj(i)); }
       }
     }
-  };
-}
 
+    function fileeObj(i) {
+      let file = document.getElementById(`image${i}`);
+      let img = document.getElementById(`im${i}`);
+      let label = file.closest('label');
+      let emptyIcon = label.querySelector('.empty-icon');
+      let overlay = label.querySelector('.edit-img-overlay');
+      let removeBtn = document.getElementById(`removeBtn${i}`);
+      
+      let uploadedFile = file.files ? file.files[0] : null;
+      if (uploadedFile) {
+        if (['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(uploadedFile.type)) {
+          img.src = URL.createObjectURL(uploadedFile);
+          img.style.display = 'block';
+          label.classList.remove('empty-state');
+          if(emptyIcon) emptyIcon.style.display = 'none';
+          if(overlay) overlay.style.display = 'flex';
+          if(removeBtn) removeBtn.style.display = 'flex';
+        } else {
+          alert("Please upload only PNG, JPEG, JPG, or WEBP files.");
+          file.value = '';
+        }
+      }
+    }
 
-
-    function backDash() {
-      gg.style.opacity = 0;
-      gg.style.zIndex = -2;
-
+    function closeEditModal() {
+      document.getElementById('editProductModal').classList.remove('active');
     }
 
   </script>

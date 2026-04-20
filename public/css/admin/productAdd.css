@@ -1,0 +1,246 @@
+/* ============================================
+   Product Add Page Styles
+   ============================================ */
+
+/* Page Overrides */
+body { overflow: auto !important; }
+body::-webkit-scrollbar { width: 4px; }
+body::-webkit-scrollbar-track { background: transparent; }
+body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+.container-scroller { overflow: visible; }
+
+/* Page Header */
+.pa-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pa-page-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pa-page-subtitle {
+  margin: 0;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+}
+
+/* Back Button */
+.pa-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+.pa-btn-back:hover {
+  background: rgba(110, 66, 193, 0.15);
+  border-color: rgba(110, 66, 193, 0.3);
+  color: #b794f4;
+  transform: translateX(-3px);
+}
+
+/* Glassmorphism Cards */
+.pa-card {
+  background: rgba(25, 28, 36, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  transition: border-color 0.3s;
+}
+.pa-card:hover { border-color: rgba(255,255,255,0.12); }
+.pa-card-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pa-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  display: flex; align-items: center; gap: 8px;
+}
+.pa-card-title i { color: #8854d0; font-size: 1.2rem; }
+.pa-card-body { padding: 1.5rem; }
+
+/* Form Elements */
+.pa-form-group { margin-bottom: 1.2rem; position: relative; }
+.pa-form-label {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.pa-form-control {
+  width: 100%;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #fff !important;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  transition: all 0.25s;
+}
+.pa-form-control:focus {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: #8854d0 !important;
+  box-shadow: 0 0 0 3px rgba(110, 66, 193, 0.15) !important;
+}
+.pa-form-control::placeholder { color: rgba(255,255,255,0.3) !important; }
+
+select.pa-form-control option { background-color: #191c24; color: #fff; }
+
+textarea.pa-form-control { resize: vertical; min-height: 120px; }
+
+/* Input Groups */
+.pa-input-group {
+  display: flex;
+  align-items: stretch;
+}
+.pa-input-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+}
+.pa-input-group .pa-form-control { border-radius: 0 10px 10px 0; }
+
+/* Radio Buttons (Active/Inactive) */
+.pa-radio-group {
+  display: flex; gap: 20px; padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+.pa-radio-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.pa-radio-item input { accent-color: #00d25b; width: 16px; height: 16px; cursor: pointer; }
+.pa-radio-text { color: rgba(255,255,255,0.85); font-size: 0.9rem; }
+
+/* Color Picker */
+.pa-color-picker-wrap {
+  display: flex; align-items: center; gap: 15px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px 12px; border-radius: 10px;
+}
+.pa-color-input {
+  -webkit-appearance: none;
+  border: none;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  overflow: hidden;
+}
+.pa-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+.pa-color-input::-webkit-color-swatch { border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; }
+.pa-color-val { color: rgba(255,255,255,0.7); font-family: monospace; font-size: 0.9rem; }
+
+/* Validation Error Messages */
+.pa-error-msg {
+  color: #fc4b6c; font-size: 0.75rem; margin-top: 6px; font-weight: 500;
+  min-height: 18px;
+}
+.pa-control-invalid { border-color: #fc4b6c !important; }
+.pa-control-valid { border-color: #00d25b !important; }
+
+/* Image Uploader Grid */
+.pa-image-grid {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.pa-image-upload-box {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border: 2px dashed rgba(255,255,255,0.15);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.25s; overflow: hidden;
+}
+.pa-image-upload-box:nth-child(n+2) { height: 120px; } /* Secondary images smaller */
+
+.pa-image-upload-box:hover {
+  background: rgba(110, 66, 193, 0.05);
+  border-color: rgba(110, 66, 193, 0.4);
+}
+.pa-image-upload-box input[type="file"] { display: none; }
+.pa-upload-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.3); pointer-events: none;
+}
+.pa-upload-placeholder i { font-size: 2rem; color: #8854d0; }
+.pa-upload-placeholder span { font-size: 0.8rem; font-weight: 500; }
+
+.pa-image-preview {
+  width: 100%; height: 100%; object-fit: cover; display: none;
+}
+.pa-image-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.2s;
+}
+.pa-image-upload-box:hover .pa-image-overlay { opacity: 1; }
+
+.pa-remove-icon {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(252, 75, 75, 0.9); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; cursor: pointer; opacity: 0; transition: all 0.2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.pa-image-upload-box.has-image:hover .pa-remove-icon { opacity: 1; }
+.pa-remove-icon:hover { background: #fc4b6c; transform: scale(1.1); }
+
+.pa-global-error { text-align: center; margin-top: 10px; }
+
+/* Action Buttons */
+.pa-actions-card .pa-card-body {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.pa-btn-submit {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 12px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #6e42c1, #8854d0);
+  color: #fff; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.25s;
+}
+.pa-btn-submit:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(110, 66, 193, 0.4); transform: translateY(-1px); }
+.pa-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+
+.pa-btn-cancel {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: rgba(255,255,255,0.7); font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: all 0.2s;
+}
+.pa-btn-cancel:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+/* Number spin hide */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none !important; }

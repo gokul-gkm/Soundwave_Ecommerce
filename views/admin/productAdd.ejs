@@ -1,554 +1,315 @@
 <%- include('../layout/adminlayout.ejs') -%>
+<link rel="stylesheet" href="/css/admin/productAdd.css" />
+
 <div class="container-scroller">
   <%- include('../layout/adminnav.ejs') -%>
   <div class="main-panel">
-    <div class="content-wrapper">
-      <div class="row">
-        <div class="circle position-absolute " style="background-color: rebeccapurple; filter: blur(136px); width: 13rem; height: 10rem; border-radius: 50%; transform: translate(57rem, 23rem);"></div>
-        <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589); filter: blur(136px); width: 13rem; height: 10rem; border-radius: 50%;"></div>
-        <a href="/admin/products" class="btn btn-outline-primary btn-rounded mb-3">← Back to products</a>
-        <div class="col-12 grid-margin stretch-card">
-          <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-            <div class="card-body">
-              <h4 class="card-title">Add product</h4>
-              <p class="card-description"> </p>
-              <form class="forms-sample" id="myForm" action="/admin/products" method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                  <label for="exampleInputName1">Name</label>
-                  <input type="text" class="text form-control text-white " name="name" style="color:white;" id="exampleInputName1" placeholder="Name" required>
-                  <p id="err1" class="text-danger "></p>
+    <div class="content-wrapper" style="padding: 1.5rem 2rem; position: relative;">
+      
+      <!-- Decorative Background Blurs -->
+      <div class="position-absolute" style="background-color: rebeccapurple; filter: blur(140px); width: 14rem; height: 14rem; border-radius: 50%; right: 5rem; top: 10rem; z-index: 0; pointer-events: none;"></div>
+      <div class="position-absolute" style="background-color: rgba(0, 0, 255, 0.4); filter: blur(140px); width: 14rem; height: 14rem; border-radius: 50%; left: 10rem; bottom: 5rem; z-index: 0; pointer-events: none;"></div>
+
+      <!-- Header -->
+      <div class="pa-page-header" style="position: relative; z-index: 1;">
+        <div>
+          <a href="/admin/products" class="pa-btn-back mb-2">
+            <i class="mdi mdi-arrow-left"></i> Back to Products
+          </a>
+          <h3 class="pa-page-title">Add New Product</h3>
+          <p class="pa-page-subtitle">Fill in the details to list a new product in the store.</p>
+        </div>
+      </div>
+
+      <form id="productForm" action="/admin/products" method="post" enctype="multipart/form-data" style="position: relative; z-index: 1;">
+        <div class="row">
+          
+          <!-- Left Column (Main Details) -->
+          <div class="col-lg-8">
+            
+            <!-- Basic Details Card -->
+            <div class="pa-card">
+              <div class="pa-card-header">
+                <h5 class="pa-card-title"><i class="mdi mdi-information-outline"></i> Basic Details</h5>
+              </div>
+              <div class="pa-card-body">
+                <div class="pa-form-group">
+                  <label class="pa-form-label">Product Name *</label>
+                  <input type="text" class="pa-form-control pa-val-input" name="name" id="pName" placeholder="Enter product name" required>
+                  <div class="pa-error-msg" id="errName"></div>
                 </div>
-                <div class="form-group">
-                  <label for="exampleInputPassword4">stock</label>
-                  <input type="number" class=" form-control text-white " name="stock" style="color:white;" id="exampleInputPassword4" placeholder="Stock" required>
-                  <p id="stockError" class="text-danger "></p>
+
+                <div class="pa-form-group">
+                  <label class="pa-form-label">Description *</label>
+                  <textarea class="pa-form-control pa-val-input" name="des" id="pDesc" placeholder="Enter a detailed product description" required></textarea>
+                  <div class="pa-error-msg" id="errDesc"></div>
                 </div>
-                <div class="form-group">
-                  <label for="exampleInputPassword4">Price</label>
-                  <div class="input-group mb-2 mr-sm-2">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">₹</div>
+
+                <div class="pa-form-group mb-0">
+                  <label class="pa-form-label">Tags</label>
+                  <input type="text" class="pa-form-control" name="tags" placeholder="e.g. wireless, headphones, gaming (comma separated)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing & Inventory Card -->
+            <div class="pa-card">
+              <div class="pa-card-header">
+                <h5 class="pa-card-title"><i class="mdi mdi-currency-usd"></i> Pricing & Inventory</h5>
+              </div>
+              <div class="pa-card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="pa-form-group">
+                      <label class="pa-form-label">Price *</label>
+                      <div class="pa-input-group">
+                        <span class="pa-input-prefix">₹</span>
+                        <input type="number" class="pa-form-control pa-val-input" name="price" id="pPrice" placeholder="0.00" min="0" required>
+                      </div>
+                      <div class="pa-error-msg" id="errPrice"></div>
                     </div>
-                    <input type="number" class="form-control" name="price" id="inlineFormInputGroupUsername2" placeholder="Price">
                   </div>
-                  <p id="priceError" class="text-danger "></p>
+                  <div class="col-md-6">
+                    <div class="pa-form-group">
+                      <label class="pa-form-label">Stock Quantity *</label>
+                      <input type="number" class="pa-form-control pa-val-input" name="stock" id="pStock" placeholder="0" min="0" step="1" required>
+                      <div class="pa-error-msg" id="errStock"></div>
+                    </div>
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="exampleSelectGender">Category</label>
-                  <select class="form-control text-white " name="category" style="color:white;" id="exampleSelectGender" required>
-                    <% locals.categoryList.forEach(e=>{ %>
-                    <option>
-                      <%=e.name %>
-                    </option>
-                    <% }) %>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>File upload</label>
-                  <div class="input-group col-xs-12">
-                    <div class="input-group">
-                      <div for="images" class="image card d-flex align-items-center flex-column  justify-content-center " style="width: 100%; height: 9rem; border: 0px;">
-                        <div class="border-0   aa d-flex align-items-center justify-content-center gap-3  h-100  position-relative " style="  gap:1rem">
-                          <% for(let i=0;i<3;i++) {%>
-                          <label for="images<%=i  %>" class="img-co   l position-relative   d-flex align-items-center justify-content-center " style="width: 6rem; height: 6.2rem; max-height: 90%;  cursor:pointer;  border: 2px dashed #ffffff40; border-radius: 15px;">
-                            <input type="file" class="inp" accept="image/*" onchange='hello(this,"<%=i %>")' name='images' id="images<%=i  %>" hidden>
-                            <p class="opacity-50 text-center text-capitalize w-100  " id="p<%=i  %>" style="opacity: .7;"><i class="ri-upload-cloud-2-line text-center   "></i><br>upload images</p>
-                            <img src="" alt="" id="i<%=i  %>" style="display: none;     border-radius: 15px;  width: 100% ; height: 100%; object-fit: cover; ">
-                            <i class="ri-close-circle-line position-absolute fs-3 mt-1 " id="icon<%=i  %>" onclick="clear(this,'<%=i%>')" style="opacity: 0;  top: -3px; right:0; z-index: 9999999999; scale: 1.5;"></i>
-                            <div for="images<%=i  %>" id="imageL<%= i %>" class="position-absolute fs-3 mt-1  align-items-center justify-content-center      pointer-event " style="width: 5.5rem; background-color: rgba(24, 23, 23, 0.11); backdrop-filter: blur(1px); height: 6.2rem; border-radius: 10px; transition: all 0.3s ease 0s; cursor: pointer; letter-spacing: 0.1rem; object-fit: cover;">Replace</div>
-                          </label>
-                          <% } %>
-                        </div>
-                        <div class="msg w-100 p-2 d-flex align-items-center justify-content-center ">
-                          <p id="msgP"></p>
-                        </div>
+
+                <div class="row mt-2">
+                  <div class="col-md-6">
+                    <div class="pa-form-group">
+                      <label class="pa-form-label">Category *</label>
+                      <select class="pa-form-control" name="category" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <% locals.categoryList.forEach(e => { %>
+                          <option value="<%= e.name %>"><%= e.name %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="pa-form-group">
+                      <label class="pa-form-label">Product Color</label>
+                      <div class="pa-color-picker-wrap">
+                        <input type="color" class="pa-color-input" id="pColor" name="color" value="#000000">
+                        <span class="pa-color-val" id="colorValText">#000000</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="color">Color: </label>
-                  <input type="color" id="color" name="color" value="#000000" />  
-                </div>
-                <div class="form-group">
-                  <label for="tags">Tags</label>
-                  <input type="text" class="form-control text-white" name="tags" style="color:white;" id="tags" placeholder="Enter tags separated by commas">
-                </div>
-                <div class="form-group row">
-                  <div class="col-sm-2">
-                    <div class="form-check">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="active" id="membershipRadios1" value=true checked> Active 
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-sm-5">
-                    <div class="form-check">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="active" id="membershipRadios2 " value=false> Non-Active 
-                      </label>
-                    </div>
+
+                <div class="pa-form-group mt-3 mb-0">
+                  <label class="pa-form-label">Listing Status</label>
+                  <div class="pa-radio-group">
+                    <label class="pa-radio-item">
+                      <input type="radio" name="active" value="true" checked>
+                      <span class="pa-radio-text">Active (Visible)</span>
+                    </label>
+                    <label class="pa-radio-item">
+                      <input type="radio" name="active" value="false">
+                      <span class="pa-radio-text">Inactive (Hidden)</span>
+                    </label>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="exampleTextarea1">Description</label>
-                  <textarea class=" text form-control text-white " name="des" style="color:white;" id="exampleTextarea1" rows="4" required></textarea>
-                  <p id="err2" class="text-danger "></p>
-                </div>
-                <button type="submit" class="btn submit btn-primary mr-2">Submit</button>
-                <a href="/admin/products" class="btn btn-dark">Cancel</a>
-              </form>
+              </div>
             </div>
+
           </div>
+
+          <!-- Right Column (Images & Submit) -->
+          <div class="col-lg-4">
+            
+            <!-- Images Card -->
+            <div class="pa-card">
+              <div class="pa-card-header">
+                <h5 class="pa-card-title"><i class="mdi mdi-image-multiple"></i> Product Images *</h5>
+              </div>
+              <div class="pa-card-body">
+                <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 15px;">Please upload exactly 3 images (.jpg, .jpeg, .png). The first image will be the main thumbnail.</p>
+                
+                <div class="pa-image-grid">
+                  <% for(let i=0; i<3; i++) { %>
+                    <label for="imgInput<%= i %>" class="pa-image-upload-box" id="imgBox<%= i %>">
+                      <input type="file" name="images" id="imgInput<%= i %>" accept="image/png, image/jpeg, image/jpg" data-index="<%= i %>" onchange="handleImage(this)">
+                      <div class="pa-upload-placeholder" id="imgPlaceholder<%= i %>">
+                        <i class="mdi mdi-cloud-upload-outline"></i>
+                        <span>Upload <%= i === 0 ? 'Main' : `Image ${i+1}` %></span>
+                      </div>
+                      <img src="" class="pa-image-preview" id="imgPreview<%= i %>">
+                      <div class="pa-image-overlay" id="imgOverlay<%= i %>">Replace</div>
+                      <div class="pa-remove-icon" id="imgRemove<%= i %>" data-index="<%= i %>" onclick="removeImage(event, this)"><i class="mdi mdi-close"></i></div>
+                    </label>
+                  <% } %>
+                </div>
+                <div class="pa-error-msg pa-global-error" id="errImages"></div>
+              </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="pa-card pa-actions-card">
+              <div class="pa-card-body">
+                <button type="submit" class="pa-btn-submit" id="submitBtn" disabled>
+                  <i class="mdi mdi-content-save"></i> Save Product
+                </button>
+                <a href="/admin/products" class="pa-btn-cancel">Cancel</a>
+              </div>
+            </div>
+
+          </div>
+
         </div>
-      </div>
+      </form>
+
     </div>
   </div>
 </div>
 
-<script defer src="https://cdn.crop.guide/loader/l.js?c=PQDNWR"></script>
-
-<!-- <script>
-  for (let i = 0; i < 3; i++) {
-    const icon = document.getElementById(`icon${i}`);
-    icon.addEventListener('click', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const text = document.getElementById(`p${i}`);
-      const im = document.getElementById(`i${i}`);
-      const imL = document.getElementById(`imageL${i}`);
-      const inp = document.getElementById(`images${i}`);
-      inp.value = '';
-      im.src = '';
-      im.style.display = 'none';
-      text.style.display = 'block';
-      imL.style.display = 'none';
-      icon.style.opacity = 0;
-    });
-  }
-
-  const textInput = document.querySelectorAll('.text');
-  const err1 = document.getElementById('err1');
-  const submit11 = document.querySelector('.submit');
-
-  document.getElementById('myForm').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-  });
-
-  const msgP = document.getElementById(`msgP`);
-  const form = document.getElementById('myForm')
-  const imgco = document.querySelector('.image')
-  form.addEventListener('submit', (ev) => {
-    const inputs = document.querySelectorAll('input[type="file"]');
-    let validFiles = 0;
-
-    inputs.forEach(input => {
-      if (input.files.length > 0) {
-        const file = input.files[0];
-        const fileType = file.type;
-
-        if (fileType === 'image/png' || fileType === 'image/jpeg') {
-          validFiles++;
-        } else {
-          msgP.textContent = 'Invalid file type. Please upload PNG or JPEG files only.';
-          imgco.style.height = '10rem';
-          ev.preventDefault();
-          return;
-        }
-      }
-    });
-
-    if (validFiles === 3) {
-      form.submit();
-    } else {
-      msgP.textContent = 'Please fill three images';
-      imgco.style.height = '10rem';
-      ev.preventDefault();
-    }
-  });
-
-  function hello(e, i) {
-    const text = document.getElementById(`p${i}`);
-    const im = document.getElementById(`i${i}`);
-    const imL = document.getElementById(`imageL${i}`);
-
-    im.src = URL.createObjectURL(e.files[0]);
-    const icon = document.getElementById(`icon${i}`)
-    icon.style.opacity = 1;
-    im.style.display = 'block';
-    text.style.display = 'none';
-    imL.style.display = 'flex';
-  }
-
-  const regex = /^[a-zA-Z0-9\s-]+$/;
-
-  textInput.forEach((inputElement, i) => {
-    const errorElement = document.getElementById(`err${i + 1}`);
-
-    inputElement.addEventListener('input', function (event) {
-      const inputValue = event.target.value;
-
-      if (inputValue.trim() !== '' && regex.test(inputValue)) {
-        submit11.style.pointerEvents = 'all';
-        submit11.style.opacity = 1;
-
-        errorElement.textContent = '';
-        inputElement.style.borderColor = 'green';
-      } else {
-        const submit11 = document.querySelector('.submit');
-        errorElement.textContent = 'Only contains alphabets, numbers, spaces, or hyphens allowed.';
-        inputElement.style.borderColor = 'red';
-        submit11.style.pointerEvents = 'none';
-        submit11.style.opacity = 0.5;
-      }
-    });
-  });
-
-  document.getElementById('myForm').addEventListener('submit', function (event) {
-    textInput.forEach((inputElement, i) => {
-      const inputValue = inputElement.value.trim();
-      const regex = /^[a-zA-Z0-9\s-]+$/;
-
-      if (!regex.test(inputValue)) {
-        document.getElementById(`err${i + 1}`).textContent = 'Only contains alphabets, numbers, spaces, or hyphens allowed.';
-        inputElement.style.borderColor = 'red';
-        event.preventDefault();
-      }
-    });
-  });
-</script> -->
-
-<!-- stock and price validation -->
-<!-- <script>
-  const priceInput = document.getElementById('inlineFormInputGroupUsername2');
-  const priceErrorElement = document.getElementById('priceError');
-  const stockInput = document.getElementById('exampleInputPassword4');
-  const stockErrorElement = document.getElementById('stockError');
-  const submitButton = document.querySelector('.submit');
-
-  priceInput.addEventListener('input', function (event) {
-    const priceValue = parseFloat(event.target.value);
-
-    if (priceValue >= 0) {
-      submitButton.style.pointerEvents = 'all';
-      submitButton.style.opacity = 1;
-      priceErrorElement.textContent = '';
-      priceInput.style.borderColor = 'green';
-    } else {
-      submitButton.style.pointerEvents = 'none';
-      submitButton.style.opacity = 0.5;
-      priceErrorElement.textContent = 'Price cannot be less than 0';
-      priceInput.style.borderColor = 'red';
-    }
-  });
-
-  stockInput.addEventListener('input', function (event) {
-    const stockValue = Number(event.target.value);
-
-    if (!isNaN(stockValue) && stockValue >= 0 && Number.isInteger(stockValue)) {
-      submitButton.style.pointerEvents = 'all';
-      submitButton.style.opacity = 1;
-      stockErrorElement.textContent = '';
-      stockInput.style.borderColor = 'green';
-    } else {
-      submitButton.style.pointerEvents = 'none';
-      submitButton.style.opacity = 0.5;
-      stockErrorElement.textContent = 'Stock must be a non-negative integer';
-      stockInput.style.borderColor = 'red';
-    }
-  });
-</script> -->
-
 <script>
-  for (let i = 0; i < 3; i++) {
-    const icon = document.getElementById(`icon${i}`);
-    icon.addEventListener('click', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      const text = document.getElementById(`p${i}`);
-      const im = document.getElementById(`i${i}`);
-      const imL = document.getElementById(`imageL${i}`);
-      const inp = document.getElementById(`images${i}`);
-      inp.value = '';
-      im.src = '';
-      im.style.display = 'none';
-      text.style.display = 'block';
-      imL.style.display = 'none';
-      icon.style.opacity = 0;
-    });
-  }
+  // Elements
+  const pName = document.getElementById('pName');
+  const pDesc = document.getElementById('pDesc');
+  const pPrice = document.getElementById('pPrice');
+  const pStock = document.getElementById('pStock');
+  const errName = document.getElementById('errName');
+  const errDesc = document.getElementById('errDesc');
+  const errPrice = document.getElementById('errPrice');
+  const errStock = document.getElementById('errStock');
+  const errImages = document.getElementById('errImages');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('productForm');
 
-  const textInput = document.querySelectorAll('.text');
-  const err1 = document.getElementById('err1');
-  const submit11 = document.querySelector('.submit');
-
-  document.getElementById('myForm').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
+  // Color Picker Sync
+  document.getElementById('pColor').addEventListener('input', function(e) {
+    document.getElementById('colorValText').textContent = e.target.value.toUpperCase();
   });
 
-  const msgP = document.getElementById(`msgP`);
-  const form = document.getElementById('myForm')
-  const imgco = document.querySelector('.image')
-
-  form.addEventListener('submit', (ev) => {
-    const inputs = document.querySelectorAll('input[type="file"]');
-    let validFiles = 0;
-
-    inputs.forEach(input => {
-      if (input.files.length > 0) {
-        const file = input.files[0];
-        const fileType = file.type;
-
-        if (fileType === 'image/png' || fileType === 'image/jpeg') {
-          validFiles++;
-        } else {
-          msgP.textContent = 'Only PNG or JPEG images are allowed.';
-          imgco.style.height = '10rem';
-          ev.preventDefault();
-          return;
-        }
-      }
-    });
-
-    if (validFiles === 3) {
-      form.submit();
-    } else {
-      msgP.textContent = 'Please upload exactly 3 images.';
-      imgco.style.height = '10rem';
-      ev.preventDefault();
-    }
-  });
-
-  function hello(e, i) {
-    const text = document.getElementById(`p${i}`);
-    const im = document.getElementById(`i${i}`);
-    const imL = document.getElementById(`imageL${i}`);
-
-    im.src = URL.createObjectURL(e.files[0]);
-    const icon = document.getElementById(`icon${i}`)
-    icon.style.opacity = 1;
-    im.style.display = 'block';
-    text.style.display = 'none';
-    imL.style.display = 'flex';
-  }
-
-  /**
-   * ================= UPDATED REGEX =================
-   */
-
+  // Regex Patterns
   const nameRegex = /^[a-zA-Z0-9\s\-()]+$/;
   const descRegex = /^[a-zA-Z0-9\s.,:;!?()\-\/&%]+$/;
 
-  textInput.forEach((inputElement, i) => {
-    const errorElement = document.getElementById(`err${i + 1}`);
+  // Validation State
+  let state = { name: false, desc: false, price: false, stock: false };
 
-    inputElement.addEventListener('input', function (event) {
-      const inputValue = event.target.value.trim();
-
-      let isValid = false;
-
-      // 👉 First input = Name
-      if (i === 0) {
-        if (inputValue !== '' && nameRegex.test(inputValue)) {
-          isValid = true;
-        } else {
-          errorElement.textContent = 'Name can include letters, numbers, spaces, (), -';
-        }
-      }
-
-      // 👉 Second input = Description
-      if (i === 1) {
-        if (inputValue !== '' && descRegex.test(inputValue)) {
-          isValid = true;
-        } else {
-          errorElement.textContent = 'Description allows symbols like . , : ; ! ? ( ) - / & %';
-        }
-      }
-
-      if (isValid) {
-        submit11.style.pointerEvents = 'all';
-        submit11.style.opacity = 1;
-
-        errorElement.textContent = '';
-        inputElement.style.borderColor = 'green';
-      } else {
-        inputElement.style.borderColor = 'red';
-        submit11.style.pointerEvents = 'none';
-        submit11.style.opacity = 0.5;
-      }
-    });
-  });
-
-  document.getElementById('myForm').addEventListener('submit', function (event) {
-    textInput.forEach((inputElement, i) => {
-      const inputValue = inputElement.value.trim();
-
-      let isValid = false;
-
-      if (i === 0) isValid = nameRegex.test(inputValue);
-      if (i === 1) isValid = descRegex.test(inputValue);
-
-      if (!isValid) {
-        document.getElementById(`err${i + 1}`).textContent = 'Please enter valid data.';
-        inputElement.style.borderColor = 'red';
-        event.preventDefault();
-      }
-    });
-  });
-</script>
-
-<!-- stock and price validation -->
-<script>
-  const priceInput = document.getElementById('inlineFormInputGroupUsername2');
-  const priceErrorElement = document.getElementById('priceError');
-  const stockInput = document.getElementById('exampleInputPassword4');
-  const stockErrorElement = document.getElementById('stockError');
-  const submitButton = document.querySelector('.submit');
-
-  priceInput.addEventListener('input', function (event) {
-    const priceValue = parseFloat(event.target.value);
-
-    if (priceValue >= 0) {
-      submitButton.style.pointerEvents = 'all';
-      submitButton.style.opacity = 1;
-      priceErrorElement.textContent = '';
-      priceInput.style.borderColor = 'green';
+  function checkFormValidity() {
+    const imagesValid = Array.from({length: 3}).every((_, i) => document.getElementById(`imgInput${i}`).files.length > 0);
+    if(state.name && state.desc && state.price && state.stock && imagesValid) {
+      submitBtn.disabled = false;
+      errImages.textContent = '';
     } else {
-      submitButton.style.pointerEvents = 'none';
-      submitButton.style.opacity = 0.5;
-      priceErrorElement.textContent = 'Price must be a positive number';
-      priceInput.style.borderColor = 'red';
+      submitBtn.disabled = true;
+    }
+  }
+
+  // Name Validation
+  pName.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    if(val === '') { errName.textContent = 'Name is required.'; state.name = false; }
+    else if(!nameRegex.test(val)) { errName.textContent = 'Special characters not allowed except () and -.'; state.name = false; }
+    else { errName.textContent = ''; state.name = true; }
+    updateInputClass(pName, state.name, val !== '');
+    checkFormValidity();
+  });
+
+  // Description Validation
+  pDesc.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    if(val === '') { errDesc.textContent = 'Description is required.'; state.desc = false; }
+    else if(!descRegex.test(val)) { errDesc.textContent = 'Invalid special characters found.'; state.desc = false; }
+    else { errDesc.textContent = ''; state.desc = true; }
+    updateInputClass(pDesc, state.desc, val !== '');
+    checkFormValidity();
+  });
+
+  // Price Validation
+  pPrice.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    if(isNaN(val)) { errPrice.textContent = 'Price is required.'; state.price = false; }
+    else if(val < 0) { errPrice.textContent = 'Price cannot be negative.'; state.price = false; }
+    else { errPrice.textContent = ''; state.price = true; }
+    updateInputClass(pPrice, state.price, !isNaN(val));
+    checkFormValidity();
+  });
+
+  // Stock Validation
+  pStock.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    if(e.target.value.trim() === '') { errStock.textContent = 'Stock is required.'; state.stock = false; }
+    else if(!Number.isInteger(val)) { errStock.textContent = 'Stock must be a whole number.'; state.stock = false; }
+    else if(val < 0) { errStock.textContent = 'Stock cannot be negative.'; state.stock = false; }
+    else { errStock.textContent = ''; state.stock = true; }
+    updateInputClass(pStock, state.stock, e.target.value.trim() !== '');
+    checkFormValidity();
+  });
+
+  function updateInputClass(el, isValid, hasValue) {
+    if(!hasValue) { el.classList.remove('pa-control-valid', 'pa-control-invalid'); }
+    else if(isValid) { el.classList.remove('pa-control-invalid'); el.classList.add('pa-control-valid'); }
+    else { el.classList.remove('pa-control-valid'); el.classList.add('pa-control-invalid'); }
+  }
+
+  // Image Handling
+  function handleImage(input) {
+    const index = input.dataset.index;
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if(input.files && input.files[0]) {
+      if(!validTypes.includes(input.files[0].type)) {
+        alert("Only PNG or JPEG images are allowed.");
+        input.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById(`imgPreview${index}`).src = e.target.result;
+        document.getElementById(`imgPreview${index}`).style.display = 'block';
+        document.getElementById(`imgPlaceholder${index}`).style.display = 'none';
+        document.getElementById(`imgBox${index}`).classList.add('has-image');
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+    checkFormValidity();
+  }
+
+  function removeImage(e, el) {
+    e.preventDefault();
+    e.stopPropagation();
+    const index = el.dataset.index;
+    document.getElementById(`imgInput${index}`).value = '';
+    document.getElementById(`imgPreview${index}`).src = '';
+    document.getElementById(`imgPreview${index}`).style.display = 'none';
+    document.getElementById(`imgPlaceholder${index}`).style.display = 'flex';
+    document.getElementById(`imgBox${index}`).classList.remove('has-image');
+    checkFormValidity();
+  }
+
+  form.addEventListener('submit', (e) => {
+    const imagesValid = Array.from({length: 3}).every((_, i) => document.getElementById(`imgInput${i}`).files.length > 0);
+    if(!imagesValid) {
+      e.preventDefault();
+      errImages.textContent = "Please provide exactly 3 images.";
     }
   });
 
-  stockInput.addEventListener('input', function (event) {
-    const stockValue = Number(event.target.value);
-
-    if (!isNaN(stockValue) && stockValue >= 0 && Number.isInteger(stockValue)) {
-      submitButton.style.pointerEvents = 'all';
-      submitButton.style.opacity = 1;
-      stockErrorElement.textContent = '';
-      stockInput.style.borderColor = 'green';
-    } else {
-      submitButton.style.pointerEvents = 'none';
-      submitButton.style.opacity = 0.5;
-      stockErrorElement.textContent = 'Stock must be a non-negative integer';
-      stockInput.style.borderColor = 'red';
-    }
+  // Prevent form submit on Enter
+  form.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') e.preventDefault();
   });
-</script>
 
+</script>
 
 <script src="/vendors/js/vendor.bundle.base.js"></script>
 <script src="/vendors/chart.js/Chart.min.js"></script>
 <script src="/vendors/progressbar.js/progressbar.min.js"></script>
 <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
 <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-<script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
 <script src="/js/off-canvas.js"></script>
 <script src="/js/hoverable-collapse.js"></script>
 <script src="/js/misc.js"></script>
 <script src="/js/settings.js"></script>
 <script src="/js/todolist.js"></script>
 <script src="/js/dashboard.js"></script>
-<script>
-  (function ($) {
-    'use strict';
 
-    $(function () {
-      $('.file-upload-browse').on('click', function () {
-        var filesInput = $(this).parent().parent().find('.file-upload-default');
-        filesInput.trigger('click');
-      });
-
-      $('.file-upload-default').on('change', function () {
-        var filesInput = $(this);
-        var files = filesInput[0].files;
-
-        var maxAllowedFiles = 3;
-        if (files.length > maxAllowedFiles) {
-          alert('You can only upload up to 3 files.');
-          filesInput.val('');
-          return;
-        }
-
-        var allowedTypes = ['image/png', 'image/jpeg'];
-        var invalidFiles = Array.from(files).filter(file => !allowedTypes.includes(file.type));
-
-        if (invalidFiles.length > 0) {
-          alert('Invalid file type. Please upload PNG or JPG files only.');
-          filesInput.val('');
-          return;
-        }
-
-        var fileNames = Array.from(files).map(file => file.name).join(', ');
-
-        filesInput.parent().find('.form-control').val(fileNames);
-      });
-    });
-  })(jQuery);
-</script>
-<style>
-  @media (max-width:900px) {
-    .aa {
-      width: 100% !important;
-    }
-  }
-
-  @font-face {
-    font-family: req;
-    src: url(/fonts/611aee5b70cc88187b78993c_GRIFTER.otf);
-  }
-
-  .aa {
-    width: 50%;
-  }
-
-  body::-webkit-scrollbar {
-    width: 0;
-  }
-
-  body {
-    overflow: hidden !important;
-  }
-
-  .container-scroller {
-    overflow: hidden;
-  }
-
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none !important;
-  }
-
-  #imageL3,
-  #imageL1,
-  #imageL2,
-  #imageL0 {
-    display: none;
-    opacity: 0;
-    font-family: req;
-  }
-
-  #msgP {
-    letter-spacing: .1rem;
-    text-transform: uppercase;
-    font-family: req;
-  }
-
-  .l:hover #imageL3,
-  .l:hover #imageL1,
-  .l:hover #imageL2,
-  .l:hover #imageL0 {
-    opacity: 1;
-  }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
-<script src="/js/base.js"></script>
 </body>
 </html>

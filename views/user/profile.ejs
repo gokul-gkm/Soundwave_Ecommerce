@@ -19,53 +19,7 @@
   <section class="">
     <div class="container-fluid py-5 h-100 position-relative">
       <div class="row d-flex align-items-start h-100" style="gap: 10rem">
-        <aside class="col-md-4 col-lg-3">
-          <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-            <li class="nav-item">
-              <a
-                class="nav-link active"
-                id="tab-dashboard-link"
-                data-toggle="tab"
-                href="#tab-dashboard"
-                role="tab"
-                aria-controls="tab-dashboard"
-                aria-selected="true"
-                >Profile</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="tab-orders-link" href="/orders">Orders</a>
-            </li>
-
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                id="tab-address-link"
-                href="/address"
-                aria-selected="true"
-                >Addresses</a
-              >
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                id="tab-account-link"         
-                href="/coupon"
-                aria-selected="false"
-                >Coupons</a
-              >
-            </li>
-            <li class="nav-item">
-              <form action="/logout" method="post" id="logoutForm1">
-                <a class="nav-link" href="#">
-                  <button type="submit" class="border-0 bg-transparent" id="logoutButton1">
-                    Sign Out
-                  </button></a
-                >
-              </form>
-            </li>
-          </ul>
-        </aside>
+        <%- include('../layout/profileSidebar', { activePage: 'profile' }) %>
         
         <div class="col col-lg-6 mb-4 mb-lg-0">
           <div class="card mb-3" style="border-radius: 0.5rem">
@@ -248,11 +202,16 @@
 
 
 <script>
-  document.getElementById('logoutButton1').addEventListener('click', function(event) {
- event.preventDefault();
- showLogoutConfirmation(event, 'logoutForm1');
-});
+// Sidebar logout (from reusable partial)
+const sidebarLogoutForm = document.getElementById('sidebarLogoutForm');
+if (sidebarLogoutForm) {
+  sidebarLogoutForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    showLogoutConfirmation(event, 'sidebarLogoutForm');
+  });
+}
 
+// Profile card logout
 document.getElementById('logoutButton2').addEventListener('click', function(event) {
  event.preventDefault();
  showLogoutConfirmation(event, 'logoutForm2');
