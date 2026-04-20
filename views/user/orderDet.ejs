@@ -20,12 +20,12 @@
         
         <%- include('../layout/profileSidebar', { activePage: 'orders' }) %>
         
-        <aside class="col col-xl-9 col-lg-8 col-md-6 col-sm-6 mb-4 mb-lg-0">
+        <aside class="col-lg-9 col-md-8 col-12 mb-4 mb-lg-0">
           <div class="row w-100" style="gap: 2rem">
-            <div class="container">
-              <div style="max-height: 400px; overflow-y: auto;">
-              <% if(locals.ordercount >0) {%> 
-              <table class="table table-wishlist table-mobile" style="width: 920px">
+            <div class="container-fluid">
+              <% if(locals.ordercount > 0) { %> 
+              <div class="table-responsive">
+                <table class="table table-wishlist table-mobile">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -41,7 +41,7 @@
                 <tbody>
                   <% if(locals.order) {%> <% order.forEach((e, index)=>{ %>
                   <tr>
-                    <td><%= index+1 %></td>
+                    <td><%= (currentPage - 1) * limit + index + 1 %></td>
                     <td class="">
                       <%= e._id %>
 
@@ -76,29 +76,44 @@
                   <% })} %>
                 </tbody>
               </table>
-            </div>
-              <% if(locals.order) {%>
-              <div class="wishlist-share">
-                <div class="social-icons social-icons-sm mb-2">
-                  <label class="social-label">Total Order:</label>
-                  <%=order.length %>
-                </div>
-                <!-- End .soial-icons -->
               </div>
-              <% }else{ %>
-              <div class="wishlist-share">
-                <div class="social-icons social-icons-sm mb-2">
-                  <label class="social-label">Total Order:</label>
-                  0
-                </div>
-                <!-- End .soial-icons -->
-              </div>
+              <!-- Pagination -->
+              <% if (totalPages > 1) { %>
+              <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                      <span aria-hidden="true">&laquo; Previous</span>
+                    </a>
+                  </li>
+                  
+                  <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                      <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
+                  <% } %>
+
+                  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                      <span aria-hidden="true">Next &raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
               <% } %>
 
-              <% } else { %>
-                <div >
-                  <h1 class="text-primary">No order yet!!</h1>
+              <div class="wishlist-share mt-3">
+                <div class="social-icons social-icons-sm mb-2">
+                  <label class="social-label">Total Orders Found:</label>
+                  <span class="text-primary font-weight-bold"><%= ordercount %></span>
+                </div>
+              </div>
 
+              <% } else { %>
+                <div class="text-center py-5">
+                  <i class="fas fa-shopping-basket fa-3x text-muted mb-3"></i>
+                  <h2 class="text-muted">No orders found yet!</h2>
+                  <a href="/category" class="btn btn-primary mt-3" style="background-color: #c96; border: none;">Start Shopping</a>
                 </div>
               <% } %>
             </div>
@@ -130,6 +145,34 @@
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
       -webkit-appearance: none !important;
+    }
+
+    /* Pagination Styling */
+    .pagination .page-link {
+      color: #333;
+      border: 1px solid #ebebeb;
+      margin: 0 3px;
+      border-radius: 4px !important;
+      padding: 8px 16px;
+    }
+    .pagination .page-item.active .page-link {
+      background-color: #c96;
+      border-color: #c96;
+      color: #fff;
+    }
+    .pagination .page-item.disabled .page-link {
+      color: #ccc;
+      pointer-events: none;
+    }
+    .pagination .page-link:hover {
+      background-color: #f4f4f4;
+      border-color: #c96;
+      color: #c96;
+    }
+    .table-wishlist td {
+      vertical-align: middle;
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>

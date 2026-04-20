@@ -215,29 +215,36 @@ const createOrder = async (req, res) => {
 const getOrders = async (req, res) => {
   try {
     const userId = req.session.login;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
     const category = await Category.find({ isDeleted: false });
-    const order = await Order
-      .find({ userId })
-      .sort({ orderDate: -1 });
-    const ordercount = await Order
-      .find({ userId }).countDocuments();
     
-      const cartCount = await getCartCount(userId);
-      const wishlistCount = await getWishlistCount(userId)
-    if (order) {
-      res.render("user/orderDet", {
-        login: userId,
-        order,
-        category,
-        ordercount,
-        cartCount,
-        wishlistCount
-      });
-    } else {
-      res.render("user/orderDet", { login: userId, category });
-    }
+    const totalOrders = await Order.countDocuments({ userId });
+    const order = await Order.find({ userId })
+      .sort({ orderDate: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalOrders / limit);
+    const cartCount = await getCartCount(userId);
+    const wishlistCount = await getWishlistCount(userId);
+
+    res.render("user/orderDet", {
+      login: userId,
+      order,
+      category,
+      ordercount: totalOrders,
+      currentPage: page,
+      totalPages,
+      limit,
+      cartCount,
+      wishlistCount
+    });
   } catch (err) {
     console.log(err.message + " orderdet page rendering ");
+    res.status(500).send("Internal Server Error");
   }
 };
 
