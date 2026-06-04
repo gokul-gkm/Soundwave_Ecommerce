@@ -40,6 +40,7 @@ const getProducts = async (req, res) => {
       ca,
       currentPage: page,
       totalPages,
+      q,
     });
   } catch (err) {
     console.log(err.message + "        product dets showing page err");

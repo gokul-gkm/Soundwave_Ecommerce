@@ -36,7 +36,7 @@ const getOrders = async (req, res) => {
             return res.json({ orderList, totalPages, currentPage: page });
         }
 
-        res.render('admin/orderDets', { admin: req.session.admin, order: true, orderList , totalPages, currentPage: page})
+        res.render('admin/orderDets', { admin: req.session.admin, order: true, orderList, totalPages, currentPage: page, q });
     } catch (err) {
         console.log(err.message + '   admin order page rendering route ')
     }

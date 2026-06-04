@@ -37,6 +37,7 @@ const getUsers = async (req, res) => {
       user: "user",
       currentPage: page,
       totalPages,
+      q,
     });
   } catch (err) {
     console.log(err.message + "     users add route");

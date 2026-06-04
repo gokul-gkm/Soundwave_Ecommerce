@@ -1,129 +1,152 @@
 <%- include('../layout/adminlayout.ejs') -%>
-  <div class="container-scroller">
+<div class="container-scroller">
+  <%- include('../layout/adminnav.ejs') -%>
+  <div class="main-panel">
+    <div class="content-wrapper" style="padding: 1.5rem 2.2rem;">
+      <div class="row">
+        <!-- Background Blurs -->
+        <div class="circle position-fixed" style="background-color: rebeccapurple; filter: blur(140px); width: 14rem; height: 11rem; border-radius: 50%; right: 5rem; top: 15rem; z-index: 0; pointer-events: none; opacity: 0.5;"></div>
+        <div class="circle position-fixed" style="background-color: rgba(0, 0, 255, 0.4); filter: blur(140px); width: 14rem; height: 11rem; border-radius: 50%; left: 18rem; top: 8rem; z-index: 0; pointer-events: none; opacity: 0.5;"></div>
 
-    <%- include('../layout/adminnav.ejs') -%>
-
-      <div class="main-panel">
-        <div class="content-wrapper">
-            
-          <div class="row ">
-            <div class="circle position-absolute " style="background-color: rebeccapurple;
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-            transform: translate(57rem, 23rem);"></div>
-            <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589);
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-         "></div>
-            <div class="col-12 grid-margin">
-              <div class="card " style="height: 80vh; border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-                <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-                  <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between ">
-                      <h4 class="card-title">offer category adding Status</h4>
-                      <a href="/admin/offers" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">back to offer</a>
-                    </div>
-                    <div class="table-responsive">
-                        <form action="/admin/offers" method="post">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>
-                              No
-                            </th>
-                            <!-- <th>image</th> -->
-                            <th>  Name </th>
-                            <!-- <th> price </th> -->
-                            <th> add </th>
-
-                  
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% console.log(locals.category); %>
-                            <%locals.category.forEach((e,i)=>{%>
-                              
-                       <tr>
-                        <td><%=i+1  %></td>
-                       
-                        <td  ><%=e.name  %></td>
-                        
-                        <td  >    <div class="form-check form-check-flat form-check-primary">
-                            <label class="form-check-label">
-                                <% console.log(locals.offer); %>
-                              <input type="checkbox"  <%= e.isOffer?"checked":'' %> onchange="offerCheck(this,'<%=e._id%>','<%=locals.id%>',<%=locals.offer%>)" class="form-check-input"></label>
-                          </div> </td>
-                       </tr>
-                       <% }) %>
-                        </tbody>
-                      </table>
-                   
-                      </form>
-                    </div>
-                    <%- include('../layout/pagination.ejs') -%>
-                  </div></div>
-                </div>
+        <div class="col-12 grid-margin" style="position: relative; z-index: 1;">
+          <div class="offer-container-glass">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div>
+                <h3 class="offer-page-title">Category Assignment</h3>
+                <p class="offer-page-subtitle text-muted">Assign current offer to specific categories</p>
               </div>
+              <a href="/admin/offers" class="offer-back-btn">
+                <i class="ri-arrow-left-line"></i> Back to Offers
+              </a>
             </div>
+
+            <div class="table-responsive">
+              <table class="offer-custom-table">
+                <thead>
+                  <tr>
+                    <th style="width: 80px;">No</th>
+                    <th>Category Name</th>
+                    <th class="text-center" style="width: 150px;">Offer Active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% category.forEach((e, i) => { %>
+                  <% let rowDelay = (i * 0.05).toFixed(2) + 's'; %>
+                  <tr class="offer-row" style="--row-delay: <%= rowDelay %>;">
+                    <td class="offer-index"><%= i + 1 %></td>
+                    <td>
+                      <div class="offer-name-cell">
+                        <span class="offer-name-txt"><%= e.name %></span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <label class="cp-toggle">
+                        <input type="checkbox" <%= e.isOffer ? "checked" : "" %> onchange="offerCheck(this, '<%= e._id %>', '<%= locals.id %>', <%= locals.offer %>)">
+                        <span class="cp-toggle-slider"></span>
+                      </label>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+
+            <%- include('../layout/pagination.ejs') -%>
           </div>
         </div>
       </div>
+    </div>
   </div>
+</div>
+
 <script>
-    function offerCheck(e,id,offerId,offer){
-        console.log('add');
-        const add=e.checked?true:false
-        console.log(add);
-        fetch(`/admin/offers/${offerId}/categories`,{
-            method:'put',
-            headers:{ "Content-Type": "application/json" },
-            body:JSON.stringify({id,add,offer})
-        }).then(res=>res.json())
-    }
+  function offerCheck(e, id, offerId, offer) {
+    const add = e.checked;
+    fetch(`/admin/offers/${offerId}/categories`, {
+      method: 'PUT',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, add, offer })
+    })
+    .then(res => res.json())
+    .catch(err => console.error('Error updating category offer:', err));
+  }
 </script>
-  <script src="/vendors/js/vendor.bundle.base.js"></script>
 
-  <script src="/vendors/chart.js/Chart.min.js"></script>
-  <script src="/vendors/progressbar.js/progressbar.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-  <script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+<style>
+  :root {
+    --accent: #8860d0;
+    --accent-soft: rgba(136, 96, 208, 0.15);
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-soft: rgba(255, 255, 255, 0.6);
+  }
 
-  <script src="/js/off-canvas.js"></script>
-  <script src="/js/hoverable-collapse.js"></script>
-  <script src="/js/misc.js"></script>
-  <script src="/js/settings.js"></script>
-  <script src="/js/todolist.js"></script>
-  <script src="/js/dashboard.js"></script>
-  <style>
-    body::-webkit-scrollbar {
-      width: 0;
-    }
+  .offer-container-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.8rem;
+    min-height: 75vh;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
 
-    body {
-      overflow: hidden !important;
-    }
+  .offer-page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .offer-page-subtitle { font-size: 0.9rem; }
 
-    .container-scroller {
-      overflow: hidden;
-    }
+  .offer-back-btn {
+    background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid var(--glass-border);
+    padding: 0.6rem 1.2rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem;
+    display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; text-decoration: none;
+  }
+  .offer-back-btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(-3px); color: #fff; text-decoration: none; }
 
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none !important;
-    }
-  </style>
+  /* Custom Toggle Switch */
+  .cp-toggle { position: relative; display: inline-block; width: 48px; height: 24px; }
+  .cp-toggle input { opacity: 0; width: 0; height: 0; }
+  .cp-toggle-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1); transition: .4s; border-radius: 34px;
+    border: 1px solid var(--glass-border);
+  }
+  .cp-toggle-slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 2px;
+    background-color: white; transition: .4s; border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  input:checked + .cp-toggle-slider { background-color: var(--accent); border-color: var(--accent); }
+  input:checked + .cp-toggle-slider:before { transform: translateX(22px); }
 
-  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+  /* Table Styles */
+  .offer-custom-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+  .offer-custom-table th {
+    padding: 1rem; color: var(--text-soft); font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .offer-row { animation: fadeInRow 0.3s ease both; animation-delay: var(--row-delay, 0s); }
+  .offer-row td {
+    padding: 1rem; background: rgba(0, 0, 0, 0.15);
+    border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border);
+  }
+  .offer-row td:first-child { border-left: 1px solid var(--glass-border); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+  .offer-row td:last-child { border-right: 1px solid var(--glass-border); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+  .offer-index { font-family: monospace; color: var(--text-soft); }
+  .offer-name-txt { font-weight: 600; color: #fff; font-size: 0.95rem; }
 
-  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+  @keyframes fadeInRow { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  <script src="/js/base.js"></script>
+  body::-webkit-scrollbar { width: 0; }
+  body { overflow: hidden !important; background: #0f1116; }
+  .container-scroller { overflow: hidden; }
+</style>
 
-  </body>
-
-  </html>
+<script src="/vendors/js/vendor.bundle.base.js"></script>
+<script src="/js/off-canvas.js"></script>
+<script src="/js/hoverable-collapse.js"></script>
+<script src="/js/misc.js"></script>
+<script src="/js/settings.js"></script>
+<script src="/js/todolist.js"></script>
+</body>
+</html>

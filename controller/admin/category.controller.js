@@ -72,6 +72,7 @@ const getCategories = async (req, res) => {
       category: true,
       totalPages,
       currentPage: page,
+      q,
     });
   } catch (er) {
     console.log(er.message + "    category dets ");
