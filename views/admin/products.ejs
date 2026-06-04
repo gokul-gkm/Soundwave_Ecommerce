@@ -91,7 +91,31 @@
                         style="outline: 0; border:0; margin-top: -1rem;">Add product</a>
                     </div>
 
-                    </p>
+                    <!-- Search Bar -->
+                    <div class="product-search-wrapper" style="margin-bottom: 1.2rem;">
+                      <div class="product-search-box">
+                        <svg class="product-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                          type="text"
+                          id="productSearchInput"
+                          class="product-search-input"
+                          placeholder="Search products..."
+                          autocomplete="off"
+                        />
+                        <div class="product-search-loader" id="productSearchLoader" style="display:none;">
+                          <div class="product-search-spinner"></div>
+                        </div>
+                        <button class="product-search-clear" id="productSearchClear" style="display:none;" title="Clear search">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
 
                     <div class="table-responsive">
                       <table class="table">
@@ -108,7 +132,7 @@
                             <th> options </th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="productTableBody">
                           <% product.forEach((e,i)=>{ %>
 
                             <tr class="tr" id="e<%=e._id  %>" style="background-color: transparent !important;">
@@ -198,7 +222,9 @@
 
                     </div>
 
-                    <%- include('../layout/pagination.ejs') -%>
+                    <div id="productPaginationContainer">
+                      <%- include('../layout/pagination.ejs') -%>
+                    </div>
 
                   </div>
                 </div>
@@ -405,6 +431,158 @@
     }
 
   </script>
+
+  <!-- Product Search Script -->
+  <script>
+  (function() {
+    const searchInput = document.getElementById('productSearchInput');
+    const searchLoader = document.getElementById('productSearchLoader');
+    const searchClear = document.getElementById('productSearchClear');
+    const tableBody = document.getElementById('productTableBody');
+    const paginationContainer = document.getElementById('productPaginationContainer');
+    let debounceTimer = null;
+    let currentQuery = '';
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      currentQuery = query;
+      searchClear.style.display = query.length > 0 ? 'flex' : 'none';
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        performSearch(query, 1);
+      }, 400);
+    });
+
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      currentQuery = '';
+      searchClear.style.display = 'none';
+      performSearch('', 1);
+      searchInput.focus();
+    });
+
+    function performSearch(query, page) {
+      searchLoader.style.display = 'flex';
+      fetch(`/admin/products?q=${encodeURIComponent(query)}&page=${page}`, {
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          renderTable(data.products, data.currentPage);
+          renderPagination(data.totalPages, data.currentPage, query);
+          searchLoader.style.display = 'none';
+        })
+        .catch(err => {
+          console.error('Product search error:', err);
+          searchLoader.style.display = 'none';
+        });
+    }
+
+    function renderTable(products, currentPage) {
+      if (!products || products.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="10" style="text-align:center; padding: 2.5rem 0;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; opacity:0.6;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <span style="font-size:0.95rem;">No products found</span>
+              </div>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const limit = 5;
+      const startIndex = (currentPage - 1) * limit;
+
+      tableBody.innerHTML = products.map((e, i) => {
+        const imagesHtml = (e.images || []).map(im => {
+          const src = im.startsWith('http') ? im : '/productImage/' + im;
+          return `<div class="cir" style="display:inline-block;width:30px;height:30px;border-radius:50%;overflow:hidden;">
+            <img style="width:100%;height:100%;object-fit:cover;" src="${src}" alt="">
+          </div>`;
+        }).join('');
+
+        const catName = e.category ? e.category.name : 'N/A';
+        const imagesJson = JSON.stringify(e.images || []).replace(/'/g, "\\'");
+        const descEscaped = (e.description || '').replace(/'/g, "\\'");
+        const tagsEscaped = (e.tags || []).join(', ').replace(/'/g, "\\'");
+        const nameEscaped = (e.name || '').replace(/'/g, "\\'");
+
+        return `
+          <tr class="tr" id="e${e._id}" style="background-color:transparent !important; animation: fadeInProductRow 0.25s ease ${i * 0.04}s both;">
+            <td class="py-1">${startIndex + i + 1}</td>
+            <td>${e.name}</td>
+            <td>
+              <div class="progress d-flex align-items-center h-100 w-100" style="background-color:transparent;">
+                ${imagesHtml}
+              </div>
+            </td>
+            <td>${e.stock}</td>
+            <td>₹${Number(e.price).toFixed(2)}</td>
+            <td>${e.createdAt}</td>
+            <td>${catName}</td>
+            <td>
+              <div onclick="" style="cursor:pointer;" class="badge badge-outline-success">${e.status}</div>
+            </td>
+            <td>
+              <div onclick="active('${e._id}')" id="b${e._id}" style="cursor:pointer;"
+                class="badge ${e.listed ? 'badge-outline-success' : 'badge-outline-danger'}">
+                ${e.listed ? 'Listed' : 'Unlisted'}
+              </div>
+            </td>
+            <td class="dropdown">
+              <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+              <div style="min-width:5rem;padding:.9rem 0;height:max-content;" class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list overflow-hidden" aria-labelledby="profile-dropdown">
+                <div class="edit d-flex flex-column gap-2 h-100 w-100 justify-content-center align-items-center">
+                  <a href="/admin/products/${e._id}" class="fs-5" style="line-height:0;margin-bottom:0;color:#6c7293;text-decoration:none;">view&nbsp;<i class="ri-eye-line"></i></a>
+                  <br>
+                  <div class="d" style="width:100%;height:1px;background-color:rgba(77,75,75,0.5);"></div>
+                  <br>
+                  <p onclick="edit('${imagesJson}','${e._id}','${nameEscaped}','${e.stock}','${e.price}','${catName}','${descEscaped}','${tagsEscaped}')" class="fs-5" style="cursor:pointer;line-height:0;margin-bottom:0;color:#6c7293;">edit&nbsp;<i class="ri-edit-line"></i></p>
+                  <br>
+                  <div class="d" style="width:100%;height:1px;background-color:rgba(77,75,75,0.5);"></div>
+                  <br>
+                  <a href="#" onclick="deleteProduct('${e._id}')" class="fs-5" style="line-height:0;margin-bottom:0;color:#6c7293;">delete&nbsp;<i class="ri-delete-bin-3-line"></i></a>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function renderPagination(totalPages, currentPage, query) {
+      if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+      }
+      let html = '<nav aria-label="Page navigation"><ul class="pagination justify-content-center">';
+      if (currentPage > 1) {
+        html += `<li class="page-item"><a class="page-link product-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`;
+      }
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item ${currentPage === i ? 'active' : ''}"><a class="page-link product-page-link" href="#" data-page="${i}">${i}</a></li>`;
+      }
+      if (currentPage < totalPages) {
+        html += `<li class="page-item"><a class="page-link product-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`;
+      }
+      html += '</ul></nav>';
+      paginationContainer.innerHTML = html;
+
+      paginationContainer.querySelectorAll('.product-page-link').forEach(link => {
+        link.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          performSearch(query, parseInt(this.dataset.page));
+        });
+      });
+    }
+  })();
+  </script>
+
   <script src="/vendors/js/vendor.bundle.base.js"></script>
 
   <script src="/vendors/chart.js/Chart.min.js"></script>
@@ -482,6 +660,105 @@
 
     h3 {
       margin-top: -1rem;
+    }
+
+    /* ── Product Search Bar ── */
+    .product-search-wrapper {
+      position: relative;
+    }
+
+    .product-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .product-search-box:focus-within {
+      border-color: rgba(136, 96, 208, 0.6);
+      box-shadow: 0 0 0 3px rgba(136, 96, 208, 0.12), 0 4px 20px rgba(136, 96, 208, 0.08);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .product-search-icon {
+      color: rgba(255, 255, 255, 0.35);
+      flex-shrink: 0;
+      transition: color 0.3s ease;
+    }
+
+    .product-search-box:focus-within .product-search-icon {
+      color: rgba(136, 96, 208, 0.8);
+    }
+
+    .product-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.92rem;
+      color: inherit;
+      letter-spacing: 0.01em;
+    }
+
+    .product-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 300;
+    }
+
+    .product-search-input:focus::placeholder {
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    .product-search-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .product-search-clear:hover {
+      background: rgba(215, 38, 36, 0.2);
+      color: #d72624;
+    }
+
+    .product-search-loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .product-search-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(136, 96, 208, 0.2);
+      border-top-color: rgba(136, 96, 208, 0.8);
+      border-radius: 50%;
+      animation: spinProductSearch 0.6s linear infinite;
+    }
+
+    @keyframes spinProductSearch {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInProductRow {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 

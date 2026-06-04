@@ -13,17 +13,27 @@ const getProducts = async (req, res) => {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
+    const q = req.query.q || "";
 
-    const totalProductsCount = await Product.countDocuments({});
+    const filter = {
+      isDeleted: false,
+      ...(q && { name: { $regex: q, $options: "i" } }),
+    };
 
+    const totalProductsCount = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProductsCount / limit);
 
     const products = await Product
-      .find({ isDeleted: false })
+      .find(filter)
       .populate("category")
       .skip(skip)
       .limit(limit);
     const ca = await Category.find({});
+
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ products, totalPages, currentPage: page });
+    }
+
     res.render("admin/products", {
       admin: req.session.admin,
       product: products,

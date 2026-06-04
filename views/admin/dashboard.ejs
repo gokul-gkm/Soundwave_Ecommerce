@@ -116,7 +116,7 @@
                         <p class="text-muted mb-0" id="cod_time"><%=cod[0]?cod[0].orderDate.toString().split(' ').slice(0,5).join('  '):''   %></p>
                       </div>
                       <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="cod">₹<%=cod[0]?cod[0].orderAmount:''  %></h6>
+                        <h6 class="font-weight-bold mb-0" id="cod">₹<%=cod[0]?cod[0].orderAmount:'0'  %></h6>
                       </div>
                     </div>
                   </div>

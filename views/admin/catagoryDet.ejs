@@ -26,6 +26,33 @@
                       <h4 class="card-title">category </h4>
                       <a href="/admin/categories/new" class="btn btn-primary text-white " style="outline: 0; border:0; margin-top: -1rem;">Add category</a>
                     </div>
+
+                    <!-- Search Bar -->
+                    <div class="category-search-wrapper" style="margin-bottom: 1.2rem;">
+                      <div class="category-search-box">
+                        <svg class="category-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                          type="text"
+                          id="categorySearchInput"
+                          class="category-search-input"
+                          placeholder="Search categories..."
+                          autocomplete="off"
+                        />
+                        <div class="category-search-loader" id="searchLoader" style="display:none;">
+                          <div class="search-spinner"></div>
+                        </div>
+                        <button class="category-search-clear" id="searchClear" style="display:none;" title="Clear search">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
@@ -42,7 +69,7 @@
                             <th> Remove </th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="categoryTableBody">
                           <% locals.categorys.forEach((e,i)=>{%>
 
                             <tr>
@@ -82,7 +109,9 @@
                       </table>
                     </div>
 
-                    <%- include('../layout/pagination.ejs') -%>
+                    <div id="paginationContainer">
+                      <%- include('../layout/pagination.ejs') -%>
+                    </div>
                   </div></div>
                 </div>
               </div>
@@ -152,21 +181,256 @@ fetch(`/admin/categories/${id}/status`, {
 })
 }
   </script>
-  <script src="/vendors/js/vendor.bundle.base.js"></script>
 
-  <script src="/vendors/chart.js/Chart.min.js"></script>
-  <script src="/vendors/progressbar.js/progressbar.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-  <script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+  <!-- Category Search Script -->
+  <script>
+  (function() {
+    const searchInput = document.getElementById('categorySearchInput');
+    const searchLoader = document.getElementById('searchLoader');
+    const searchClear = document.getElementById('searchClear');
+    const tableBody = document.getElementById('categoryTableBody');
+    const paginationContainer = document.getElementById('paginationContainer');
+    let debounceTimer = null;
+    let currentQuery = '';
 
-  <script src="/js/off-canvas.js"></script>
-  <script src="/js/hoverable-collapse.js"></script>
-  <script src="/js/misc.js"></script>
-  <script src="/js/settings.js"></script>
-  <script src="/js/todolist.js"></script>
-  <script src="/js/dashboard.js"></script>
+    // Debounced search
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      currentQuery = query;
+
+      // Show/hide clear button
+      searchClear.style.display = query.length > 0 ? 'flex' : 'none';
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        performSearch(query, 1);
+      }, 400);
+    });
+
+    // Clear button
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      currentQuery = '';
+      searchClear.style.display = 'none';
+      performSearch('', 1);
+      searchInput.focus();
+    });
+
+    function performSearch(query, page) {
+      searchLoader.style.display = 'flex';
+
+      fetch(`/admin/categories?q=${encodeURIComponent(query)}&page=${page}`, {
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+          renderTable(data.categorys, data.currentPage);
+          renderPagination(data.totalPages, data.currentPage, query);
+          searchLoader.style.display = 'none';
+        })
+        .catch(err => {
+          console.error('Search error:', err);
+          searchLoader.style.display = 'none';
+        });
+    }
+
+    function renderTable(categories, currentPage) {
+      if (!categories || categories.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center; padding: 2.5rem 0;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; opacity:0.6;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <span style="font-size:0.95rem;">No categories found</span>
+              </div>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const limit = 5;
+      const startIndex = (currentPage - 1) * limit;
+
+      tableBody.innerHTML = categories.map((e, i) => `
+        <tr style="animation: fadeInRow 0.25s ease ${i * 0.04}s both;">
+          <td>${startIndex + i + 1}</td>
+          <td>
+            <span class="pl-2" id="name${e._id}">${e.name}</span>
+          </td>
+          <td id="status${e._id}" class="${e.listed === false ? 'text-danger' : 'text-success'}">
+            ${e.listed ? 'true' : 'false'}
+          </td>
+          <td>
+            <div onclick="active('${e._id}')" id="b${e._id}" style="cursor: pointer;"
+              class="badge ${e.listed ? 'badge-outline-success' : 'badge-outline-danger'}">
+              ${e.listed ? 'Listed' : 'unlisted'}
+            </div>
+          </td>
+          <td>
+            <a href="#" onclick="deleteCategory('${e._id}')" style="cursor: pointer; background-color: red;"
+              class="badge btn text-white">
+              remove
+            </a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPagination(totalPages, currentPage, query) {
+      if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+      }
+
+      let html = '<nav aria-label="Page navigation"><ul class="pagination justify-content-center">';
+
+      if (currentPage > 1) {
+        html += `<li class="page-item">
+          <a class="page-link search-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>`;
+      }
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+          <a class="page-link search-page-link" href="#" data-page="${i}">${i}</a>
+        </li>`;
+      }
+
+      if (currentPage < totalPages) {
+        html += `<li class="page-item">
+          <a class="page-link search-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>`;
+      }
+
+      html += '</ul></nav>';
+      paginationContainer.innerHTML = html;
+
+      // Attach click handlers
+      paginationContainer.querySelectorAll('.search-page-link').forEach(link => {
+        link.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          performSearch(query, parseInt(this.dataset.page));
+        });
+      });
+    }
+  })();
+  </script>
+
   <style>
+    /* ── Category Search Bar ── */
+    .category-search-wrapper {
+      position: relative;
+    }
+
+    .category-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .category-search-box:focus-within {
+      border-color: rgba(136, 96, 208, 0.6);
+      box-shadow: 0 0 0 3px rgba(136, 96, 208, 0.12), 0 4px 20px rgba(136, 96, 208, 0.08);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .category-search-icon {
+      color: rgba(255, 255, 255, 0.35);
+      flex-shrink: 0;
+      transition: color 0.3s ease;
+    }
+
+    .category-search-box:focus-within .category-search-icon {
+      color: rgba(136, 96, 208, 0.8);
+    }
+
+    .category-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.92rem;
+      color: inherit;
+      letter-spacing: 0.01em;
+    }
+
+    .category-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 300;
+    }
+
+    .category-search-input:focus::placeholder {
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    .category-search-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .category-search-clear:hover {
+      background: rgba(215, 38, 36, 0.2);
+      color: #d72624;
+    }
+
+    /* Loader spinner */
+    .category-search-loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .search-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(136, 96, 208, 0.2);
+      border-top-color: rgba(136, 96, 208, 0.8);
+      border-radius: 50%;
+      animation: spinSearch 0.6s linear infinite;
+    }
+
+    @keyframes spinSearch {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInRow {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     body::-webkit-scrollbar {
       width: 0;
     }
@@ -184,6 +448,21 @@ fetch(`/admin/categories/${id}/status`, {
       -webkit-appearance: none !important;
     }
   </style>
+
+  <script src="/vendors/js/vendor.bundle.base.js"></script>
+
+  <script src="/vendors/chart.js/Chart.min.js"></script>
+  <script src="/vendors/progressbar.js/progressbar.min.js"></script>
+  <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+  <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+  <script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+
+  <script src="/js/off-canvas.js"></script>
+  <script src="/js/hoverable-collapse.js"></script>
+  <script src="/js/misc.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/todolist.js"></script>
+  <script src="/js/dashboard.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
 

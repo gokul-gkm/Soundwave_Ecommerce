@@ -10,18 +10,33 @@ const getOrders = async (req, res) => {
         const limit = 5;
         const page = parseInt(req.query.page) || 1; 
         const skip = (page - 1) * limit;
-        const totalOrderCount = await Order.countDocuments({});
+        const q = req.query.q || "";
+
+        const filter = {
+            orderStatus: { $ne: "payment pending" },
+            ...(q && {
+                $or: [
+                    { 'deliveryAddress.name': { $regex: q, $options: "i" } },
+                    { orderStatus: { $regex: q, $options: "i" } },
+                    { peyment: { $regex: q, $options: "i" } }
+                ],
+            }),
+        };
+
+        const totalOrderCount = await Order.countDocuments(filter);
         const totalPages = Math.ceil(totalOrderCount / limit);
-        console.log(skip + " "+page)
-        const orderList = await Order.find({ orderStatus: { $ne: "payment pending" } })
+        
+        const orderList = await Order.find(filter)
         .populate('userId')
         .skip(skip)
         .limit(limit)
         .sort({ orderDate: -1 });
 
-        if (orderList) {
-            res.render('admin/orderDets', { admin: req.session.admin, order: true, orderList , totalPages, currentPage: page})
+        if (req.xhr || req.headers.accept?.includes("application/json")) {
+            return res.json({ orderList, totalPages, currentPage: page });
         }
+
+        res.render('admin/orderDets', { admin: req.session.admin, order: true, orderList , totalPages, currentPage: page})
     } catch (err) {
         console.log(err.message + '   admin order page rendering route ')
     }

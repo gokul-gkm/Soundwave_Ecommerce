@@ -23,6 +23,32 @@
                 <div class="card">
                     <div class="card-body">
                       <h4 class="card-title">Order Status</h4>
+                      
+                      <!-- Search Bar -->
+                      <div class="order-search-wrapper" style="margin-bottom: 1.2rem;">
+                        <div class="order-search-box">
+                          <svg class="order-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                          </svg>
+                          <input
+                            type="text"
+                            id="orderSearchInput"
+                            class="order-search-input"
+                            placeholder="Search orders (name, status, payment)..."
+                            autocomplete="off"
+                          />
+                          <div class="order-search-loader" id="orderSearchLoader" style="display:none;">
+                            <div class="order-search-spinner"></div>
+                          </div>
+                          <button class="order-search-clear" id="orderSearchClear" style="display:none;" title="Clear search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
                       <div class="table-responsive">
                         <table class="table">
                           <thead>
@@ -41,7 +67,7 @@
                               <th> options </th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody id="orderTableBody">
                            
                             <% locals.orderList.forEach((elem,i)=>{ %>
                               
@@ -80,7 +106,9 @@
                         </table>
                       </div>
 
-                      <%- include('../layout/pagination.ejs') -%>
+                      <div id="orderPaginationContainer">
+                        <%- include('../layout/pagination.ejs') -%>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -108,6 +136,131 @@
   }
 })
   }
+</script>
+
+<!-- Order Search Script -->
+<script>
+(function() {
+  const searchInput = document.getElementById('orderSearchInput');
+  const searchLoader = document.getElementById('orderSearchLoader');
+  const searchClear = document.getElementById('orderSearchClear');
+  const tableBody = document.getElementById('orderTableBody');
+  const paginationContainer = document.getElementById('orderPaginationContainer');
+  let debounceTimer = null;
+  let currentQuery = '';
+
+  searchInput.addEventListener('input', function() {
+    const query = this.value.trim();
+    currentQuery = query;
+    searchClear.style.display = query.length > 0 ? 'flex' : 'none';
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      performSearch(query, 1);
+    }, 400);
+  });
+
+  searchClear.addEventListener('click', function() {
+    searchInput.value = '';
+    currentQuery = '';
+    searchClear.style.display = 'none';
+    performSearch('', 1);
+    searchInput.focus();
+  });
+
+  function performSearch(query, page) {
+    searchLoader.style.display = 'flex';
+    fetch(`/admin/orders?q=${encodeURIComponent(query)}&page=${page}`, {
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(res => res.json())
+      .then(data => {
+        renderTable(data.orderList, data.currentPage);
+        renderPagination(data.totalPages, data.currentPage, query);
+        searchLoader.style.display = 'none';
+      })
+      .catch(err => {
+        console.error('Order search error:', err);
+        searchLoader.style.display = 'none';
+      });
+  }
+
+  function renderTable(orderList, currentPage) {
+    if (!orderList || orderList.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding: 2.5rem 0;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; opacity:0.6;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+              <span style="font-size:0.95rem;">No orders found</span>
+            </div>
+          </td>
+        </tr>`;
+      return;
+    }
+
+    const limit = 5;
+    const startIndex = (currentPage - 1) * limit;
+
+    tableBody.innerHTML = orderList.map((elem, i) => {
+      const clientName = elem.userId ? elem.userId.name : (elem.deliveryAddress ? elem.deliveryAddress.name : 'Unknown');
+      const orderDate = new Date(elem.orderDate).toString().split(' ').slice(0,4).join('  ');
+      
+      return `
+      <tr id="c${elem._id}" style="animation: fadeInOrderRow 0.25s ease ${i * 0.04}s both;">
+        <td>
+          <div class="form-check form-check-muted m-0">
+            ${startIndex + i + 1}
+          </div>
+        </td>
+        <td>
+          <span class="pl-2">${clientName}</span>
+        </td>
+        <td> ₹${elem.orderAmount.toFixed(2)} </td>
+        <td>${elem.peyment}</td>
+        <td>${orderDate}</td>
+        <td>
+          <div style="cursor: pointer;" id="b${elem._id}" onclick="orderStatus('${elem._id}','${elem.orderStatus}')" class="badge ${elem.orderStatus === 'canceled' ? 'badge-outline-danger' : 'badge-outline-success'}">${elem.orderStatus}</div>
+        </td>
+        <td>
+          <div class="d-flex align-items-center justify-content-between w-100" style="cursor: pointer;">
+            <a href="/admin/orders/${elem._id}" class="btn bg-primary">Details</a>
+            <i class="ri-delete-bin-3-line" onclick="removeorder('${elem._id}')"></i>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderPagination(totalPages, currentPage, query) {
+    if (totalPages <= 1) {
+      paginationContainer.innerHTML = '';
+      return;
+    }
+    let html = '<nav aria-label="Page navigation"><ul class="pagination justify-content-center">';
+    if (currentPage > 1) {
+      html += `<li class="page-item"><a class="page-link order-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`;
+    }
+    for (let i = 1; i <= totalPages; i++) {
+      html += `<li class="page-item ${currentPage === i ? 'active' : ''}"><a class="page-link order-page-link" href="#" data-page="${i}">${i}</a></li>`;
+    }
+    if (currentPage < totalPages) {
+      html += `<li class="page-item"><a class="page-link order-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`;
+    }
+    html += '</ul></nav>';
+    paginationContainer.innerHTML = html;
+
+    paginationContainer.querySelectorAll('.order-page-link').forEach(link => {
+      link.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        performSearch(query, parseInt(this.dataset.page));
+      });
+    });
+  }
+})();
 </script>
  
   <script src="/vendors/js/vendor.bundle.base.js"></script>
@@ -140,6 +293,104 @@
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
       -webkit-appearance: none !important;
+    }
+    /* Order Search Styles */
+    .order-search-wrapper {
+      position: relative;
+    }
+
+    .order-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .order-search-box:focus-within {
+      border-color: rgba(136, 96, 208, 0.6);
+      box-shadow: 0 0 0 3px rgba(136, 96, 208, 0.12), 0 4px 20px rgba(136, 96, 208, 0.08);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .order-search-icon {
+      color: rgba(255, 255, 255, 0.35);
+      flex-shrink: 0;
+      transition: color 0.3s ease;
+    }
+
+    .order-search-box:focus-within .order-search-icon {
+      color: rgba(136, 96, 208, 0.8);
+    }
+
+    .order-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.92rem;
+      color: inherit;
+      letter-spacing: 0.01em;
+    }
+
+    .order-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 300;
+    }
+
+    .order-search-input:focus::placeholder {
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    .order-search-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .order-search-clear:hover {
+      background: rgba(215, 38, 36, 0.2);
+      color: #d72624;
+    }
+
+    .order-search-loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .order-search-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(136, 96, 208, 0.2);
+      border-top-color: rgba(136, 96, 208, 0.8);
+      border-radius: 50%;
+      animation: spinOrderSearch 0.6s linear infinite;
+    }
+
+    @keyframes spinOrderSearch {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInOrderRow {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 

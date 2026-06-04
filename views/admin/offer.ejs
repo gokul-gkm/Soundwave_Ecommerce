@@ -28,6 +28,32 @@
                       <a href="/admin/offers/new" class="btn btn-primary text-white "
                         style="outline: 0; border:0; margin-top: -1rem;">Add offer</a>
                     </div>
+
+                    <!-- Search Bar -->
+                    <div class="offer-search-wrapper" style="margin-bottom: 1.2rem;">
+                      <div class="offer-search-box">
+                        <svg class="offer-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input
+                          type="text"
+                          id="offerSearchInput"
+                          class="offer-search-input"
+                          placeholder="Search offers..."
+                          autocomplete="off"
+                        />
+                        <div class="offer-search-loader" id="offerSearchLoader" style="display:none;">
+                          <div class="offer-search-spinner"></div>
+                        </div>
+                        <button class="offer-search-clear" id="offerSearchClear" style="display:none;" title="Clear search">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     <div class="table-responsive">
                       <form action="/admin/offers" method="post">
                         <table class="table">
@@ -45,7 +71,7 @@
 
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody id="offerTableBody">
                             <%locals.offer.forEach((e,i)=>{%>
                               <tr>
                                 <td>
@@ -100,6 +126,87 @@
           window.location.href=`/admin/offers/remove/${id}`;
         }})
     }
+  </script>
+
+  <!-- Offer Search Script -->
+  <script>
+  (function() {
+    const searchInput = document.getElementById('offerSearchInput');
+    const searchLoader = document.getElementById('offerSearchLoader');
+    const searchClear = document.getElementById('offerSearchClear');
+    const tableBody = document.getElementById('offerTableBody');
+    let debounceTimer = null;
+    let currentQuery = '';
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      currentQuery = query;
+      searchClear.style.display = query.length > 0 ? 'flex' : 'none';
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        performSearch(query);
+      }, 400);
+    });
+
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      currentQuery = '';
+      searchClear.style.display = 'none';
+      performSearch('');
+      searchInput.focus();
+    });
+
+    function performSearch(query) {
+      searchLoader.style.display = 'flex';
+      fetch(`/admin/offers?q=${encodeURIComponent(query)}`, {
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          renderTable(data.offer);
+          searchLoader.style.display = 'none';
+        })
+        .catch(err => {
+          console.error('Offer search error:', err);
+          searchLoader.style.display = 'none';
+        });
+    }
+
+    function renderTable(offers) {
+      if (!offers || offers.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding: 2.5rem 0;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; opacity:0.6;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <span style="font-size:0.95rem;">No offers found</span>
+              </div>
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = offers.map((e, i) => `
+        <tr style="animation: fadeInOfferRow 0.25s ease ${i * 0.04}s both;">
+          <td>${i + 1}</td>
+          <td>${e.name}</td>
+          <td>${e.offer}%</td>
+          <td><a href="/admin/offers/${e._id}/products" class="">add product</a></td>
+          <td><a href="/admin/offers/${e._id}/categories" class="">add category</a></td>
+          <td>
+            <div class="d-flex justify-content-start align-items-center" style="gap: 1rem;">
+              <h4><a href="/admin/offers/${e._id}/edit" class="text-white text-decoration-none"><i class="ri-edit-circle-fill" style="cursor: pointer;"></i></a></h4>
+              <h4><a onclick="gg('${e._id}')" class="text-white text-decoration-none"><i class="ri-delete-bin-line" style="cursor: pointer;"></i></a></h4>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+  })();
   </script>
   
   <script src="/vendors/js/vendor.bundle.base.js"></script>
@@ -201,6 +308,104 @@
     .l:hover #imageL2,
     .l:hover #imageL0 {
       opacity: 1;
+    }
+    /* Offer Search Styles */
+    .offer-search-wrapper {
+      position: relative;
+    }
+
+    .offer-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .offer-search-box:focus-within {
+      border-color: rgba(136, 96, 208, 0.6);
+      box-shadow: 0 0 0 3px rgba(136, 96, 208, 0.12), 0 4px 20px rgba(136, 96, 208, 0.08);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .offer-search-icon {
+      color: rgba(255, 255, 255, 0.35);
+      flex-shrink: 0;
+      transition: color 0.3s ease;
+    }
+
+    .offer-search-box:focus-within .offer-search-icon {
+      color: rgba(136, 96, 208, 0.8);
+    }
+
+    .offer-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.92rem;
+      color: inherit;
+      letter-spacing: 0.01em;
+    }
+
+    .offer-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 300;
+    }
+
+    .offer-search-input:focus::placeholder {
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    .offer-search-clear {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .offer-search-clear:hover {
+      background: rgba(215, 38, 36, 0.2);
+      color: #d72624;
+    }
+
+    .offer-search-loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .offer-search-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(136, 96, 208, 0.2);
+      border-top-color: rgba(136, 96, 208, 0.8);
+      border-radius: 50%;
+      animation: spinOfferSearch 0.6s linear infinite;
+    }
+
+    @keyframes spinOfferSearch {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInOfferRow {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 

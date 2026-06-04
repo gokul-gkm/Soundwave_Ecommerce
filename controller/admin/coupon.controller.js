@@ -9,13 +9,29 @@ const { getPublicId } = require("../../utils/cloudinaryHelper");
  * @route   GET /admin/coupons
  */
 const getCouponsPage  = async (req, res) => {
-  const coupon = (await Coupon.find({})) || [];
+  try {
+    const q = req.query.q || "";
+    const filter = q ? {
+      $or: [
+        { name: { $regex: q, $options: "i" } },
+        { ID: { $regex: q, $options: "i" } }
+      ]
+    } : {};
 
-  res.render("admin/coupen", {
-    admin: req.session.admin,
-    coupon,
-    coupens: true,
-  });
+    const coupon = (await Coupon.find(filter)) || [];
+
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ coupon });
+    }
+
+    res.render("admin/coupen", {
+      admin: req.session.admin,
+      coupon,
+      coupens: true,
+    });
+  } catch (err) {
+    console.log(err.message + " coupon page");
+  }
 };
 
 /**

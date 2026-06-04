@@ -50,24 +50,29 @@ const getCategories = async (req, res) => {
     const limit = 5;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalCategoryCount = await Category.countDocuments({});
+    const q = req.query.q || "";
 
+    const filter = {
+      isDeleted: false,
+      ...(q && { name: { $regex: q, $options: "i" } }),
+    };
+
+    const totalCategoryCount = await Category.countDocuments(filter);
     const totalPages = Math.ceil(totalCategoryCount / limit);
 
-    const categorys = await Category
-      .find({ isDeleted: false })
-      .skip(skip)
-      .limit(limit);
+    const categorys = await Category.find(filter).skip(skip).limit(limit);
 
-    if (categorys) {
-      res.render("admin/catagoryDet", {
-        categorys,
-        admin: req.session.admin,
-        category: true,
-        totalPages,
-        currentPage: page,
-      });
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ categorys, totalPages, currentPage: page });
     }
+
+    res.render("admin/catagoryDet", {
+      categorys,
+      admin: req.session.admin,
+      category: true,
+      totalPages,
+      currentPage: page,
+    });
   } catch (er) {
     console.log(er.message + "    category dets ");
   }

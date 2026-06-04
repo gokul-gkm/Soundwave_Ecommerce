@@ -9,13 +9,27 @@ const getUsers = async (req, res) => {
     const limit = 4;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalProductsCount = await User.countDocuments({ is_admin: 0 });
+    const q = req.query.q || "";
+
+    const filter = {
+      is_admin: 0,
+      isDeleted: false,
+      ...(q && {
+        $or: [
+          { name: { $regex: q, $options: "i" } },
+          { email: { $regex: q, $options: "i" } },
+        ],
+      }),
+    };
+
+    const totalProductsCount = await User.countDocuments(filter);
     const totalPages = Math.ceil(totalProductsCount / limit);
 
-    const users = await User
-      .find({ is_admin: 0, isDeleted: false })
-      .skip(skip)
-      .limit(limit);
+    const users = await User.find(filter).skip(skip).limit(limit);
+
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ users, totalPages, currentPage: page });
+    }
 
     res.render("admin/userList", {
       admin: req.session.admin,

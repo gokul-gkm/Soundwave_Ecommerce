@@ -7,7 +7,14 @@ const Category = require("../../models/catagory");
  */
 const getOffers  = async (req, res) => {
   try {
-    const offer = await Offer.find({});
+    const q = req.query.q || "";
+    const filter = q ? { name: { $regex: q, $options: "i" } } : {};
+    const offer = await Offer.find(filter);
+
+    if (req.xhr || req.headers.accept?.includes("application/json")) {
+      return res.json({ offer });
+    }
+
     res.render("admin/offer", {
       admin: req.session.admin,
       offer,
