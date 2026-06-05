@@ -1,240 +1,281 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('../layout/adminlayout.ejs') -%>
+<link rel="stylesheet" href="/css/admin/report.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Report</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        
-</head>
+<div class="container-scroller">
+  <%- include('../layout/adminnav.ejs') -%>
 
-<body>
+  <div class="main-panel">
+    <div class="content-wrapper" style="padding: 1.5rem 2.2rem; position: relative;">
 
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-        <a class="nav-link" href="/admin/">Admin Home</a>
-    </nav>
+      <!-- Ambient glow blobs -->
+      <div class="report-blob report-blob-purple"></div>
+      <div class="report-blob report-blob-blue"></div>
 
-    <section class="content-main">
-        
-        <div class="card mb-4 border-0" style="background-color: #18191f;">
-            <header class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-md-4 col-12 me-auto mb-md-0 ">
-                        <h2 style='color: #fff;' class="content-title card-title text-white ">
-                            <%=locals.gg %> Sales Report
-                        </h2>
-                    </div>
+      <div class="col-12 grid-margin" style="position: relative; z-index: 1;">
+        <div class="report-glass">
 
-                    <div class=" col-6 d-flex align-items-center justify-content-center " style="gap: 1rem;">
-                        <% if(locals.custom){ %>
-                            <input type="date" onchange="change(this)" name="start" id="start">
-                            <input type="date" onchange="change(this)" name="end" id="end">
-
-                            <% } %>
-                                <% if(locals.data) {%>
-
-                                    <div class="select">
-                                        <form action="/admin/report/download/<%=data  %>" id="myForm" method="post">
-                                            <select onchange="execor(this)" id="format" name="report" id="">
-                                                <option value="exec">exec</option>
-                                                <option value="pdf">pdf</option>
-
-                                            </select>
-                                    </div>
-                                    <!-- <form action="/admin/report/download/" method="post"> -->
-                                    <button type="submit" class="btn bg-danger text-white"
-                                        type="submit">Download</button>
-                                    </form>
-
-                                    <!-- </form> -->
-                                <% } %>
-                                <br>
-                                
-
-
-                    </div>
-                    
-                    <div class="">
-                        <span id="fromDate" style="color: #fff;" class="text-white fw-bold fs-4 pe-3"></span><span id="toDate" class="text-white fw-bold fs-4 pe-3" style="color: #fff;"></span>
-                    </div>
-                </div>
-            </header>
-            <!-- card-header end// -->
-            <div class="card-body">
-                <div class="table-responsive">
-
-                    <div id="reloadDiv" style='color: #fff;'>
-                        <table class="table table-dark table-bordered bg-black" style="--bs-table-bg: #18191f;
-                        ">
-                            <thead>
-                                <tr>
-                                    <th scope="col">NO</th>
-                                    <th scope="col">Order Id</th>
-                                    <th scope="col">Billing Name</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Payment</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tb">
-                                <% if(locals.report){ %>
-                                    <% locals.report.forEach((e,i)=>{ %>
-                                        <tr>
-                                            <td scope="col">
-                                                <%= i+1 %>
-                                            </td>
-                                            <td scope="col">
-                                                <%= e._id %>
-                                            </td>
-                                            <td scope="col">
-                                                <%=e.deliveryAddress.name %>
-                                            </td>
-                                            <td scope="col">
-                                                <%= e.orderDate.toString().split(' ').slice(0,4).join(' ') %>
-                                        </td>
-                                        <td scope="col">
-                                            <%=e.orderAmount %>
-                                        </td>
-                                        <td scope="col">
-                                            <%=e.peyment %>
-                                        </td>
-                                    </tr>
-                                    <% })} %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+          <!-- ── Page Header ── -->
+          <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+            <div>
+              <h3 class="report-page-title">
+                <i class="ri-bar-chart-2-line" style="font-size:1.5rem; opacity:0.85;"></i>
+                <% if (locals.gg) { %>
+                  <%= locals.gg.charAt(0).toUpperCase() + locals.gg.slice(1) %>
+                <% } else { %>
+                  Sales
+                <% } %>
+                Report
+              </h3>
+              <p class="report-page-subtitle">Detailed breakdown of orders &amp; revenue</p>
             </div>
-            <!-- card-body end// -->
-        </div>
-        <!-- card end// -->
 
-    </section>
+            <!-- Controls -->
+            <div class="report-controls">
+              <% if (locals.custom) { %>
+                <input type="date" id="start" name="start" class="report-date-input" placeholder="Start date">
+                <input type="date" id="end" name="end" class="report-date-input" placeholder="End date">
+              <% } %>
 
-    <script>
-        const tb=document.getElementById('tb')
-        const start=document.getElementById('start')
-        const fromDate=document.getElementById('fromDate')
-        const toDate=document.getElementById('toDate')
-        const end=document.getElementById('end');
-        const form=document.getElementById('myForm');
+              <% if (locals.data) { %>
+                <form id="myForm" action="/admin/report/download/<%= data %>" method="post" style="display:contents;">
+                  <select id="format" name="report" class="report-format-select">
+                    <option value="exec">Excel (.xlsx)</option>
+                    <option value="pdf">PDF</option>
+                  </select>
+                  <button type="submit" class="btn-report-download">
+                    <i class="ri-download-2-line"></i> Download
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          </div>
 
-        function change(e){
-            if(start.value!=='' &&end.value!=='' ){
-                
-                fetch('/admin/report',{
-                    method:'put',
-                    headers:{"Content-Type":'application/json'},
-                    body:JSON.stringify({start:start.value ,end:end.value })
-                }).then(res=>res.json()).then(data=>{
-                    console.log(data)
-                    console.log(start.value,end.value)
-                if(data.data.length>0){
-                    fromDate.textContent = "FROM: "+start.value;
-                    toDate.textContent = "TO: "+end.value;
-                    tb.innerHTML=data.data.map((e,i)=>`
-                    <tr>
-                                            <td scope="col">
-                                               ${i+1}
-                                            </td>
-                                            <td scope="col">
-                                                ${e._id}
-                                            </td>
-                                            <td scope="col">
-                                                ${e.deliveryAddress.name}
-                                            </td>
-                                            <td scope="col">
-                                                ${e.orderDate.toString().split(' ').slice(0,4).join(' ')}
-                                        </td>
-                                        <td scope="col">
-                                            ${e.orderAmount}
-                                        </td>
-                                        <td scope="col">
-                                           ${e.peyment}
-                                        </td>
-                                    </tr>
-                    `).join('');
-                    form.action=`/admin/report/download/custom?start=${start.value}&&end=${end.value}`;
-                } else{
-                    tb.innerHTML='no data here'
-                }
-                })
-            }
-        }
+          <!-- Date Range Display (custom mode) -->
+          <div id="dateRangeDisplay" style="display:none; margin-bottom: 1rem;">
+            <span class="report-date-range">
+              <i class="ri-calendar-line"></i>
+              <span id="fromDate"></span>
+              &nbsp;→&nbsp;
+              <span id="toDate"></span>
+            </span>
+          </div>
 
+          <!-- ── Stats Summary ── -->
+          <% if (locals.report && locals.report.length > 0) { %>
+            <%
+              let totalRevenue = 0;
+              locals.report.forEach(o => { totalRevenue += (o.orderAmount || 0); });
+              let totalOrders = locals.report.length;
+              let avgOrder = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+            %>
+            <div class="report-stats-grid" id="statsGrid">
+              <div class="report-stat-card">
+                <i class="ri-shopping-bag-3-line report-stat-icon" style="color:#b794f4;"></i>
+                <div class="report-stat-label">Total Orders</div>
+                <div class="report-stat-value purple"><%= totalOrders %></div>
+              </div>
+              <div class="report-stat-card">
+                <i class="ri-money-rupee-circle-line report-stat-icon" style="color:#00d25b;"></i>
+                <div class="report-stat-label">Total Revenue</div>
+                <div class="report-stat-value green">₹<%= totalRevenue.toLocaleString('en-IN') %></div>
+              </div>
+              <div class="report-stat-card">
+                <i class="ri-line-chart-line report-stat-icon" style="color:#ffab00;"></i>
+                <div class="report-stat-label">Avg. Order Value</div>
+                <div class="report-stat-value gold">₹<%= avgOrder.toLocaleString('en-IN') %></div>
+              </div>
+            </div>
+          <% } %>
 
-    </script>
+          <hr class="report-divider">
 
-    <footer>
-        
-    </footer>
+          <!-- ── Orders Table ── -->
+          <div class="report-table-wrapper">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                </tr>
+              </thead>
+              <tbody id="tb">
+                <% if (locals.report && locals.report.length > 0) { %>
+                  <% locals.report.forEach((e, i) => { %>
+                    <tr class="report-row" style="--row-delay: <%= (i * 0.04).toFixed(2) %>s;">
+                      <td class="report-idx"><%= i + 1 %></td>
+                      <td class="report-order-id" title="<%= e._id %>">
+                        <%= e._id.toString().slice(-10) %>...
+                      </td>
+                      <td class="report-name"><%= e.deliveryAddress ? e.deliveryAddress.name : '—' %></td>
+                      <td class="report-date-cell">
+                        <%= e.orderDate ? e.orderDate.toString().split(' ').slice(0,4).join(' ') : '—' %>
+                      </td>
+                      <td class="report-amount"><%= (e.orderAmount || 0).toLocaleString('en-IN') %></td>
+                      <td>
+                        <%
+                          let pm = (e.peyment || '').toLowerCase();
+                          let pmClass = pm.includes('razorpay') ? 'razorpay' : pm.includes('cod') ? 'cod' : pm.includes('wallet') ? 'wallet' : 'default';
+                        %>
+                        <span class="report-payment-badge <%= pmClass %>">
+                          <%= e.peyment || '—' %>
+                        </span>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="6" style="border: none; background: transparent; padding: 0;">
+                      <div class="report-empty">
+                        <i class="ri-file-chart-line"></i>
+                        <p>No orders found for this period.<br>
+                          <% if (locals.custom) { %>
+                            Select a date range above to generate your report.
+                          <% } else { %>
+                            Try a different report period.
+                          <% } %>
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+        </div><!-- /report-glass -->
+      </div>
+    </div>
+  </div><!-- /main-panel -->
+</div><!-- /container-scroller -->
 
-        <style>
-            body {
-                padding: 2rem;
-                background-color: #18191f;
-                color: #fff;
-                font-family: Arial, sans-serif;
-            }
-    
-            .content-header {
-                margin-bottom: 2rem;
-            }
-    
-            .card-header {
-                background-color: #18191f;
-                border: none;
-                padding: 1rem;
-            }
-    
-            .card-title {
-                color: #fff;
-            }
-    
-            .table {
-                color: #fff;
-            }
-    
-            .btn {
-                background-color: #dc3545;
-                border-color: #dc3545;
-            }
-    
-            .btn:hover {
-                background-color: #c82333;
-                border-color: #bd2130;
-            }
-    
-            .nav-bar {
-                background-color: #343a40;
-                padding: 1rem;
-                border-bottom: 2px solid #dc3545; /* Add a bottom border for styling */
-            }
-    
-            .nav-link {
-                color: #fff;
-                font-size: 1.2rem; /* Increase font size */
-                text-transform: uppercase; /* Uppercase text */
-                margin: 0 1rem; /* Add margin between links */
-                padding: 0.5rem 1rem; /* Add padding to make clickable area larger */
-                border-radius: 0.5rem; /* Add border radius for rounded corners */
-                transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-                max-width: fit-content;
-            }
-    
-            .nav-link:hover {
-                background-color: #495057; /* Darken background on hover */
-                color: #23c823;
-            }
-        </style>
+<script>
+  (() => {
+    const startEl   = document.getElementById('start');
+    const endEl     = document.getElementById('end');
+    const tb        = document.getElementById('tb');
+    const fromDate  = document.getElementById('fromDate');
+    const toDate    = document.getElementById('toDate');
+    const rangeDisp = document.getElementById('dateRangeDisplay');
+    const statsGrid = document.getElementById('statsGrid');
+    const myForm    = document.getElementById('myForm');
+
+    function paymentClass(pm) {
+      if (!pm) return 'default';
+      const p = pm.toLowerCase();
+      if (p.includes('razorpay')) return 'razorpay';
+      if (p.includes('cod'))      return 'cod';
+      if (p.includes('wallet'))   return 'wallet';
+      return 'default';
+    }
+
+    function formatINR(n) {
+      return Number(n || 0).toLocaleString('en-IN');
+    }
+
+    function renderRows(data) {
+      if (!data || data.length === 0) {
+        tb.innerHTML = `<tr><td colspan="6" style="border:none;background:transparent;padding:0;">
+          <div class="report-empty">
+            <i class="ri-file-chart-line"></i>
+            <p>No orders found for this date range.</p>
+          </div></td></tr>`;
+        if (statsGrid) statsGrid.style.display = 'none';
+        return;
+      }
+
+      // Recalculate stats
+      const totalRevenue = data.reduce((s, e) => s + (e.orderAmount || 0), 0);
+      const totalOrders  = data.length;
+      const avgOrder     = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+
+      if (statsGrid) {
+        statsGrid.style.display = 'grid';
+        statsGrid.innerHTML = `
+          <div class="report-stat-card">
+            <i class="ri-shopping-bag-3-line report-stat-icon" style="color:#b794f4;"></i>
+            <div class="report-stat-label">Total Orders</div>
+            <div class="report-stat-value purple">${totalOrders}</div>
+          </div>
+          <div class="report-stat-card">
+            <i class="ri-money-rupee-circle-line report-stat-icon" style="color:#00d25b;"></i>
+            <div class="report-stat-label">Total Revenue</div>
+            <div class="report-stat-value green">₹${formatINR(totalRevenue)}</div>
+          </div>
+          <div class="report-stat-card">
+            <i class="ri-line-chart-line report-stat-icon" style="color:#ffab00;"></i>
+            <div class="report-stat-label">Avg. Order Value</div>
+            <div class="report-stat-value gold">₹${formatINR(avgOrder)}</div>
+          </div>
+        `;
+      }
+
+      tb.innerHTML = data.map((e, i) => {
+        const pmClass = paymentClass(e.peyment);
+        const dateStr = e.orderDate
+          ? new Date(e.orderDate).toString().split(' ').slice(0,4).join(' ')
+          : '—';
+        const orderId = e._id ? String(e._id).slice(-10) + '...' : '—';
+        const name    = e.deliveryAddress ? e.deliveryAddress.name : '—';
+        return `
+          <tr class="report-row" style="--row-delay:${(i * 0.04).toFixed(2)}s;">
+            <td class="report-idx">${i + 1}</td>
+            <td class="report-order-id" title="${e._id}">${orderId}</td>
+            <td class="report-name">${name}</td>
+            <td class="report-date-cell">${dateStr}</td>
+            <td class="report-amount">${formatINR(e.orderAmount)}</td>
+            <td><span class="report-payment-badge ${pmClass}">${e.peyment || '—'}</span></td>
+          </tr>`;
+      }).join('');
+    }
+
+    function change() {
+      if (!startEl || !endEl) return;
+      if (startEl.value && endEl.value) {
+        fetch('/admin/report', {
+          method: 'put',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ start: startEl.value, end: endEl.value })
+        })
+        .then(r => r.json())
+        .then(resp => {
+          if (rangeDisp) {
+            fromDate.textContent = startEl.value;
+            toDate.textContent   = endEl.value;
+            rangeDisp.style.display = 'block';
+          }
+          renderRows(resp.data);
+          if (myForm) {
+            myForm.action = `/admin/report/download/custom?start=${startEl.value}&&end=${endEl.value}`;
+          }
+        })
+        .catch(err => console.error(err));
+      }
+    }
+
+    if (startEl) startEl.addEventListener('change', change);
+    if (endEl)   endEl.addEventListener('change', change);
+
+    // Format select changes form submit type
+    const formatSelect = document.getElementById('format');
+    if (formatSelect && myForm) {
+      formatSelect.addEventListener('change', function() {
+        // action is already set with the correct format parameter via "name" of select
+      });
+    }
+  })();
+</script>
+
+<script src="/vendors/js/vendor.bundle.base.js"></script>
+<script src="/js/off-canvas.js"></script>
+<script src="/js/hoverable-collapse.js"></script>
+<script src="/js/misc.js"></script>
+<script src="/js/settings.js"></script>
 
 </body>
-
 </html>

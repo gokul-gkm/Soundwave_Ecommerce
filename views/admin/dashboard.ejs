@@ -1,688 +1,499 @@
 <%- include('../layout/adminlayout.ejs') -%>
-  <div class="container-scroller">
-    <!-- partial:partials/_sidebar.html -->
-    <%- include('../layout/adminnav.ejs') -%>
-      <!-- partial -->
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <% let sale=0; locals.orderList.forEach(e=>{sale+=e.totalAmount}); %>
-          <% let Totorder=locals.orderList.reduce((acc,val)=>acc+val.totalCount,0);  %>
-            <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹<%=sale %>
-                          </h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium"></p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Total Sales </h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">
-                            
-                            ₹<%=locals.daily[0]?locals.daily[0].totalAmount:0  %>
-                          </h3>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p> -->
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Daily Income</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹<%=locals.monthSale  %></h3>
-                          <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Monthly Sales </h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹<%=locals.yearly[0]?locals.yearly[0].totalAmount:0  %></h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium"></p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Yearly revenue</h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Transaction History</h4>
-                    <canvas id="transaction-history" class="transaction-chart"></canvas>
-                    <div
-                      class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                      <div class="text-md-center text-xl-left">
-                        <h6 class="mb-1">Transfer to online peyment</h6>
-                        <p class="text-muted mb-0" id="op_time"><%= op[0]?op[0].orderDate.toString().split(' ').slice(0,5).join('  '):''%></p>
-                      </div>
-                      <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="online-peyment">₹<%=op[0]?op[0].orderAmount:''  %></h6>
-                      </div>
-                    </div>
-                    <div
-                      class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                      <div class="text-md-center text-xl-left">
-                        <h6 class="mb-1">Cash on delivery</h6>
-                        <p class="text-muted mb-0" id="cod_time"><%=cod[0]?cod[0].orderDate.toString().split(' ').slice(0,5).join('  '):''   %></p>
-                      </div>
-                      <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                        <h6 class="font-weight-bold mb-0" id="cod">₹<%=cod[0]?cod[0].orderAmount:'0'  %></h6>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+<link rel="stylesheet" href="/css/admin/dashboard.css">
+<div class="container-scroller">
+  <%- include('../layout/adminnav.ejs') -%>
+  <div class="main-panel">
+    <div class="content-wrapper dash-content-wrapper">
 
-              <!-- most buyed products -->
+      <% let sale=0; locals.orderList.forEach(e=>{ sale+=e.totalAmount }); %>
+      <% let Totorder=locals.orderList.reduce((acc,val)=>acc+val.totalCount,0); %>
 
-              <div class="col-md-8 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex flex-row justify-content-between">
-                      <h4 class="card-title mb-1">Most Buyed Products</h4>
-                      <p class="text-muted mb-1 " style="text-align: end;">total count <br>latest buyed date</p>
-                    </div>
-                    <div class="row">
-                      <div class="col-12">
-                        <div class="preview-list">
-                          <% most.forEach(e=>{  %>
-                          <div class="preview-item border-bottom">
-                            <div class="preview-thumbnail">
-                              <div class="preview-icon bg-primary">
-                                <img style="width: 100%; height: 100%; object-fit: cover; "
-                                src='<%= e.productData[0].images[0].startsWith('http') ? e.productData[0].images[0] : '/productImage/' + e.productData[0].images[0] %>' alt="">
-                              </div>
-                            </div>
-                            <div class="preview-item-content d-sm-flex flex-grow">
-                              <div class="flex-grow">
-                                <h6 class="preview-subject"><%=e.productData[0].name  %></h6>
-                                <p class="text-muted mb-0">product price:- ₹<%=e.productData[0].price  %></p>
-                              </div>
-                              <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                                <p class="text-muted"><%=e.totalCount  %>  products</p>
-                                <p class="text-muted mb-0"><%=e.orderDates[e.orderDates.length-1].toString().split(' ').slice(0,4).join('  ')  %></p>
-                              </div>
-                            </div>
-                          </div>
-                     <% }) %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- Ambient Background Blurs -->
+      <div class="dash-glow-blob dash-glow-purple"></div>
+      <div class="dash-glow-blob dash-glow-blue"></div>
 
-            </div>
+      <div class="dash-inner">
 
-            <div class="row">
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>Total Order</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">Count: <%= Totorder  %></h2>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
-                        </div>
-                        <!-- <h6 class="text-muted font-weight-normal">11.38% Since last month</h6> -->
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-codepen text-primary ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>User Count</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">Count: <%=locals.userCount.length  %></h2>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p> -->
-                        </div>
-                        <!-- <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6> -->
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-wallet-travel text-danger ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>Product Count</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0">Count: <%= locals.productCount.length  %> </h2>
-                          <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p> -->
-                        </div>
-                        <!-- <h6 class="text-muted font-weight-normal">2.27% Since last month</h6> -->
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-monitor text-success ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row ">
-              <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Best selling Categories</h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>
-                             No
-                            </th>
-                            <th> Category Name </th>
-                          
-                            <th>Total products</th>
-                            
-                            <th>Top product</th>
-                      
-                          </tr>
-                        </thead>
-                        <tbody>
-                         
-                          <% locals.topTenCategory.forEach((elem,i)=>{ %>
-                            
-                          <tr id="c<%=elem._id  %>">
-                            <td>
-                              <div class="form-check form-check-muted m-0">
-                                <%= i+1  %>
-                              </div>
-                            </td>
-                            <td>
-                              <span class="pl-2"> <%= elem.categoryName %></span>
-                            </td>
-                       
-                            <td> <%= elem.totalProducts %> </td>
-                            <td><%= elem.topProductName %> </td>     
-                          </tr>
-                     
-                          <% }) %>  
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- order -->
-
-            <div class="row ">
-              <a href="/admin/orders" class="text-decoration-none  col-12 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Recent Orders</h4>
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th>
-                             No
-                            </th>
-                            <th> Client Name </th>
-                          
-                            <th> order Amount </th>
-                            
-                            <th> Payment Mode </th>
-                            <th> Start Date </th>
-                            <!-- <th> Payment Status </th> -->
-                            <th> order Status </th>
-                            <th> options </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                         
-                          <% locals.orderList1.forEach((elem,i)=>{ %>
-                            
-                          <tr id="c<%=elem._id  %>">
-                            <td>
-                              <div class="form-check form-check-muted m-0">
-                                <%= i+1  %>
-                              </div>
-                            </td>
-                            <td>
-                              
-                              <span class="pl-2"> <%= elem.userId.name? elem.userId.name: 'user' %>
-                              </span>
-                            </td>
-                       
-                            <td> ₹<%= elem.orderAmount.toFixed(2) %></td>
-                            <td><%= elem.peyment %></td>
-                            <td><%=elem.orderDate.toString().split(' ').slice(0,4).join('  ') %></td>
-                            
-                            <td>
-                              <div style="cursor: pointer;" id="b<%=elem._id  %>" onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')" class="badge  <%= elem.orderStatus ? 'badge-outline-success' : 'badge-outline-danger' %>"><%= elem.orderStatus %></div>
-                          </td>
-                          <td>
-                              <div class="d-flex align-items-center justify-content-between w-100 " style="cursor: pointer; " >
-                             <a href="/admin/orders/<%=elem._id  %>" class="btn bg-primary ">Details</a>
-                           
-                          </div>
-                            </td>
-                          </tr>
-                     
-                          <% }) %>  
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </a href="/admin/order">
-            </div>
-
-            <!-- recently add users -->
-
-            <div class="row">
-              
-              <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex flex-row justify-content-between">
-                      <h4 class="card-title mb-1">recently add users</h4>
-                      <p><a href="/admin/users" class="text-muted mb-1 " style="text-align: end;">view all </a ></p>
-                    </div>
-                    <div class="preview-list">
-                      <% locals.recentUser.forEach(e=>{%>
-                      <div class="preview-item border-bottom">
-                        <div class="preview-item-content d-flex flex-grow">
-                          <div class="flex-grow">
-                            <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                              <h6 class="preview-subject"><%=e.name  %></h6>
-                              
-                              <p class="text-muted text-small"><%= e.date  %></p>
-                            </div>
-                            <p class="text-muted"><%= e.email  %>.</p>
-                          </div>
-                        </div>
-                      </div>
-                      <% }) %>
-                      </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- chart -->
-
-            <div class="row">
-              
-              <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Yearly Sales</h4>
-                    <canvas id="areaChart" style="height:250px"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
-          
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                  <div class="card-body">
-                      <h4 class="card-title">Monthly Sales</h4>
-                      <canvas id="monthlyChart" style="height:250px"></canvas>
-                  </div>
-              </div>
-            </div>
-            
+        <!-- ── Page Header ── -->
+        <div class="dash-page-header">
+          <div>
+            <h3 class="dash-page-title">Dashboard</h3>
+            <p class="dash-page-subtitle">Welcome back, <strong><%= admin.name %></strong> — here's what's happening today.</p>
+          </div>
+          <div class="dash-header-date">
+            <i class="ri-calendar-check-line"></i>
+            <span id="dash-live-date"></span>
+          </div>
         </div>
-        
-      </div>
-      <!-- main-panel ends -->
-  </div>
-  <!-- page-body-wrapper ends -->
-  </div>
-  <!-- container-scroller -->
-  <!-- plugins:js -->
-  <script src="/js/chart.js"></script>
-  <script src="/vendors/js/vendor.bundle.base.js"></script>
-  <!-- endinject -->
-  <!-- Plugin js for this page -->
-  <script src="/vendors/chart.js/Chart.min.js"></script>
-  <script src="/vendors/progressbar.js/progressbar.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-  <script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-  <script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-  <!-- End plugin js for this page -->
-  <!-- inject:js -->
-  <script src="/js/off-canvas.js"></script>
-  <script src="/js/hoverable-collapse.js"></script>
-  <script src="/js/misc.js"></script>
-  <script src="/js/settings.js"></script>
-  <script src="/js/todolist.js"></script>
-  <!-- endinject -->
-  <!-- Custom js for this page -->
-  <script src="/js/dashboard.js"></script>
-  <style>
-    *::-webkit-scrollbar {
-      width: 0;
-    }
 
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none !important;
-    }
-  </style>
+        <!-- ── ROW 1: STAT CARDS ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="dash-stat-card">
+              <div class="dash-stat-icon-box" style="--icon-color:#8860d0; --icon-bg:rgba(136,96,208,0.12);">
+                <i class="ri-currency-line"></i>
+              </div>
+              <div class="dash-stat-body">
+                <p class="dash-stat-label">Total Sales</p>
+                <h3 class="dash-stat-value">₹<%= sale %></h3>
+                <span class="dash-stat-pill" style="--pill-color:rgba(136,96,208,0.15);--pill-text:#b19ffb;--pill-border:rgba(136,96,208,0.3);">All time</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="dash-stat-card">
+              <div class="dash-stat-icon-box" style="--icon-color:#00d45b; --icon-bg:rgba(0,212,91,0.1);">
+                <i class="ri-sun-line"></i>
+              </div>
+              <div class="dash-stat-body">
+                <p class="dash-stat-label">Daily Income</p>
+                <h3 class="dash-stat-value">₹<%= locals.dailyIncome %></h3>
+                <span class="dash-stat-pill" style="--pill-color:rgba(0,212,91,0.1);--pill-text:#00e86d;--pill-border:rgba(0,212,91,0.25);">Today</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="dash-stat-card">
+              <div class="dash-stat-icon-box" style="--icon-color:#00b2ff; --icon-bg:rgba(0,178,255,0.1);">
+                <i class="ri-calendar-2-line"></i>
+              </div>
+              <div class="dash-stat-body">
+                <p class="dash-stat-label">Monthly Sales</p>
+                <h3 class="dash-stat-value">₹<%= locals.monthSale %></h3>
+                <span class="dash-stat-pill" style="--pill-color:rgba(0,178,255,0.1);--pill-text:#60cfff;--pill-border:rgba(0,178,255,0.25);">This month</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="dash-stat-card">
+              <div class="dash-stat-icon-box" style="--icon-color:#ffab00; --icon-bg:rgba(255,171,0,0.1);">
+                <i class="ri-bar-chart-grouped-line"></i>
+              </div>
+              <div class="dash-stat-body">
+                <p class="dash-stat-label">Yearly Revenue</p>
+                <h3 class="dash-stat-value">₹<%= locals.yearly[0]?locals.yearly[0].totalAmount:0 %></h3>
+                <span class="dash-stat-pill" style="--pill-color:rgba(255,171,0,0.1);--pill-text:#ffd060;--pill-border:rgba(255,171,0,0.25);">This year</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
+        <!-- ── ROW 2: COUNT MINI CARDS ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="dash-mini-card">
+              <div class="dash-mini-icon" style="--mc:rgba(136,96,208,0.12);">
+                <i class="ri-shopping-bag-3-line" style="color:#8860d0;"></i>
+              </div>
+              <div>
+                <p class="dash-mini-label">Total Orders</p>
+                <h2 class="dash-mini-value"><%= Totorder %></h2>
+              </div>
+              <div class="dash-mini-sparkline dash-mini-sparkline-purple"></div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="dash-mini-card">
+              <div class="dash-mini-icon" style="--mc:rgba(0,212,91,0.12);">
+                <i class="ri-group-line" style="color:#00d45b;"></i>
+              </div>
+              <div>
+                <p class="dash-mini-label">Total Users</p>
+                <h2 class="dash-mini-value"><%= locals.userCount.length %></h2>
+              </div>
+              <div class="dash-mini-sparkline dash-mini-sparkline-green"></div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="dash-mini-card">
+              <div class="dash-mini-icon" style="--mc:rgba(0,178,255,0.12);">
+                <i class="ri-box-3-line" style="color:#00b2ff;"></i>
+              </div>
+              <div>
+                <p class="dash-mini-label">Total Products</p>
+                <h2 class="dash-mini-value"><%= locals.productCount.length %></h2>
+              </div>
+              <div class="dash-mini-sparkline dash-mini-sparkline-blue"></div>
+            </div>
+          </div>
+        </div>
 
-  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+        <!-- ── ROW 3: TRANSACTION CHART + MOST BOUGHT PRODUCTS ── -->
+        <div class="row g-3 mb-4">
+          <!-- Transaction Doughnut -->
+          <div class="col-lg-4">
+            <div class="dash-glass-card h-100">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-exchange-dollar-line"></i>Transaction History</h5>
+              </div>
+              <div class="dash-card-body d-flex flex-column align-items-center">
+                <div class="dash-donut-wrap">
+                  <canvas id="transaction-history"></canvas>
+                </div>
+                <div class="w-100 mt-3">
+                  <div class="dash-txn-row">
+                    <span class="dash-txn-dot" style="background:#00d25b;"></span>
+                    <div class="flex-grow-1">
+                      <p class="dash-txn-label">Online Payment</p>
+                      <p class="dash-txn-time" id="op_time"><%= op[0]?op[0].orderDate.toString().split(' ').slice(0,5).join(' '):'' %></p>
+                    </div>
+                    <span class="dash-txn-amount" id="online-peyment">₹<%= op[0]?op[0].orderAmount:'' %></span>
+                  </div>
+                  <div class="dash-txn-row">
+                    <span class="dash-txn-dot" style="background:#ffab00;"></span>
+                    <div class="flex-grow-1">
+                      <p class="dash-txn-label">Cash on Delivery</p>
+                      <p class="dash-txn-time" id="cod_time"><%= cod[0]?cod[0].orderDate.toString().split(' ').slice(0,5).join(' '):'--' %></p>
+                    </div>
+                    <span class="dash-txn-amount" id="cod">₹<%= cod[0]?cod[0].orderAmount:'0' %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <script src="js/base.js"></script>
-  <script>
+          <!-- Most Bought Products -->
+          <div class="col-lg-8">
+            <div class="dash-glass-card h-100">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-award-line"></i>Most Bought Products</h5>
+                <span class="dash-card-meta">Count · Latest date</span>
+              </div>
+              <div class="dash-card-body">
+                <% most.forEach(e=>{ %>
+                <div class="dash-product-row">
+                  <div class="dash-product-img">
+                    <img src='<%= e.productData[0].images[0].startsWith("http") ? e.productData[0].images[0] : "/productImage/" + e.productData[0].images[0] %>' alt="<%= e.productData[0].name %>">
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h6 class="dash-product-name"><%= e.productData[0].name %></h6>
+                    <p class="dash-product-price">₹<%= e.productData[0].price %></p>
+                  </div>
+                  <div class="text-end">
+                    <span class="dash-sold-badge"><%= e.totalCount %> sold</span>
+                    <p class="dash-product-date"><%= e.orderDates[e.orderDates.length-1].toString().split(' ').slice(0,4).join(' ') %></p>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    
-    const op = document.getElementById('online-peyment')
-    const cod = document.getElementById('cod')
-    const opTime = document.getElementById('op_time')
-    const codTime = document.getElementById('cod_time')
+        <!-- ── ROW 4: BEST SELLING CATEGORIES ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <div class="dash-glass-card">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-stack-line"></i>Best Selling Categories</h5>
+              </div>
+              <div class="dash-card-body pt-0">
+                <div class="table-responsive">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Category Name</th>
+                        <th>Total Products</th>
+                        <th>Top Product</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% locals.topTenCategory.forEach((elem,i)=>{ %>
+                      <tr>
+                        <td><span class="dash-idx"><%= i+1 %></span></td>
+                        <td><span class="dash-name"><%= elem.categoryName %></span></td>
+                        <td><span class="dash-num"><%= elem.totalProducts %></span></td>
+                        <td><span class="dash-soft"><%= elem.topProductName %></span></td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROW 5: RECENT ORDERS ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <div class="dash-glass-card">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-file-list-3-line"></i>Recent Orders</h5>
+                <a href="/admin/orders" class="dash-view-link">View All <i class="ri-arrow-right-s-line"></i></a>
+              </div>
+              <div class="dash-card-body pt-0">
+                <div class="table-responsive">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Client</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% locals.orderList1.forEach((elem,i)=>{ %>
+                      <tr>
+                        <td><span class="dash-idx"><%= i+1 %></span></td>
+                        <td><span class="dash-name"><%= elem.userId.name? elem.userId.name: 'User' %></span></td>
+                        <td><span class="dash-amount">₹<%= elem.orderAmount.toFixed(2) %></span></td>
+                        <td><span class="dash-soft"><%= elem.peyment %></span></td>
+                        <td><span class="dash-soft"><%= elem.orderDate.toString().split(' ').slice(0,4).join(' ') %></span></td>
+                        <td>
+                          <span id="b<%= elem._id %>"
+                            onclick="orderStatus('<%= elem._id %>','<%= elem.orderStatus%>')"
+                            class="dash-status-badge <%= elem.orderStatus === 'delivered' ? 'status-delivered' : elem.orderStatus === 'cancelled' ? 'status-cancelled' : 'status-pending' %>"
+                            style="cursor:pointer;">
+                            <%= elem.orderStatus %>
+                          </span>
+                        </td>
+                        <td>
+                          <a href="/admin/orders/<%= elem._id %>" class="dash-eye-btn" title="View Details">
+                            <i class="ri-eye-line"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROW 6: RECENTLY ADDED USERS ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <div class="dash-glass-card">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-user-add-line"></i>Recently Added Users</h5>
+                <a href="/admin/users" class="dash-view-link">View All <i class="ri-arrow-right-s-line"></i></a>
+              </div>
+              <div class="dash-card-body pt-0">
+                <div class="dash-users-grid">
+                  <% locals.recentUser.forEach(e=>{ %>
+                  <div class="dash-user-item">
+                    <div class="dash-user-avatar">
+                      <%= e.name ? e.name.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <div class="flex-grow-1 ms-3 overflow-hidden">
+                      <h6 class="dash-user-name"><%= e.name %></h6>
+                      <p class="dash-user-email text-truncate"><%= e.email %></p>
+                    </div>
+                    <span class="dash-user-date"><%= e.date %></span>
+                  </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROW 7: SALES CHARTS ── -->
+        <div class="row g-3 mb-4">
+          <div class="col-lg-6">
+            <div class="dash-glass-card">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-line-chart-line"></i>Yearly Sales</h5>
+              </div>
+              <div class="dash-card-body">
+                <div class="dash-chart-container">
+                  <canvas id="areaChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="dash-glass-card">
+              <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="ri-bar-chart-2-line"></i>Monthly Sales</h5>
+              </div>
+              <div class="dash-card-body">
+                <div class="dash-chart-container">
+                  <canvas id="monthlyChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dash-inner -->
+    </div><!-- /content-wrapper -->
+  </div><!-- /main-panel -->
+</div><!-- /container-scroller -->
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script src="/js/chart.js"></script>
+<script src="/vendors/js/vendor.bundle.base.js"></script>
+<script src="/vendors/chart.js/Chart.min.js"></script>
+<script src="/vendors/progressbar.js/progressbar.min.js"></script>
+<script src="/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+<script src="/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script src="/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+<script src="/js/off-canvas.js"></script>
+<script src="/js/hoverable-collapse.js"></script>
+<script src="/js/misc.js"></script>
+<script src="/js/settings.js"></script>
+<script src="/js/todolist.js"></script>
+<script src="/js/dashboard.js"></script>
+
+
+
+<!-- ============================================================
+     SCRIPTS: Transaction Doughnut
+     ============================================================ -->
+<script>
+  (function() {
+    const opEl     = document.getElementById('online-peyment');
+    const codEl    = document.getElementById('cod');
+    const opTimeEl = document.getElementById('op_time');
+    const codTimeEl= document.getElementById('cod_time');
+
     fetch('/admin/payments/summary', {
       method: 'put',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({})
-    }).then(res => res.json()).then(data => {
-      let amoount = 0;
-      data.orderList.forEach(e => {
-        amoount += e.totalAmount;
-      })
-const cod=data.orderList[0]?data.orderList[0]._id:'cod';      
-const online=data.orderList[1]?data.orderList[1]._id:'online peyment';      
-const codC=data.orderList[0]?data.orderList[0].totalCount:0;
-const peymentC=data.orderList[1]?data.orderList[1].totalCount:0;
+    })
+    .then(res => res.json())
+    .then(data => {
+      let total = 0;
+      data.orderList.forEach(e => { total += e.totalAmount; });
+
+      const codLabel    = data.orderList[0] ? data.orderList[0]._id : 'COD';
+      const onlineLabel = data.orderList[1] ? data.orderList[1]._id : 'Online';
+      const codC        = data.orderList[0] ? data.orderList[0].totalCount : 0;
+      const onlineC     = data.orderList[1] ? data.orderList[1].totalCount : 0;
 
       if ($("#transaction-history").length) {
-        var areaData = {
-          labels: [cod, online],
-          datasets: [{
-            data: [codC
-              , peymentC],
-            backgroundColor: [
-              "#00d25b", "#ffab00"
-            ]
-          }
-          ]
-        };
-        var areaOptions = {
-          responsive: true,
-          maintainAspectRatio: true,
-          segmentShowStroke: false,
-          cutoutPercentage: 70,
-          elements: {
-            arc: {
-              borderWidth: 0
-            }
-          },
-          legend: {
-            display: false
-          },
-          tooltips: {
-            enabled: true
-          }
-        }
-        var transactionhistoryChartPlugins = {
-          beforeDraw: function (chart) {
-            var width = chart.chart.width,
-              height = chart.chart.height,
-              ctx = chart.chart.ctx;
-
-            ctx.restore();
-            var fontSize = 1;
-            ctx.font = fontSize + "rem sans-serif";
-            ctx.textAlign = 'left';
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = "#ffffff";
-
-            var text = `₹${amoount}`,
-              textX = Math.round((width - ctx.measureText(text).width) / 2),
-              textY = height / 2.4;
-
-            ctx.fillText(text, textX, textY);
-
-            ctx.restore();
-            var fontSize = 0.75;
-            ctx.font = fontSize + "rem sans-serif";
-            ctx.textAlign = 'left';
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = "#6c7293";
-
-            var texts = "Total",
-              textsX = Math.round((width - ctx.measureText(text).width) / 1.93),
-              textsY = height / 1.7;
-
-            ctx.fillText(texts, textsX, textsY);
-            ctx.save();
-          }
-        }
-        var transactionhistoryChartCanvas = $("#transaction-history").get(0).getContext("2d");
-        var transactionhistoryChart = new Chart(transactionhistoryChartCanvas, {
+        var ctx = $("#transaction-history").get(0).getContext("2d");
+        new Chart(ctx, {
           type: 'doughnut',
-          data: areaData,
-          options: areaOptions,
-          plugins: transactionhistoryChartPlugins
+          data: {
+            labels: [codLabel, onlineLabel],
+            datasets: [{ data: [codC, onlineC], backgroundColor: ["#00d25b","#ffab00"], borderWidth: 0 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutoutPercentage: 72,
+            legend: { display: false },
+            tooltips: { enabled: true }
+          },
+          plugins: [{
+            beforeDraw: function(chart) {
+              var w = chart.chart.width, h = chart.chart.height, c = chart.chart.ctx;
+              c.restore();
+              c.font = "bold 1rem Outfit,sans-serif";
+              c.fillStyle = "#fff";
+              c.textAlign = "center";
+              c.textBaseline = "middle";
+              c.fillText("₹" + total, w / 2, h / 2.2);
+              c.font = "0.68rem Outfit,sans-serif";
+              c.fillStyle = "rgba(255,255,255,0.4)";
+              c.fillText("Total", w / 2, h / 1.65);
+              c.save();
+            }
+          }]
         });
       }
+    });
+  })();
+</script>
 
-    })
+<!-- ============================================================
+     SCRIPTS: Yearly & Monthly Charts
+     ============================================================ -->
+<script>
+  (function() {
+    const currentYear = new Date().getFullYear();
+    const yearLabels  = Array.from({ length: 6 }, (_, i) => (currentYear + 3) - i).reverse();
+    var yearData = new Array(6).fill(0);
 
-  </script>
-
-  <script>
-  //year chart
-      const currentYear = new Date().getFullYear();
-     const next5Years = Array.from({ length: 6 }, (_, index) => (currentYear+3) - index);
-     const previeYear = next5Years.reverse();
-     var d = [];
-
-
-fetch('/admin/year', {
-    method: 'put',
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({})
-})
-    .then(res => res.json())
-    .then(data => {
-        const ryear = data.year.reverse();
-        previeYear.forEach((e, i) => {
-            let yearFound = false;
-
-            data.year.forEach((year, ind) => {
-                if (e === year._id) {
-                    d[i] = year.totalAmount;
-                    yearFound = true;
-                }
-            });
-
-            if (!yearFound) {
-                d[i] = 0;
-            }
+    fetch('/admin/year', { method: 'put', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
+      .then(r => r.json())
+      .then(data => {
+        yearLabels.forEach((yr, i) => {
+          const found = data.year.find(y => y._id === yr);
+          if (found) yearData[i] = found.totalAmount;
         });
         if ($("#areaChart").length) {
-      var areaData = {
-      labels: previeYear,
-      datasets: [{
-        label: 'sales',
-        data: d,
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255,99,132,1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
-        borderWidth: 1,
-        fill: true, // 3: no fill
-      }]
-    }; 
-    var areaOptions = {
-      plugins: {
-        filler: {
-          propagate: true
+          new Chart($("#areaChart").get(0).getContext("2d"), {
+            type: 'line',
+            data: {
+              labels: yearLabels,
+              datasets: [{
+                label: 'Sales (₹)', data: yearData, fill: true,
+                backgroundColor: 'rgba(136,96,208,0.07)',
+                borderColor: '#8860d0', borderWidth: 2.5,
+                pointBackgroundColor: '#b19ffb', pointRadius: 5, pointHoverRadius: 7,
+                tension: 0.4
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                yAxes: [{ gridLines: { color: "rgba(255,255,255,0.04)" }, ticks: { fontColor: "rgba(255,255,255,0.4)", fontFamily: "Outfit" } }],
+                xAxes: [{ gridLines: { color: "rgba(255,255,255,0.04)" }, ticks: { fontColor: "rgba(255,255,255,0.4)", fontFamily: "Outfit" } }]
+              },
+              legend: { labels: { fontColor: "rgba(255,255,255,0.55)", fontFamily: "Outfit" } },
+              tooltips: { backgroundColor: "rgba(14,16,20,0.9)", titleFontFamily: "Outfit", bodyFontFamily: "Outfit" }
+            }
+          });
         }
-      },
-      scales: {
-        yAxes: [{
-          gridLines: {
-            color: "rgba(204, 204, 204,0.1)"
-          }
-        }],
-        xAxes: [{
-          gridLines: {
-            color: "rgba(204, 204, 204,0.1)"
-          }
-        }]
-      }
-    }
-      var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
-      var areaChart = new Chart(areaChartCanvas, {
-        type: 'line',
-        data: areaData,
-        options: areaOptions
       });
-    }
 
-        
-    console.log(d);
-      })
-
-      //monthly chart
-      const monthNames = [
-        "January", "February", "March",
-        "April", "May", "June", "July",
-        "August", "September", "October",
-        "November", "December"
-    ];
-
-    fetch('/admin/monthly', {
-        method: 'put',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({})
-    })
-    .then(res => res.json())
-    .then(data => {
-        const months = monthNames;
-        const salesData = data.salesData;
-
+    // Monthly
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    fetch('/admin/monthly', { method: 'put', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
+      .then(r => r.json())
+      .then(data => {
         if ($("#monthlyChart").length) {
-            var monthlyData = {
-                labels: months,
-                datasets: [{
-                    label: 'Sales',
-                    data: salesData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                    fill: true,
-                }]
-            }; 
-
-            var monthlyOptions = {
-                plugins: {
-                    filler: {
-                        propagate: true
-                    }
-                },
-                scales: {
-                    yAxes: [{
-                        gridLines: {
-                            color: "rgba(204, 204, 204,0.1)"
-                        }
-                    }],
-                    xAxes: [{
-                        gridLines: {
-                            color: "rgba(204, 204, 204,0.1)"
-                        }
-                    }]
-                }
-            };
-
-            var monthlyChartCanvas = $("#monthlyChart").get(0).getContext("2d");
-            var monthlyChart = new Chart(monthlyChartCanvas, {
-                type: 'line',
-                data: monthlyData,
-                options: monthlyOptions
-            });
+          new Chart($("#monthlyChart").get(0).getContext("2d"), {
+            type: 'line',
+            data: {
+              labels: monthNames,
+              datasets: [{
+                label: 'Sales (₹)', data: data.salesData, fill: true,
+                backgroundColor: 'rgba(0,178,255,0.07)',
+                borderColor: '#00b2ff', borderWidth: 2.5,
+                pointBackgroundColor: '#60cfff', pointRadius: 5, pointHoverRadius: 7,
+                tension: 0.4
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                yAxes: [{ gridLines: { color: "rgba(255,255,255,0.04)" }, ticks: { fontColor: "rgba(255,255,255,0.4)", fontFamily: "Outfit" } }],
+                xAxes: [{ gridLines: { color: "rgba(255,255,255,0.04)" }, ticks: { fontColor: "rgba(255,255,255,0.4)", fontFamily: "Outfit" } }]
+              },
+              legend: { labels: { fontColor: "rgba(255,255,255,0.55)", fontFamily: "Outfit" } },
+              tooltips: { backgroundColor: "rgba(14,16,20,0.9)", titleFontFamily: "Outfit", bodyFontFamily: "Outfit" }
+            }
+          });
         }
+      })
+      .catch(err => console.error('Monthly chart error:', err));
+  })();
+</script>
 
-        console.log(salesData);
-    })
-    .catch(error => console.error('Error fetching monthly sales data:', error));
-  </script>
-  <!-- End custom js for this page -->
-  </body>
-
-  </html>
+<!-- Live Date -->
+<script>
+  (function() {
+    const el = document.getElementById('dash-live-date');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+  })();
+</script>
+<!-- End dashboard scripts -->
+</body>
+</html>

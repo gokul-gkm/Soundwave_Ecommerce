@@ -1,0 +1,82 @@
+:root {
+  --accent: #8860d0;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --text-soft: rgba(255, 255, 255, 0.6);
+}
+
+.order-container-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  min-height: 75vh;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.order-page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.2rem; }
+.order-page-subtitle { font-size: 0.9rem; }
+
+/* Search Styles */
+.order-search-box {
+  display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 1.1rem;
+  border-radius: 14px; background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border); transition: all 0.3s ease;
+}
+.order-search-box:focus-within { border-color: var(--accent); background: rgba(0, 0, 0, 0.3); }
+.order-search-icon { color: var(--text-soft); font-size: 1.1rem; }
+.order-search-input { flex: 1; border: none; outline: none; background: transparent; color: #fff; font-size: 0.9rem; }
+
+/* Table Styles */
+.order-custom-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+.order-custom-table th { padding: 1.1rem 0.8rem; color: var(--text-soft); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid var(--glass-border); }
+.order-row { opacity: 0; animation: fadeInOrderRow 0.4s ease forwards; animation-delay: var(--row-delay, 0s); }
+.order-row td { padding: 1rem 0.8rem; background: rgba(255, 255, 255, 0.02); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
+.order-row td:first-child { border-left: 1px solid var(--glass-border); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.order-row td:last-child { border-right: 1px solid var(--glass-border); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.order-row:hover td { background: rgba(255, 255, 255, 0.05); }
+
+.order-index { color: var(--text-soft); font-family: monospace; font-size: 0.85rem; }
+.order-client-name { font-weight: 600; color: #fff; font-size: 0.95rem; }
+.order-amount { font-weight: 700; color: #fff; font-size: 0.95rem; }
+.order-payment-mode, .order-date { font-size: 0.85rem; color: var(--text-soft); }
+
+/* Status Badges */
+.order-status-badge {
+  padding: 0.35rem 0.8rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  display: inline-flex; align-items: center; justify-content: center; min-width: 90px;
+}
+.order-status-badge.delivered { background: rgba(0, 176, 50, 0.12); color: #00ff4c; border: 1px solid rgba(0, 176, 50, 0.2); }
+.order-status-badge.shipped { background: rgba(136, 96, 208, 0.12); color: #b088ff; border: 1px solid rgba(136, 96, 208, 0.2); }
+.order-status-badge.pending { background: rgba(255, 171, 0, 0.12); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
+.order-status-badge.canceled, .order-status-badge.returned { background: rgba(215, 38, 36, 0.12); color: #ff4d4d; border: 1px solid rgba(215, 38, 36, 0.2); }
+
+.order-icon-btn {
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; transition: all 0.2s ease; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-border); cursor: pointer; text-decoration: none;
+}
+.order-icon-btn.info { color: #8860d0; }
+.order-icon-btn.delete { color: #ff4d4d; }
+.order-icon-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-2px); text-decoration: none; }
+
+.order-empty-state { padding: 4rem 0; text-align: center; opacity: 0.4; }
+.order-empty-state i { font-size: 3rem; margin-bottom: 0.8rem; display: block; }
+
+@keyframes fadeInOrderRow { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.order-search-spinner { width: 18px; height: 18px; border: 2px solid rgba(136, 96, 208, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spinOrderSearch 0.6s linear infinite; }
+@keyframes spinOrderSearch { to { transform: rotate(360deg); } }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .order-container-glass { padding: 1rem; }
+  .order-page-title { font-size: 1.4rem; }
+  .order-custom-table th, .order-row td { padding: 0.8rem 0.5rem; }
+  .order-client-name { font-size: 0.85rem; }
+  .order-amount { font-size: 0.85rem; }
+  .order-status-badge { min-width: 70px; font-size: 0.65rem; }
+}
+
+body::-webkit-scrollbar { width: 0; }
+body { overflow: hidden !important; background: #0f1116; }
+.container-scroller { overflow: hidden; }

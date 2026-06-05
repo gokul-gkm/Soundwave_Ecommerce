@@ -25,7 +25,7 @@ const getReportByType = async (req, res) => {
       const report = await Order.find({
         orderDate: { $gte: currentWeekStart, $lte: currentWeekEnd },
       });
-      res.render("admin/report", { report, data: "weekly", gg: req.params.id });
+      res.render("admin/report", { report, data: "weekly", gg: req.params.id, admin: req.session.admin });
     } else if (req.params.id == "monthly") {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth();
@@ -38,6 +38,7 @@ const getReportByType = async (req, res) => {
         report,
         data: "monthly",
         gg: req.params.id,
+        admin: req.session.admin,
       });
     } else if (req.params.id == "yearly") {
       const currentDate = new Date();
@@ -46,12 +47,13 @@ const getReportByType = async (req, res) => {
       const report = await Order.find({
         orderDate: { $gte: currentYearStart, $lte: currentYearEnd },
       });
-      res.render("admin/report", { report, data: "yearly", gg: req.params.id });
+      res.render("admin/report", { report, data: "yearly", gg: req.params.id, admin: req.session.admin });
     } else if ((req.params.id = "custom")) {
       res.render("admin/report", {
         custom: true,
         gg: req.params.id,
         data: "custom",
+        admin: req.session.admin,
       });
     } else {
       res.redirect("/admin");

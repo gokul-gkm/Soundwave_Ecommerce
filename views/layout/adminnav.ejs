@@ -1,176 +1,799 @@
-<nav class="sidebar sidebar-offcanvas"  id="sidebar">
-    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-      <a class="sidebar-brand brand-logo" href="/admin/"><h1 class="text-white ">Soundwave</h1></a>
-      <a class="sidebar-brand brand-logo-mini" href="/admin/"><h1 class="text-white ">S</h1></a>
-    </div>
-    <ul class="nav" style="position: fixed;">
-      <li class="nav-item profile">
-        <div class="profile-desc">
-          <div class="profile-pic">
-            <div class="count-indicator">
-              <img class="img-xs rounded-circle " src="/images/faces/face15.jpg" alt="">
-              <span class="count bg-success"></span>
-            </div>
-            <div class="profile-name">
-              <h5 class="mb-0 font-weight-normal"><%= admin.name %></h5>
-              <span>admin</span>
-            </div>
-          </div>
-          
-          
-        </div>
-      </li>
-      <li class="nav-item nav-category">
-        <span class="nav-link">Navigation</span>
-      </li>
-      <li class="nav-item menu-items <%= locals.home?'active':''   %> ">
-        <a class="nav-link" href="/admin">
-          <span class="menu-icon">
-            <i class="mdi mdi-speedometer"></i>
-          </span>
-          <span class="menu-title">Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item menu-items <%= locals.user?'active':''   %>">
-        <a class="nav-link"  href="/admin/users" >
-          <span class="menu-icon">
-            <i class=" ri-user-line"></i>
-          </span>
-          <span class="menu-title">User List</span>
-         
-        </a>
-     
-      </li>
-      <li class="nav-item menu-items <%= locals.order?'active':''   %>">
-        <a class="nav-link" href="/admin/orders">
-          <span class="menu-icon">
-            <i class="ri-shopping-cart-line"></i>
-          </span>
-          <span class="menu-title">Orders</span>
-        </a>
-      </li>
-      <li class="nav-item menu-items <%= locals.product?'active':''   %>">
-        <a class="nav-link" href="/admin/products">
-          <span class="menu-icon">
-            <i class="ri-shirt-line"></i>
-          </span>
-          <span class="menu-title">Product</span>
-        </a>
-      </li>
-      
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+  :root {
+    --accent: #8860d0;
+    --accent-glow: rgba(136, 96, 208, 0.15);
+    --accent-hover: #9b72e3;
+    --accent-gradient: linear-gradient(135deg, #8860d0, #b19ffb);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-bg-hover: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-soft: rgba(255, 255, 255, 0.6);
+    --text-bright: #ffffff;
+    --sidebar-width: 244px;
+    --navbar-height: 70px;
+    --sidebar-dark: rgba(15, 17, 22, 0.85);
+    --navbar-dark: rgba(15, 17, 22, 0.7);
+  }
 
+  /* --- Global Admin Body & Font Setup --- */
+  body {
+    background-color: #0f1116 !important;
+    color: var(--text-bright);
+    font-family: 'Inter', sans-serif !important;
+  }
 
-      <li class="nav-item menu-items <%= locals.category?'active':''   %>">
-        <a class="nav-link" href="/admin/categories">
-          <span class="menu-icon">
-            <i class="ri-pie-chart-line"></i>
-          </span>
-          <span class="menu-title">Category</span>
-        </a>
-      </li>
+  h1, h2, h3, h4, h5, h6, .menu-title, .brand-logo h1 {
+    font-family: 'Outfit', sans-serif !important;
+  }
 
-      <li class="nav-item menu-items">
-        <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-          <span class="menu-icon">
-            <i class="mdi mdi-file-document-box"></i>
-          </span>
-          <span class="menu-title">Sales Report</span>
-          <i class="menu-arrow"></i>
-        </a>
-        <div class="collapse" id="auth">
-          <ul class="nav flex-column sub-menu">
-            <li class="nav-item"> <a class="nav-link" href="/admin/report/weekly"><i class="ri-calendar-event-fill text-primary "></i>weekly report</a></li>
-            <li class="nav-item"> <a class="nav-link" href="/admin/report/monthly"><i class="ri-calendar-event-line text-info "></i>monthly report  </a></li>
-            <li class="nav-item"> <a class="nav-link" href="/admin/report/yearly"> <i class="ri-calendar-todo-fill text-danger "></i>yearly report</a></li>
-            <li class="nav-item"> <a class="nav-link" href="/admin/report/custom"><i class="ri-calendar-todo-fill text-bg-warning  "></i></i>  custom report </a></li>
-          </ul>
-        </div>
-      </li>
+  /* --- Sidebar Redesign --- */
+  #sidebar {
+    background: var(--sidebar-dark) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border-right: 1px solid var(--glass-border) !important;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1025;
+  }
 
-      <li class="nav-item menu-items <%= locals.coupens?'active':''   %>">
-        <a class="nav-link" href="/admin/coupons">
-          <span class="menu-icon">
-            <i class="ri-coupon-3-fill"></i>
-          </span>
-          <span class="menu-title">Coupens</span>
-        </a>
-      </li>
-      <li class="nav-item menu-items <%= locals.offers?'active':''   %>">
-        <a class="nav-link" href="/admin/offers">
-          <span class="menu-icon">
-            <i class="ri-percent-line"></i>
-          </span>
-          <span class="menu-title">Offers</span>
-        </a>
-      </li>
+  /* Brand Wrapper */
+  .sidebar .sidebar-brand-wrapper {
+    background: transparent !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    height: var(--navbar-height) !important;
+  }
 
-      
-      
+  .sidebar .sidebar-brand-wrapper .brand-logo,
+  .sidebar .sidebar-brand-wrapper .brand-logo-mini {
+    text-decoration: none;
+  }
+
+  .sidebar .sidebar-brand-wrapper .brand-logo h1,
+  .sidebar .sidebar-brand-wrapper .brand-logo-mini h1 {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .sidebar .sidebar-brand-wrapper .brand-logo-mini h1 {
+    font-size: 2.1rem;
+  }
+
+  /* Sidebar Navigation Items - Restricted to Direct Child of Sidebar */
+  .sidebar > .nav {
+    position: fixed;
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--navbar-height));
+    top: var(--navbar-height);
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 0.8rem 4rem 0.8rem !important; /* Higher bottom padding to ensure room for submenus */
+    margin: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Sidebar custom scrollbars - bypassing the universal zero-width rule */
+  .sidebar > .nav::-webkit-scrollbar {
+    width: 5px !important;
+    display: block !important;
+  }
+
+  .sidebar > .nav::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  .sidebar > .nav::-webkit-scrollbar-thumb {
+    background: rgba(136, 96, 208, 0.15) !important;
+    border-radius: 10px !important;
+    transition: background 0.2s;
+  }
+
+  .sidebar > .nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(136, 96, 208, 0.35) !important;
+  }
+
+  /* Sidebar Category Title */
+  .sidebar > .nav > .nav-item.nav-category {
+    padding: 0.5rem 1rem 0.5rem 1.2rem !important;
+    margin-top: 1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .sidebar > .nav > .nav-item.nav-category > .nav-link {
+    color: var(--text-soft) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 0 !important;
+  }
+
+  /* Menu Items */
+  .sidebar > .nav > .nav-item.menu-items {
+    padding: 0 !important;
+    margin-bottom: 0.3rem;
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link {
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem !important;
+    color: var(--text-soft) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    border: 1px solid transparent;
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link:hover {
+    background: var(--glass-bg-hover) !important;
+    color: var(--text-bright) !important;
+    border-color: rgba(255, 255, 255, 0.04);
+    transform: translateX(4px);
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0 !important;
+    transition: all 0.2s ease;
+    color: var(--text-soft);
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-icon i {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link:hover .menu-icon {
+    background: rgba(136, 96, 208, 0.1);
+    border-color: rgba(136, 96, 208, 0.2);
+    color: var(--accent);
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-title {
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  /* Dropdown Menu Arrow */
+  .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-arrow {
+    margin-left: auto;
+    color: var(--text-soft);
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+  }
+
+  .sidebar > .nav > .nav-item.menu-items > .nav-link[aria-expanded="true"] .menu-arrow {
+    transform: rotate(90deg);
+  }
+
+  /* Submenu Dropdown Container - Cleanly Styled */
+  .sidebar .sub-menu {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-radius: 12px;
+    padding: 0.4rem 0.4rem 0.4rem 1.2rem !important;
+    margin: 0.4rem 0 0.4rem 0 !important;
+    border: 1px solid var(--glass-border) !important;
+    list-style: none;
+  }
+
+  .sidebar .sub-menu .nav-item {
+    padding: 0 !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .sidebar .sub-menu .nav-item .nav-link {
+    padding: 0.6rem 0.8rem !important;
+    font-size: 0.85rem !important;
+    color: var(--text-soft) !important;
+    background: transparent !important;
+    border-radius: 8px;
+    gap: 0.6rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    border: none !important;
+    transform: none !important;
+  }
+
+  .sidebar .sub-menu .nav-item .nav-link i {
+    font-size: 0.95rem;
+    color: var(--text-soft);
+  }
+
+  .sidebar .sub-menu .nav-item .nav-link:hover {
+    color: var(--accent) !important;
+    background: rgba(136, 96, 208, 0.05) !important;
+    transform: translateX(4px) !important;
+  }
+
+  .sidebar .sub-menu .nav-item .nav-link:hover i {
+    color: var(--accent);
+  }
+
+  /* Active Sidebar Item */
+  .sidebar > .nav > .nav-item.menu-items.active > .nav-link {
+    background: linear-gradient(90deg, rgba(136, 96, 208, 0.12) 0%, rgba(136, 96, 208, 0.02) 100%) !important;
+    border-color: rgba(136, 96, 208, 0.15) !important;
+    border-left: 3px solid var(--accent) !important;
+    color: var(--text-bright) !important;
+  }
+
+  .sidebar > .nav > .nav-item.menu-items.active > .nav-link .menu-icon {
+    background: rgba(136, 96, 208, 0.2);
+    border-color: rgba(136, 96, 208, 0.3);
+    color: var(--accent);
+    box-shadow: 0 0 10px rgba(136, 96, 208, 0.2);
+  }
+
+  /* Profile Card inside Sidebar */
+  .sidebar > .nav > .nav-item.profile {
+    padding: 0.6rem 0.8rem !important;
+    margin: 0 0.2rem 1.2rem 0.2rem !important;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar > .nav > .nav-item.profile:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .sidebar .profile-desc {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .sidebar .profile-desc .profile-pic {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .sidebar .profile-desc .count-indicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar .profile-desc img {
+    border: 1px solid var(--accent);
+    padding: 1px;
+    width: 32px !important;
+    height: 32px !important;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar .profile-desc:hover img {
+    transform: scale(1.05);
+  }
+
+  .sidebar .profile-desc .count-indicator .count {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #0f1116;
+    border-radius: 50%;
+  }
+
+  .sidebar .profile-desc .profile-name h5 {
+    color: var(--text-bright);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .sidebar .profile-desc .profile-name span {
+    color: var(--accent);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* --- Top Navbar Redesign --- */
+  .navbar {
+    background: var(--navbar-dark) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    height: var(--navbar-height) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+    z-index: 1020;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .navbar .navbar-brand-wrapper {
+    background: transparent !important;
+    height: var(--navbar-height) !important;
+    border: none !important;
+  }
+
+  .navbar .navbar-brand-wrapper h3 {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  .navbar .navbar-menu-wrapper {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    box-shadow: none !important;
+  }
+
+  /* Minimizer Button */
+  .navbar .navbar-menu-wrapper .navbar-toggler {
+    color: var(--text-soft) !important;
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    outline: none !important;
+  }
+
+  .navbar .navbar-menu-wrapper .navbar-toggler:hover {
+    color: var(--accent) !important;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* Profile Dropdown Trigger */
+  .navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .navbar .navbar-nav-right .nav-item.dropdown:hover .navbar-profile,
+  .navbar .navbar-nav-right .nav-item.dropdown .navbar-profile[aria-expanded="true"] {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border);
+  }
+
+  .navbar-profile img {
+    border: 1px solid var(--accent);
+    padding: 1px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .navbar-profile-name {
+    color: var(--text-bright) !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .navbar-profile i {
+    color: var(--text-soft);
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+
+  .navbar .navbar-nav-right .nav-item.dropdown:hover .navbar-profile i {
+    color: var(--accent);
+    transform: translateY(1px);
+  }
+
+  /* --- Premium Profile Dropdown Menu --- */
+  .navbar-dropdown {
+    background: rgba(20, 24, 33, 0.95) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4) !important;
+    min-width: 240px !important;
+    padding: 0.8rem 0 !important;
+    margin-top: 15px !important;
+    overflow: hidden;
+    animation: dropdownAnimation 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes dropdownAnimation {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header card inside dropdown */
+  .dropdown-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 1.2rem 0.8rem 1.2rem;
+  }
+
+  .dropdown-profile-header img {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--accent);
+    padding: 1px;
+  }
+
+  .dropdown-profile-header .profile-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dropdown-profile-header .profile-name-title {
+    color: var(--text-bright) !important;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .dropdown-profile-header .profile-role {
+    color: var(--accent) !important;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .navbar-dropdown .dropdown-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    margin: 0.4rem 0 !important;
+  }
+
+  /* Dropdown Option Items */
+  .navbar-dropdown .dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+    padding: 0.75rem 1.4rem !important;
+    color: var(--text-soft) !important;
+    background: transparent !important;
+    transition: all 0.25s ease !important;
+    border: none !important;
+    width: 100% !important;
+    text-align: left !important;
+    cursor: pointer !important;
+  }
+
+  .navbar-dropdown .dropdown-item:hover {
+    color: var(--text-bright) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    padding-left: 1.6rem !important; /* Slide-in motion */
+  }
+
+  .navbar-dropdown .dropdown-item .preview-thumbnail {
+    margin-right: 0 !important;
+  }
+
+  .navbar-dropdown .dropdown-item .preview-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .navbar-dropdown .dropdown-item:hover .preview-icon {
+    background: rgba(136, 96, 208, 0.1) !important;
+    border-color: rgba(136, 96, 208, 0.2);
+    color: var(--accent);
+  }
+
+  .navbar-dropdown .preview-subject {
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+  }
+
+  /* Form & Button styles inside logout dropdown */
+  .navbar-dropdown form {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .navbar-dropdown button.dropdown-item.logout-btn:hover {
+    background: rgba(215, 38, 36, 0.05) !important;
+  }
+
+  .navbar-dropdown button.dropdown-item.logout-btn:hover .preview-icon {
+    background: rgba(215, 38, 36, 0.1) !important;
+    border-color: rgba(215, 38, 36, 0.2);
+  }
+
+  .navbar-dropdown button.dropdown-item.logout-btn:hover .preview-subject {
+    color: #ff4d4d !important;
+  }
+
+  .navbar-dropdown button.dropdown-item.logout-btn:hover .preview-icon i {
+    color: #ff4d4d !important;
+    transform: scale(1.1);
+  }
+
+  /* --- Responsiveness & Template Override Styles --- */
   
-   
-    </ul>
-  </nav>
-  <!-- partial -->
-  <div class="container-fluid page-body-wrapper">
-    <!-- partial:partials/_navbar.html -->
+  /* Desktop Layout Styles when Sidebar is Not Minimized */
+  body:not(.sidebar-icon-only) .sidebar {
+    width: var(--sidebar-width) !important;
+  }
+  
+  /* Desktop Layout Styles when Sidebar IS Minimized */
+  body.sidebar-icon-only .sidebar {
+    width: 70px !important;
+  }
 
+  body.sidebar-icon-only .sidebar > .nav {
+    width: 70px !important;
+    padding: 1.5rem 0.4rem !important;
+  }
 
-    <nav class="navbar p-0 fixed-top d-flex flex-row">
-      <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo-mini" href="index.html"><h3 class="text-white ">Soundwave</h3></a>
+  body.sidebar-icon-only .sidebar > .nav > .nav-item.profile {
+    display: none !important;
+  }
+
+  body.sidebar-icon-only .sidebar > .nav > .nav-item.menu-items > .nav-link {
+    padding: 0.8rem 0 !important;
+    justify-content: center;
+    gap: 0;
+  }
+
+  body.sidebar-icon-only .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-title,
+  body.sidebar-icon-only .sidebar > .nav > .nav-item.menu-items > .nav-link .menu-arrow {
+    display: none !important;
+  }
+
+  /* Float compact popover sub-menus when sidebar is minimized */
+  body.sidebar-icon-only .sidebar .nav-item.hover-open .sub-menu {
+    position: absolute !important;
+    left: 70px !important;
+    top: 0 !important;
+    width: 190px !important;
+    background: rgba(18, 21, 28, 0.98) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 0 12px 12px 0 !important;
+    padding: 0.5rem !important;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4) !important;
+    display: block !important;
+  }
+
+  /* Mobile Layout Styles (< 992px) */
+  @media (max-width: 991px) {
+    body .sidebar {
+      position: fixed !important;
+      left: 0 !important;
+      top: 0 !important;
+      height: 100vh !important;
+      z-index: 1040 !important;
+      transform: translateX(-100%) !important;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    body .sidebar.active {
+      transform: translateX(0) !important;
+    }
+
+    .sidebar > .nav {
+      position: relative !important;
+      width: 100% !important;
+      top: 0 !important;
+      height: calc(100% - var(--navbar-height)) !important;
+    }
+
+    .navbar .navbar-menu-wrapper {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+
+    /* Align right items nicely */
+    .navbar .navbar-menu-wrapper .navbar-toggler-right {
+      color: var(--text-soft) !important;
+      font-size: 1.3rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      background: transparent;
+      border: none;
+      margin-left: 0.5rem;
+    }
+
+    .navbar .navbar-menu-wrapper .navbar-toggler-right:hover {
+      color: var(--accent) !important;
+      background: rgba(255, 255, 255, 0.04);
+    }
+  }
+</style>
+
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+    <a class="sidebar-brand brand-logo" href="/admin/"><h1>Soundwave</h1></a>
+    <a class="sidebar-brand brand-logo-mini" href="/admin/"><h1>S</h1></a>
+  </div>
+  <ul class="nav">
+    <li class="nav-item profile">
+      <div class="profile-desc">
+        <div class="profile-pic">
+          <div class="count-indicator">
+            <img class="img-xs rounded-circle" src="/images/faces/face15.jpg" alt="">
+            <span class="count bg-success"></span>
+          </div>
+          <div class="profile-name">
+            <h5 class="mb-0 font-weight-normal"><%= admin.name %></h5>
+            <span>admin</span>
+          </div>
+        </div>
       </div>
-      <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-          <span class="mdi mdi-menu"></span>
-        </button>
-        <ul class="navbar-nav w-100">
-          <li class="nav-item w-100">
-            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-              <input type="text" class="form-control" placeholder="Search<% if(locals.user){  %> user<%} else if(locals.product){%>products<% }else if(locals.order){ %>order <% } %>">
-            </form>
-          </li>
+    </li>
+    <li class="nav-item nav-category">
+      <span class="nav-link">Navigation</span>
+    </li>
+    <li class="nav-item menu-items <%= locals.home?'active':'' %>">
+      <a class="nav-link" href="/admin">
+        <span class="menu-icon">
+          <i class="ri-dashboard-3-line"></i>
+        </span>
+        <span class="menu-title">Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items <%= locals.user?'active':'' %>">
+      <a class="nav-link" href="/admin/users">
+        <span class="menu-icon">
+          <i class="ri-group-line"></i>
+        </span>
+        <span class="menu-title">User List</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items <%= locals.order?'active':'' %>">
+      <a class="nav-link" href="/admin/orders">
+        <span class="menu-icon">
+          <i class="ri-shopping-bag-3-line"></i>
+        </span>
+        <span class="menu-title">Orders</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items <%= locals.product?'active':'' %>">
+      <a class="nav-link" href="/admin/products">
+        <span class="menu-icon">
+          <i class="ri-box-3-line"></i>
+        </span>
+        <span class="menu-title">Product</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items <%= locals.category?'active':'' %>">
+      <a class="nav-link" href="/admin/categories">
+        <span class="menu-icon">
+          <i class="ri-stack-line"></i>
+        </span>
+        <span class="menu-title">Category</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items">
+      <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+        <span class="menu-icon">
+          <i class="ri-file-chart-line"></i>
+        </span>
+        <span class="menu-title">Sales Report</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="auth">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"><a class="nav-link" href="/admin/report/weekly"><i class="ri-calendar-todo-line"></i>weekly report</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/report/monthly"><i class="ri-calendar-2-line"></i>monthly report</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/report/yearly"><i class="ri-calendar-line"></i>yearly report</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/report/custom"><i class="ri-calendar-check-line"></i>custom report</a></li>
         </ul>
-        <ul class="navbar-nav navbar-nav-right">
+      </div>
+    </li>
+    <li class="nav-item menu-items <%= locals.coupens?'active':'' %>">
+      <a class="nav-link" href="/admin/coupons">
+        <span class="menu-icon">
+          <i class="ri-coupon-3-line"></i>
+        </span>
+        <span class="menu-title">Coupons</span>
+      </a>
+    </li>
+    <li class="nav-item menu-items <%= locals.offers?'active':'' %>">
+      <a class="nav-link" href="/admin/offers">
+        <span class="menu-icon">
+          <i class="ri-percent-line"></i>
+        </span>
+        <span class="menu-title">Offers</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 
-          
-
-       
-          <li class="nav-item dropdown">
-            <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
-              <div class="navbar-profile">
-                <img class="img-xs rounded-circle" src="/images/faces/face15.jpg" alt="">
-                <p class="mb-0 d-none d-sm-block navbar-profile-name"><%= admin.name %></p>
-                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+<!-- partial -->
+<div class="container-fluid page-body-wrapper">
+  <!-- partial:partials/_navbar.html -->
+  <nav class="navbar p-0 fixed-top d-flex flex-row">
+    <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+      <a class="navbar-brand brand-logo-mini" href="/admin/"><h3>Soundwave</h3></a>
+    </div>
+    <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+      <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+        <i class="ri-menu-2-line"></i>
+      </button>
+      <ul class="navbar-nav navbar-nav-right">
+        <li class="nav-item dropdown">
+          <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+            <div class="navbar-profile">
+              <img class="img-xs rounded-circle" src="/images/faces/face15.jpg" alt="">
+              <p class="mb-0 d-none d-sm-block navbar-profile-name"><%= admin.name %></p>
+              <i class="ri-arrow-down-s-line d-none d-sm-block"></i>
+            </div>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+            <!-- Admin Header Card -->
+            <div class="dropdown-profile-header">
+              <img class="img-xs rounded-circle" src="/images/faces/face15.jpg" alt="">
+              <div class="profile-info">
+                <h6 class="profile-name-title"><%= admin.name %></h6>
+                <span class="profile-role">Administrator</span>
               </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-              <h6 class="p-3 mb-0">Profile</h6>
-              <div class="dropdown-divider"></div>
-             
-              <div class="dropdown-divider"></div>
-              <form action="/logout" method="post">
-              <button type="submit" class="dropdown-item preview-item">
+            </div>
+            <div class="dropdown-divider"></div>
+            
+            
+            <!-- Logout Action -->
+            <form action="/logout" method="post">
+              <button type="submit" class="dropdown-item preview-item logout-btn">
                 <div class="preview-thumbnail">
-                  <div class="preview-icon bg-dark rounded-circle">
-                    <i class="mdi mdi-logout text-danger"></i>
+                  <div class="preview-icon">
+                    <i class="ri-logout-box-r-line text-danger"></i>
                   </div>
                 </div>
                 <div class="preview-item-content">
-                 
-                    <p type="submit" class="border-0 bg-transparent text-white  d-flex align-items-center justify-content-center "><p class="preview-subject mb-1">Log out</p></p>
-
-                
+                  <p class="preview-subject mb-1">Log out</p>
                 </div>
               </button>
             </form>
-              <div class="dropdown-divider"></div>
-             
-            </div>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="mdi mdi-format-line-spacing"></span>
-        </button>
-      </div>
-    </nav>
+          </div>
+        </li>
+      </ul>
+      <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+        <i class="ri-menu-fold-line"></i>
+      </button>
+    </div>
+  </nav>

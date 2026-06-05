@@ -14,7 +14,7 @@ const getDashboard = async (req, res) => {
       .limit(10);
 
     const productCount = await Product.find({});
-    const userCount = await User.find({}).sort({ date: -1 });
+    const userCount = await User.find({ is_admin: false}).sort({ date: -1 });
     const recentUser = userCount.slice(0, 3);
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -97,6 +97,31 @@ const getDashboard = async (req, res) => {
         $sort: { _id: -1 },
       },
     ]);
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const todayOrders = await Order.aggregate([
+      {
+        $match: {
+          orderDate: {
+            $gte: todayStart,
+            $lte: todayEnd,
+          },
+          orderStatus: { $ne: "payment pending" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$orderAmount" },
+        },
+      },
+    ]);
+    const dailyIncome = todayOrders[0] ? todayOrders[0].totalAmount : 0;
+
     const yearly = await Order.aggregate([
       {
         $group: {
@@ -136,29 +161,18 @@ const getDashboard = async (req, res) => {
         $unwind: "$categoryData",
       },
       {
-        $lookup: {
-          from: "products",
-          localField: "OrderedItems.productId",
-          foreignField: "_id",
-          as: "orderedProduct",
-        },
-      },
-      {
-        $unwind: "$orderedProduct",
-      },
-      {
         $group: {
           _id: {
+            productId: "$OrderedItems.productId",
+            productName: "$productData.name",
             categoryId: "$productData.category",
             categoryName: "$categoryData.name",
-            productId: "$orderedProduct._id",
-            productName: "$orderedProduct.name",
           },
-          totalProducts: { $sum: "$OrderedItems.quantity" },
+          productQuantity: { $sum: "$OrderedItems.quantity" },
         },
       },
       {
-        $sort: { totalProducts: -1 },
+        $sort: { productQuantity: -1 },
       },
       {
         $group: {
@@ -166,8 +180,11 @@ const getDashboard = async (req, res) => {
           categoryName: { $first: "$_id.categoryName" },
           topProduct: { $first: "$_id.productId" },
           topProductName: { $first: "$_id.productName" },
-          totalProducts: { $first: "$totalProducts" },
+          totalProducts: { $sum: "$productQuantity" },
         },
+      },
+      {
+        $sort: { totalProducts: -1 },
       },
       {
         $limit: 10,
@@ -184,6 +201,7 @@ const getDashboard = async (req, res) => {
       cod,
       monthSale,
       daily,
+      dailyIncome,
       yearly,
       userCount,
       productCount,

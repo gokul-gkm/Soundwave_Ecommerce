@@ -1,4 +1,5 @@
 <%- include('../layout/adminlayout.ejs') -%>
+<link rel="stylesheet" href="/css/admin/products.css">
   <div class="container-scroller">
 
     <%- include('../layout/adminnav.ejs') -%>
@@ -68,234 +69,229 @@
             </div>
           </div>
 
-          <div class="row hh">
-            <div class="circle position-absolute " style="background-color: rebeccapurple;
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-            transform: translate(57rem, 23rem);"></div>
-            <div class="circle position-absolute " style="background-color: rgba(0, 0, 255, 0.589);
-            filter: blur(136px);
-            width: 13rem;
-            height: 10rem;
-            border-radius: 50%;
-         "></div>
-            <div class="col-12 grid-margin">
-              <div class="card " style="height: 80vh; border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-                <div class="card" style="border-radius: 15px; box-shadow: 0 0 0 0; border: 0;">
-                  <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between ">
-                      <h4 class="card-title">products</h4>
-                      <a href="/admin/products/new" class="btn btn-primary text-white "
-                        style="outline: 0; border:0; margin-top: -1rem;">Add product</a>
-                    </div>
+        <!-- Background Blurs -->
+        <div class="circle position-fixed" style="background-color: rebeccapurple; filter: blur(140px); width: 14rem; height: 11rem; border-radius: 50%; right: 5rem; top: 15rem; z-index: 0; opacity: 0.4; pointer-events: none;"></div>
+        <div class="circle position-fixed" style="background-color: rgba(0, 0, 255, 0.35); filter: blur(140px); width: 14rem; height: 11rem; border-radius: 50%; left: 18rem; top: 8rem; z-index: 0; opacity: 0.4; pointer-events: none;"></div>
 
-                    <!-- Search Bar -->
-                    <div class="product-search-wrapper" style="margin-bottom: 1.2rem;">
-                      <div class="product-search-box">
-                        <svg class="product-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <circle cx="11" cy="11" r="8"></circle>
-                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input
-                          type="text"
-                          id="productSearchInput"
-                          class="product-search-input"
-                          placeholder="Search products..."
-                          autocomplete="off"
-                        />
-                        <div class="product-search-loader" id="productSearchLoader" style="display:none;">
-                          <div class="product-search-spinner"></div>
-                        </div>
-                        <button class="product-search-clear" id="productSearchClear" style="display:none;" title="Clear search">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
+        <div class="col-12 grid-margin" style="position: relative; z-index: 1;">
+          <div class="user-container-glass">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div>
+                <h3 class="user-page-title">Product Management</h3>
+                <p class="user-page-subtitle text-muted">View, add, edit, and manage store products</p>
+              </div>
+              <a href="/admin/products/new" class="btn-add-product">
+                <i class="ri-add-line"></i> Add Product
+              </a>
+            </div>
 
-                    <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th> no </th>
-                            <th> Name </th>
-                            <th> image </th>
-                            <th> Stock </th>
-                            <th> price </th>
-                            <th> Date </th>
-                            <th> Cetegory </th>
-                            <th> Active </th>
-                            <th> options </th>
-                          </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                          <% product.forEach((e,i)=>{ %>
-
-                            <tr class="tr" id="e<%=e._id  %>" style="background-color: transparent !important;">
-                              <td class="py-1">
-                                <%= i+1 %>
-                              </td>
-                              <td>
-                                <%= e.name %>
-                              </td>
-                              <td>
-
-                                <div class="progress d-flex align-items-center  h-100 w-100  "
-                                  style=" background-color: transparent; ">
-                                  <%e.images.forEach(im=>{%>
-                                    <div class="cir "
-                                      style="display: inline-block; width: 30px; height: 30px;  border-radius: 50%; overflow: hidden;">
-                                      <img style="width: 100%; height: 100%; object-fit: cover; "
-                                        src="<%= im.startsWith('http') ? im : '/productImage/' + im %>" alt="">
-                                    </div>
-
-                                    <% }) %>
-                                </div>
-                              </td>
-                              <td>
-                                <%=e.stock %>
-                              </td>
-                              <td>
-                                ₹<%=e.price.toFixed(2) %>
-                              </td>
-                              <td>
-                                <%=e.createdAt %>
-                              </td>
-                              <td>
-                                <%=e.category.name %>
-                              </td>
-                              <td>
-                                <div onclick="" style="cursor: pointer;" class="badge  badge-outline-success">
-                                  <%=e.status %>
-                                </div>
-                              </td>
-                              <!-- New -->
-                              <td>
-                                <div onclick="active('<%= e._id %>')" id="b<%=e._id  %>" style="cursor: pointer;"
-                                  class="badge  <%= e.listed ? 'badge-outline-success' : 'badge-outline-danger' %>">
-                                  <%= e.listed ? 'Listed' : 'Unlisted' %>
-                                </div>
-                              </td>
-                              <!-- New -->
-
-                                <td class=" dropdown"> <a href="#" id="profile-dropdown" data-toggle="dropdown"><i
-                                    class="mdi mdi-dots-vertical"></i></a>
-                                <div style="min-width: 5rem; padding: .9rem 0; height: max-content; "
-                                  class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list   overflow-hidden "
-                                  aria-labelledby="profile-dropdown">
-                                  <div
-                                    class="edit d-flex flex-column gap-2  h-100 w-100 justify-content-center align-items-center ">
-                                    <% let b=[]; locals.ca.forEach(e=>{ b.push(e.name) }) %>
-                                      <a href="/admin/products/<%=e._id %>" class="fs-5"
-                                        style="line-height: 0; margin-bottom: 0; color:#6c7293; text-decoration: none;">
-                                        view&nbsp;<i class="ri-eye-line"></i></a>
-                                      <br>
-                                      <div class="d "
-                                        style="width: 100%; height: 1px; background-color: rgba(77, 75, 75, 0.5);">
-                                      </div>
-                                      <br>
-                                      <p onclick="edit('<%=JSON.stringify(e.images)%>','<%= e._id%>','<%= e.name %>','<%=e.stock  %>','<%=e.price  %>','<%=e.category.name  %>','<%= e.description%>','<%= e.tags%>')"
-                                        class="fs-5 "
-                                        style="cursor: pointer; line-height: 0; margin-bottom: 0; color:#6c7293;">
-                                        edit&nbsp;<i class="ri-edit-line  "></i></p>
-                                      <br>
-                                      <div class="d "
-                                        style="width: 100%; height: 1px; background-color: rgba(77, 75, 75, 0.5);">
-                                      </div>
-                                      <br>
-                                      <a href="#"  onclick="deleteProduct('<%= e._id %>')" class="fs-5 "
-                                        style="line-height: 0; margin-bottom: 0; color:#6c7293;">
-                                        delete&nbsp;<i class="ri-delete-bin-3-line  "></i></a>
-                                  </div>
-
-
-                              </td>
-                            </tr>
-                            <% }) %>
-
-                        </tbody>
-                      </table>
-
-                    </div>
-
-                    <div id="productPaginationContainer">
-                      <%- include('../layout/pagination.ejs') -%>
-                    </div>
-
-                  </div>
+            <!-- Search Bar -->
+            <div class="user-search-wrapper mb-4">
+              <div class="user-search-box">
+                <i class="ri-search-line user-search-icon"></i>
+                <input
+                  type="text"
+                  id="productSearchInput"
+                  class="product-search-input"
+                  placeholder="Search products by name..."
+                  autocomplete="off"
+                />
+                <div class="product-search-loader" id="productSearchLoader" style="display:none;">
+                  <div class="product-search-spinner"></div>
                 </div>
+                <button class="product-search-clear" id="productSearchClear" style="display:none;" title="Clear search">
+                  <i class="ri-close-line"></i>
+                </button>
               </div>
             </div>
+
+            <div class="table-responsive">
+              <table class="user-custom-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">No</th>
+                    <th>Product</th>
+                    <th>Images</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th class="text-center">Listing</th>
+                    <th class="text-end" style="width: 130px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productTableBody">
+                  <% product.forEach((e, i)=>{ %>
+                    <tr class="user-row" id="e<%=e._id %>" style="--row-delay: <%= (i * 0.05).toFixed(2) + 's' %>;">
+                      <td data-label="No." class="user-index"><%= i + 1 %></td>
+                      <td data-label="Product" class="font-weight-bold text-white product-name-cell"><%= e.name %></td>
+                      <td data-label="Images">
+                        <div class="product-images-overlap">
+                          <% (e.images || []).forEach((im, idx)=>{ %>
+                            <div class="product-image-avatar">
+                              <img src="<%= im.startsWith('http') ? im : '/productImage/' + im %>" alt="product image" onerror="this.src='/images/no-image.png'">
+                            </div>
+                          <% }) %>
+                        </div>
+                      </td>
+                      <td data-label="Stock">
+                        <% if (e.stock === 0) { %>
+                          <span class="stock-badge out-of-stock">Out of Stock</span>
+                        <% } else if (e.stock <= 5) { %>
+                          <span class="stock-badge low-stock">Only <%= e.stock %> left</span>
+                        <% } else { %>
+                          <span class="stock-badge in-stock"><%= e.stock %> Units</span>
+                        <% } %>
+                      </td>
+                      <td data-label="Price" class="font-weight-bold text-white">₹<%= e.price.toFixed(2) %></td>
+                      <td data-label="Category">
+                        <span class="product-category-tag"><%= e.category ? e.category.name : 'N/A' %></span>
+                      </td>
+                      <td data-label="Listing" class="text-center">
+                        <label class="user-toggle" title="<%= e.listed ? 'Unlist Product' : 'List Product' %>">
+                          <input type="checkbox" <%= e.listed ? "checked" : "" %> onchange="active('<%= e._id %>')">
+                          <span class="user-toggle-slider"></span>
+                        </label>
+                      </td>
+                      <td data-label="Actions">
+                        <div class="product-action-group">
+                          <a href="/admin/products/<%= e._id %>" class="product-action-btn view" title="View Details">
+                            <i class="ri-eye-line"></i>
+                          </a>
+                          <button 
+                            onclick="openEditProductModal(this)" 
+                            class="product-action-btn edit" 
+                            title="Edit Product"
+                            data-id="<%= e._id %>"
+                            data-name="<%= e.name %>"
+                            data-images="<%= JSON.stringify(e.images || []) %>"
+                            data-stock="<%= e.stock %>"
+                            data-price="<%= e.price %>"
+                            data-category="<%= e.category ? e.category.name : '' %>"
+                            data-description="<%= e.description %>"
+                            data-tags="<%= e.tags ? e.tags.join(', ') : '' %>"
+                          >
+                            <i class="ri-edit-line"></i>
+                          </button>
+                          <button onclick="deleteProduct('<%= e._id %>')" class="product-action-btn delete" title="Delete Product">
+                            <i class="ri-delete-bin-line"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+
+            <div id="productPaginationContainer" class="mt-4">
+              <%- include('../layout/pagination.ejs') -%>
+            </div>
+
           </div>
+        </div>
         </div>
       </div>
   </div>
   </div>
 
 
+  <!-- SweetAlert2 library -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     function deleteProduct(proId) {
-        // Display a confirmation dialog before proceeding
-        if (confirm('Are you sure you want to remove this product?')) {
-            // Send an AJAX request to delete the user
-            fetch('/admin/products/' + proId, {
-                method: 'DELETE',
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show a success toaster message or any other feedback
-                    alert('Product removed successfully');
-                    // Reload the page or update the UI as needed
-                    location.reload();
-                } else {
-                    // Show an error toaster message or any other feedback
-                    alert('Failed to remove product: ' + data.message);
-                }
-            })
-            .catch(error => console.error('Error removing product:', error));
-        }
+        Swal.fire({
+            title: 'Remove Product?',
+            text: 'This action will permanently delete the product from the store catalog.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#8860d0',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete!',
+            background: '#12151c',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/admin/products/' + proId, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Product has been removed.',
+                            icon: 'success',
+                            background: '#12151c',
+                            color: '#fff',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to remove product: ' + data.message,
+                            icon: 'error',
+                            background: '#12151c',
+                            color: '#fff'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing product:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while deleting the product.',
+                        icon: 'error',
+                        background: '#12151c',
+                        color: '#fff'
+                    });
+                });
+            }
+        });
     }
-</script>
 
-<script>
     function active(id) {
-
-    const status = document.getElementById(`status${id}`)
-    const btn = document.getElementById(`b${id}`)
-
-
-    fetch(`/admin/products/${id}/status`, {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payload: id})
-
-    }).then(res => res.json()).then(data => {
-      console.log("listed:"+data.updatedData.listed)
-  
-        // status.textContent=data.updatedData.listed
-
-        console.log("listedOrnot: "+data.updatedData);
-      
-        if(data.updatedData.listed===false){
-   
-          btn.style.borderColor='#d72624'
-          btn.style.color='#d72624'
-          btn.textContent="Unlisted"    
-        }else{
-           
-          btn.style.borderColor='#00b032'
-          btn.style.color='#00b032'                 
-          btn.textContent="Listed"
-        }
-        
-        
-
-    })
+        fetch(`/admin/products/${id}/status`, {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ payload: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+          const isListed = data.updatedData.listed;
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            background: '#12151c',
+            color: '#fff',
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+          });
+          Toast.fire({
+            icon: 'success',
+            title: isListed ? 'Product listed successfully' : 'Product unlisted successfully'
+          });
+        })
+        .catch(error => {
+          console.error('Error toggling status:', error);
+          const checkbox = document.querySelector(`input[onchange="active('${id}')"]`);
+          if (checkbox) checkbox.checked = !checkbox.checked;
+          
+          Swal.fire({
+            title: 'Error!',
+            text: 'Failed to update product status.',
+            icon: 'error',
+            background: '#12151c',
+            color: '#fff'
+          });
+        });
     }
   </script>
 
@@ -309,6 +305,7 @@
     const tags1 = document.querySelector('.tags');
     const gg = document.querySelector('.gg');
     const dname = document.querySelector('.dname');
+
     function removeP(i, im) {
       const wrap = document.getElementById(`imgBoxWrap${i}`);
       const myForm = document.getElementById('myForm1');
@@ -345,6 +342,18 @@
         <button type="button" style="display:none;" class="remove-btn-circular" id="removeBtn${i}" onclick="removeNewlyAddedP('${i}')" title="Remove"><i class="mdi mdi-close"></i></button>
       `;
       document.getElementById(`image${i}`).addEventListener('change', () => fileeObj(i));
+    }
+
+    function openEditProductModal(btn) {
+      const id = btn.getAttribute('data-id');
+      const name = btn.getAttribute('data-name');
+      const images = btn.getAttribute('data-images');
+      const stock = btn.getAttribute('data-stock');
+      const price = btn.getAttribute('data-price');
+      const category = btn.getAttribute('data-category');
+      const description = btn.getAttribute('data-description');
+      const tags = btn.getAttribute('data-tags');
+      edit(images, id, name, stock, price, category, description, tags);
     }
 
     function edit(image, id, name, stock, price, catName, desc, tags) {
@@ -420,7 +429,13 @@
           if(overlay) overlay.style.display = 'flex';
           if(removeBtn) removeBtn.style.display = 'flex';
         } else {
-          alert("Please upload only PNG, JPEG, JPG, or WEBP files.");
+          Swal.fire({
+            title: 'Invalid File Type',
+            text: 'Please upload only PNG, JPEG, JPG, or WEBP files.',
+            icon: 'error',
+            background: '#12151c',
+            color: '#fff'
+          });
           file.value = '';
         }
       }
@@ -429,7 +444,6 @@
     function closeEditModal() {
       document.getElementById('editProductModal').classList.remove('active');
     }
-
   </script>
 
   <!-- Product Search Script -->
@@ -482,14 +496,10 @@
       if (!products || products.length === 0) {
         tableBody.innerHTML = `
           <tr>
-            <td colspan="10" style="text-align:center; padding: 2.5rem 0;">
-              <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; opacity:0.6;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  <line x1="8" y1="11" x2="14" y2="11"></line>
-                </svg>
-                <span style="font-size:0.95rem;">No products found</span>
+            <td colspan="10" style="text-align:center; padding: 4rem 0; border: none;">
+              <div class="user-empty-state">
+                <i class="ri-search-line" style="font-size: 3rem; opacity: 0.5;"></i>
+                <p class="mt-2">No products match your criteria</p>
               </div>
             </td>
           </tr>`;
@@ -500,55 +510,74 @@
       const startIndex = (currentPage - 1) * limit;
 
       tableBody.innerHTML = products.map((e, i) => {
-        const imagesHtml = (e.images || []).map(im => {
+        const imagesHtml = (e.images || []).map((im, idx) => {
           const src = im.startsWith('http') ? im : '/productImage/' + im;
-          return `<div class="cir" style="display:inline-block;width:30px;height:30px;border-radius:50%;overflow:hidden;">
-            <img style="width:100%;height:100%;object-fit:cover;" src="${src}" alt="">
+          return `<div class="product-image-avatar" style="z-index: ${3 - idx};">
+            <img src="${src}" alt="product image" onerror="this.src='/images/no-image.png'">
           </div>`;
         }).join('');
 
+        let stockHtml = '';
+        const stock = Number(e.stock);
+        if (stock === 0) {
+          stockHtml = `<span class="stock-badge out-of-stock">Out of Stock</span>`;
+        } else if (stock <= 5) {
+          stockHtml = `<span class="stock-badge low-stock">Only ${stock} left</span>`;
+        } else {
+          stockHtml = `<span class="stock-badge in-stock">${stock} Units</span>`;
+        }
+
         const catName = e.category ? e.category.name : 'N/A';
         const imagesJson = JSON.stringify(e.images || []).replace(/'/g, "\\'");
-        const descEscaped = (e.description || '').replace(/'/g, "\\'");
-        const tagsEscaped = (e.tags || []).join(', ').replace(/'/g, "\\'");
-        const nameEscaped = (e.name || '').replace(/'/g, "\\'");
+        const descEscaped = (e.description || '').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/"/g, '&quot;');
+        const tagsEscaped = (e.tags || []).join(', ').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const nameEscaped = (e.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
         return `
-          <tr class="tr" id="e${e._id}" style="background-color:transparent !important; animation: fadeInProductRow 0.25s ease ${i * 0.04}s both;">
-            <td class="py-1">${startIndex + i + 1}</td>
-            <td>${e.name}</td>
-            <td>
-              <div class="progress d-flex align-items-center h-100 w-100" style="background-color:transparent;">
+          <tr class="user-row" id="e${e._id}" style="--row-delay: ${(i * 0.05).toFixed(2) + 's'};">
+            <td data-label="No." class="user-index">${startIndex + i + 1}</td>
+            <td data-label="Product Name" class="font-weight-bold text-white">${e.name}</td>
+            <td data-label="Images">
+              <div class="product-images-overlap">
                 ${imagesHtml}
               </div>
             </td>
-            <td>${e.stock}</td>
-            <td>₹${Number(e.price).toFixed(2)}</td>
-            <td>${e.createdAt}</td>
-            <td>${catName}</td>
-            <td>
-              <div onclick="" style="cursor:pointer;" class="badge badge-outline-success">${e.status}</div>
+            <td data-label="Stock">${stockHtml}</td>
+            <td data-label="Price" class="font-weight-bold text-white">₹${Number(e.price).toFixed(2)}</td>
+            <td data-label="Created Date"><span class="user-date">${e.createdAt || ''}</span></td>
+            <td data-label="Category"><span class="badge badge-outline-secondary" style="border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);">${catName}</span></td>
+            <td data-label="Status">
+              <div class="badge badge-outline-success">${e.status || 'Active'}</div>
             </td>
-            <td>
-              <div onclick="active('${e._id}')" id="b${e._id}" style="cursor:pointer;"
-                class="badge ${e.listed ? 'badge-outline-success' : 'badge-outline-danger'}">
-                ${e.listed ? 'Listed' : 'Unlisted'}
-              </div>
+            <td data-label="Listing">
+              <label class="user-toggle" title="${e.listed ? 'Unlist Product' : 'List Product'}">
+                <input type="checkbox" ${e.listed ? "checked" : ""} onchange="active('${e._id}')">
+                <span class="user-toggle-slider"></span>
+              </label>
             </td>
-            <td class="dropdown">
-              <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
-              <div style="min-width:5rem;padding:.9rem 0;height:max-content;" class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list overflow-hidden" aria-labelledby="profile-dropdown">
-                <div class="edit d-flex flex-column gap-2 h-100 w-100 justify-content-center align-items-center">
-                  <a href="/admin/products/${e._id}" class="fs-5" style="line-height:0;margin-bottom:0;color:#6c7293;text-decoration:none;">view&nbsp;<i class="ri-eye-line"></i></a>
-                  <br>
-                  <div class="d" style="width:100%;height:1px;background-color:rgba(77,75,75,0.5);"></div>
-                  <br>
-                  <p onclick="edit('${imagesJson}','${e._id}','${nameEscaped}','${e.stock}','${e.price}','${catName}','${descEscaped}','${tagsEscaped}')" class="fs-5" style="cursor:pointer;line-height:0;margin-bottom:0;color:#6c7293;">edit&nbsp;<i class="ri-edit-line"></i></p>
-                  <br>
-                  <div class="d" style="width:100%;height:1px;background-color:rgba(77,75,75,0.5);"></div>
-                  <br>
-                  <a href="#" onclick="deleteProduct('${e._id}')" class="fs-5" style="line-height:0;margin-bottom:0;color:#6c7293;">delete&nbsp;<i class="ri-delete-bin-3-line"></i></a>
-                </div>
+            <td data-label="Actions">
+              <div class="product-action-group">
+                <a href="/admin/products/${e._id}" class="product-action-btn view" title="View Details">
+                  <i class="ri-eye-line"></i>
+                </a>
+                <button 
+                  onclick="openEditProductModal(this)" 
+                  class="product-action-btn edit" 
+                  title="Edit Product"
+                  data-id="${e._id}"
+                  data-name="${nameEscaped}"
+                  data-images="${imagesJson}"
+                  data-stock="${e.stock}"
+                  data-price="${e.price}"
+                  data-category="${catName}"
+                  data-description="${descEscaped}"
+                  data-tags="${tagsEscaped}"
+                >
+                  <i class="ri-edit-line"></i>
+                </button>
+                <button onclick="deleteProduct('${e._id}')" class="product-action-btn delete" title="Delete Product">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
               </div>
             </td>
           </tr>`;
@@ -560,17 +589,45 @@
         paginationContainer.innerHTML = '';
         return;
       }
-      let html = '<nav aria-label="Page navigation"><ul class="pagination justify-content-center">';
+      let html = '<div class="pg-container-glass mt-4"><nav aria-label="Page navigation"><ul class="pg-list">';
+      
+      // Previous Button
       if (currentPage > 1) {
-        html += `<li class="page-item"><a class="page-link product-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>`;
+        html += `<li class="pg-item"><a class="pg-link pg-arrow product-page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous"><i class="ri-arrow-left-s-line"></i></a></li>`;
+      } else {
+        html += `<li class="pg-item disabled"><span class="pg-link pg-arrow"><i class="ri-arrow-left-s-line"></i></span></li>`;
       }
-      for (let i = 1; i <= totalPages; i++) {
-        html += `<li class="page-item ${currentPage === i ? 'active' : ''}"><a class="page-link product-page-link" href="#" data-page="${i}">${i}</a></li>`;
+
+      // Page Numbers
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+
+      if (startPage > 1) {
+        html += `<li class="pg-item"><a class="pg-link product-page-link" href="#" data-page="1">1</a></li>`;
+        if (startPage > 2) {
+          html += `<li class="pg-item disabled"><span class="pg-link pg-dots">...</span></li>`;
+        }
       }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="pg-item ${currentPage === i ? 'active' : ''}"><a class="pg-link product-page-link" href="#" data-page="${i}">${i}</a></li>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += `<li class="pg-item disabled"><span class="pg-link pg-dots">...</span></li>`;
+        }
+        html += `<li class="pg-item"><a class="pg-link product-page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+      }
+
+      // Next Button
       if (currentPage < totalPages) {
-        html += `<li class="page-item"><a class="page-link product-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>`;
+        html += `<li class="pg-item"><a class="pg-link pg-arrow product-page-link" href="#" data-page="${currentPage + 1}" aria-label="Next"><i class="ri-arrow-right-s-line"></i></a></li>`;
+      } else {
+        html += `<li class="pg-item disabled"><span class="pg-link pg-arrow"><i class="ri-arrow-right-s-line"></i></span></li>`;
       }
-      html += '</ul></nav>';
+
+      html += '</ul></nav></div>';
       paginationContainer.innerHTML = html;
 
       paginationContainer.querySelectorAll('.product-page-link').forEach(link => {
@@ -595,172 +652,7 @@
   <script src="/js/hoverable-collapse.js"></script>
   <script src="/js/misc.js"></script>
   <script src="/js/settings.js"></script>
-  <script src="/js/todolist.js"></script>
   <script src="/js/dashboard.js"></script>
-  <style>
-    @font-face {
-      font-family: req;
-      src: url(/fonts/611aee5b70cc88187b78993c_GRIFTER.otf);
-    }
-
-    @media (max-width:900px) {
-      .hh {
-        width: 90vw;
-      }
-      .edit-product-card {
-        max-width: 60% !important;
-      }
-
-    }
-
-    @media (min-width:900px) {
-      
-      .edit-product-card {
-        max-width: 60% !important;
-      }
-
-    }
-
-    .gg {
-      opacity: 0;
-
-      z-index: -2;
-      transition: all ease 0.7s;
-    }
-
-    #imageL {
-      opacity: 0;
-    }
-
-    .imcircle:hover #imageL {
-      opacity: 1;
-    }
-
-    body::-webkit-scrollbar {
-      width: 0;
-    }
-
-    body {
-      overflow: hidden !important;
-    }
-
-    .container-scroller {
-      overflow: hidden;
-    }
-
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none !important;
-    }
-
-    .edit-page {
-      font-family: req;
-      letter-spacing: 2px;
-    }
-
-    h3 {
-      margin-top: -1rem;
-    }
-
-    /* ── Product Search Bar ── */
-    .product-search-wrapper {
-      position: relative;
-    }
-
-    .product-search-box {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.55rem 1rem;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-    }
-
-    .product-search-box:focus-within {
-      border-color: rgba(136, 96, 208, 0.6);
-      box-shadow: 0 0 0 3px rgba(136, 96, 208, 0.12), 0 4px 20px rgba(136, 96, 208, 0.08);
-      background: rgba(255, 255, 255, 0.09);
-    }
-
-    .product-search-icon {
-      color: rgba(255, 255, 255, 0.35);
-      flex-shrink: 0;
-      transition: color 0.3s ease;
-    }
-
-    .product-search-box:focus-within .product-search-icon {
-      color: rgba(136, 96, 208, 0.8);
-    }
-
-    .product-search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 0.92rem;
-      color: inherit;
-      letter-spacing: 0.01em;
-    }
-
-    .product-search-input::placeholder {
-      color: rgba(255, 255, 255, 0.3);
-      font-weight: 300;
-    }
-
-    .product-search-input:focus::placeholder {
-      color: rgba(255, 255, 255, 0.18);
-    }
-
-    .product-search-clear {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.08);
-      border: none;
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.45);
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-      padding: 0;
-    }
-
-    .product-search-clear:hover {
-      background: rgba(215, 38, 36, 0.2);
-      color: #d72624;
-    }
-
-    .product-search-loader {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .product-search-spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(136, 96, 208, 0.2);
-      border-top-color: rgba(136, 96, 208, 0.8);
-      border-radius: 50%;
-      animation: spinProductSearch 0.6s linear infinite;
-    }
-
-    @keyframes spinProductSearch {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeInProductRow {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
 
