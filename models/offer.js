@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const offerSchema = new mongoose.Schema({
-    name: { type: String, requied: true },
-    offer: { type: Number, requied: true}
+    name: { type: String, required: true },
+    offer: { type: Number, required: true}
 })
 
 module.exports = mongoose.model('offer', offerSchema);

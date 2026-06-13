@@ -97,7 +97,7 @@ const userRouter = require("./routes/user");
 
 // Admin Routes
 const adminRouter = require("./routes/admin");
-const notFound = require("./middleware/notFound.middlware");
+const notFound = require("./middleware/notFound.middleware");
 const errorHandler = require("./middleware/error.middleware");
 
 // Mount Routes

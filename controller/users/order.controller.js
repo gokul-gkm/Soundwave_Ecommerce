@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const easyinvoice = require("easyinvoice");
 const User = require("../../models/userSchema");
 const Category = require("../../models/catagory");
 const Address = require("../../models/address");
@@ -14,7 +15,7 @@ const invoiceConfig = require("../../config/invoice");
 const { getWishlistCount ,getCartCount} = require('../../utils/count'); 
 
 /**
- * @route   GET /checkout
+ * @route   GET /checkouteasyinvoice 
  * @desc    Render Checkout Page
  */
 const getCheckoutPage = async (req, res) => {
