@@ -1,207 +1,320 @@
 <%- include('../layout/header.ejs') -%>
-<link rel="stylesheet" href="css/mycss/otp.css">
-	</head>
+<link rel="stylesheet" href="/css/mycss/otp.css">
+</head>
 
-	<body>
-		<div class="page-wrapper">
-			<header class="header">
+<body>
+  <div class="page-wrapper">
+    
+    <!-- ─── Site Header ──────────────────────────────────── -->
+    <header class="header">
+      <div class="header-middle sticky-header">
+        <div class="container">
+          <div class="header-left">
+            <button class="mobile-menu-toggler">
+              <span class="sr-only">Toggle mobile menu</span>
+              <i class="icon-bars"></i>
+            </button>
 
+            <a href="/" class="logo">
+              <img src="/images/soundwave/logoblack.png" alt="Soundwave Logo" width="105" height="25">
+            </a>
 
-				<div class="header-middle sticky-header">
-					<div class="container">
-						<div class="header-left">
-							<button class="mobile-menu-toggler">
-								<span class="sr-only">Toggle mobile menu</span>
-								<i class="icon-bars"></i>
-							</button>
+            <nav class="main-nav">
+              <ul class="menu">
+                <li class="megamenu-container active">
+                  <a href="/">Home</a>
+                </li>
+                <li>
+                  <a href="/products">Products</a>
+                </li>
+                <li>
+                  <a class="sf-with-ul">Category</a>
+                  <ul>
+                    <li><a href="/products">Headphones</a></li>
+                    <li><a href="/products">Earbuds</a></li>
+                    <li><a href="/products">Speakers</a></li>
+                    <li><a href="/products">Soundbars</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="/about">About</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
 
-							<a href="/" class="logo">
-								<img src="images/soundwave/logoblack.png" alt="Molla Logo" width="105" height="25">
-							</a>
+    <!-- ─── Breadcrumb ───────────────────────────────────── -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+      <div class="container">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/login">Login</a></li>
+          <li class="breadcrumb-item active" aria-current="page">OTP Verification</li>
+        </ol>
+      </div>
+    </nav>
 
-							<nav class="main-nav">
-								<ul class="menu ">
-									<li class="megamenu-container active">
-										<a href="/" class="">Home</a>
+    <!-- ─── Main Auth Section ─────────────────────────────── -->
+    <main class="main">
+      <section class="auth-page">
+        <div class="auth-card">
 
-										<!-- End .megamenu -->
-									</li>
-									<li>
-										<a href="/products" class="">Products</a>
+          <!-- ── Brand / Header Strip ──────────────────────── -->
+          <div class="auth-brand">
+            <!-- Hidden form to handle back button via resubmit email -->
+            <form action="/resubmit" method="post" id="resubmit-form" style="display: none;"></form>
+            <a href="javascript:void(0);" onclick="document.getElementById('resubmit-form').submit();" class="auth-back-link" aria-label="Back to login">
+              <i class="fas fa-arrow-left"></i>
+              <span>Back</span>
+            </a>
 
-										<!-- End .megamenu megamenu-md -->
-									</li>
-									<li>
-										<a class="sf-with-ul">Category</a>
-										<ul>
-											<li><a href="/products">Headphones</a></li>
-											<li><a href="/products">Earbuds</a></li>
-											<li><a href="/products">Speakers</a></li>
-											<li><a href="/products">Soundbars</a></li>
-										</ul>
+            <div class="auth-icon-badge">
+              <i class="fas fa-shield-alt"></i>
+            </div>
 
-									</li>
+            <h1 class="auth-brand-title">Security Check</h1>
+            <p class="auth-brand-subtitle">
+              We've sent a 4-digit verification code to your email.<br>Enter it below to verify your identity.
+            </p>
+          </div>
 
-									<li>
-										<a href="/about">About</a>
+          <!-- ── Form Body ──────────────────────────────────── -->
+          <div class="auth-body">
+            <form action="/otp" method="post" id="otp-form" novalidate>
+              
+              <!-- Server Error/Success Messages -->
+              <% if (locals.expiredMsg && expiredMsg) { %>
+                <div class="auth-alert alert-error">
+                  <strong>Code Expired</strong><br>
+                  This OTP has expired. Please request a new one.
+                </div>
+              <% } else if (locals.wrongOtp && wrongOtp) { %>
+                <div class="auth-alert alert-error">
+                  <strong>Incorrect Code</strong><br>
+                  The OTP entered is wrong. You have <%= attemptsLeft %> attempts remaining.
+                </div>
+              <% } %>
 
+              <% if (locals.resendMsg && resendMsg === true) { %>
+                <div class="auth-alert alert-success">
+                  <strong>OTP Sent</strong><br>
+                  We have resent the verification code. Please check your email.
+                </div>
+              <% } else if (locals.resendMsg && resendMsg === "cooldown") { %>
+                <div class="auth-alert alert-warning">
+                  <strong>Please Wait</strong><br>
+                  Too many requests. Please wait before asking for another OTP.
+                </div>
+              <% } %>
 
-									</li>
+              <!-- 4 Digit Inputs -->
+              <div class="otp-inputs-wrapper">
+                <input class="otp-digit-input inp" type="text" name="otp" maxlength="1" required autocomplete="off" inputmode="numeric" pattern="[0-9]*" autofocus>
+                <input class="otp-digit-input inp" type="text" name="otp" maxlength="1" required autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                <input class="otp-digit-input inp" type="text" name="otp" maxlength="1" required autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+                <input class="otp-digit-input inp" type="text" name="otp" maxlength="1" required autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+              </div>
 
-								</ul><!-- End .menu -->
-							</nav>
-						</div>
+              <!-- Action button area -->
+              <div class="otp-actions">
+                <button type="submit" class="auth-btn" id="submit-btn" <% if (locals.expiredMsg && expiredMsg) { %>disabled style="opacity: 0.5; pointer-events: none;"<% } %>>
+                  <span class="btn-label">Verify Code</span>
+                  <i class="icon-long-arrow-right btn-icon"></i>
+                </button>
+              </div>
+            </form>
 
-						<!-- End .header-right -->
-					</div><!-- End .container -->
-				</div><!-- End .header-middle -->
-			</header><!-- End .header -->
+            <!-- Countdown Timer Display -->
+            <div class="otp-timer-container" id="timer-box" 
+                 data-time-left="<%= typeof remaining !== 'undefined' ? remaining : 0 %>"
+                 data-resend-cooldown="<%= typeof resendCooldown !== 'undefined' ? resendCooldown : 0 %>">
+              <i class="far fa-clock" id="timer-icon"></i>
+              <span id="otp-timer"></span>
+              <span id="timer-message"></span>
+            </div>
 
-			<main class="main">
-				<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-					<div class="container">
-						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="/">Home</a></li>
-							<li class="breadcrumb-item"><a href="">login</a></li>
-							<li class="breadcrumb-item active" aria-current="page">otp</li>
-						</ol>
-					</div><!-- End .container -->
-				</nav><!-- End .breadcrumb-nav -->
+            <!-- Footer Area (Resend Code / Change Email) -->
+            <div class="auth-footer">
+              <p class="auth-footer-text">
+                Didn't receive the verification code?
+              </p>
+              
+              <a href="/resend" class="auth-btn resend-action-btn" id="resend-btn" style="margin-top: 1.2rem;">
+                <span class="btn-label">Resend Code</span>
+                <i class="fas fa-redo btn-icon"></i>
+              </a>
 
-				<div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
-					style="background-image: url('images/backgrounds/login-bg.jpg')">
-					<div class="container">
-						<div class="form-box">
-							<div class="form-tab">
+              <form action="/resubmit" method="post" style="display: block; margin-top: 1.2rem;">
+                <button type="submit" class="auth-link-btn">Change Email Address</button>
+              </form>
+            </div>
 
-								<ul class="nav nav-pills nav-fill" role="tablist">
-								
-									<li class="nav-item">
-										<a class="nav-link active" id="register-tab-2" data-toggle="tab"
-											href="#register-2" role="tab" aria-controls="register-2"
-											aria-selected="true">OTP</a>
-									</li>
-								</ul>
-								<div class="tab-content">
-								
-									<!-- sign-up part -->
-									<div class="tab-pane fade show active d-flex align-items-center justify-content-center flex-column  " id="register-2" role="tabpanel"
-										aria-labelledby="register-tab-2">
-										<form action="/otp" method="post">
-											<label for="otp">Check Your Email OTP is There </label>
-											
-											<div class="otp d-flex gap-5   align-items-center  justify-content-center ">
-												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
-												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
-												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
-												<input class=" inp form-control " type="text" name="otp" maxlength="1" required>
-											</div>
-										
-                                          <% if(locals.message || locals.resend) {%>
-											<% if(locals.message){ %>
-											<p class="text-danger text-center text-capitalize mb-3 fw-bold   ">otp is wrong</p>
-											<% } %>
-											<% if(locals.resend){ %>
-											<p class="text-success  text-center text-capitalize mb-3 fw-bold   ">We have resend the otp, Please check your email</p>
-											<% } %>
-											<%}  %>
-											<div class="form-footer d-flex justify-content-center ">
-												<button type="submit" class="btn btn-outline-primary-2">
-													<span>Submit</span>
-													<i class="icon-long-arrow-right"></i>
-												</button>
+          </div><!-- /.auth-body -->
+        </div><!-- /.auth-card -->
+      </section>
+    </main>
 
-                                               <a href="/resend" class="btn text-decoration-none resend btn-outline-primary-2">Resend</a>
+    <%- include('../layout/lyfooter.ejs') -%>
+  </div><!-- /.page-wrapper -->
 
-											</div><!-- End .form-footer -->
-										</form>
+  <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+  <%- include('../layout/mobMenu.ejs') -%>
 
-										<div id="otp-timer"></div>
-										<div id="timer-message"></div>
+  <!-- ─── Countdown and Input Navigation Script ────────────── -->
+  <script>
+    // ── Server-provided values ──
+    var timerBoxEl = document.getElementById('timer-box');
+    var timeLeft = parseInt(timerBoxEl.getAttribute('data-time-left')) || 0;
+    var resendCooldown = parseInt(timerBoxEl.getAttribute('data-resend-cooldown')) || 0;
 
-									
-										<div class="form-choice">
-											<p class="text-black text-center text-black ">
-												<form action="/resubmit" method="post">
-												<button type="submit" class="btn resubmit">resubmit your Email</button>
-											</form>
-										</p>
-									<!-- End .row -->
-										</div><!-- End .form-choice -->
-									</div><!-- .End .tab-pane -->
-								</div><!-- End .tab-content -->
-							</div><!-- End .form-tab -->
-						</div><!-- End .form-box -->
-					</div><!-- End .container -->
-				</div><!-- End .login-page section-bg -->
-			</main><!-- End .main -->
-			<%- include('../layout/lyfooter.ejs') -%>
+    var timerEl = document.getElementById('otp-timer');
+    var timerIconEl = document.getElementById('timer-icon');
+    var messageEl = document.getElementById('timer-message');
+    var submitBtn = document.getElementById('submit-btn');
+    var resendBtn = document.getElementById('resend-btn');
 
-		</div><!-- End .page-wrapper -->
-		<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+    // Helper to format MM:SS
+    function formatTime(seconds) {
+      var minutes = Math.floor(seconds / 60);
+      var secs = seconds % 60;
+      return "Code expires in: " + minutes + ":" + (secs < 10 ? "0" : "") + secs;
+    }
 
-		<%- include('../layout/mobMenu.ejs') -%>
+    // ── OTP Countdown Timer ──
+    if (timeLeft > 0) {
+      timerEl.textContent = formatTime(timeLeft);
+      var timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          timerEl.textContent = "";
+          timerIconEl.className = "fas fa-exclamation-circle";
+          timerBoxEl.classList.add('otp-timer-expired');
+          messageEl.textContent = 'Verification code has expired.';
+          
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = 0.5;
+            submitBtn.style.pointerEvents = 'none';
+          }
+        } else {
+          timerEl.textContent = formatTime(timeLeft);
+        }
+      }, 1000);
+    } else {
+      // Already expired when page loaded
+      timerEl.textContent = "";
+      timerIconEl.className = "fas fa-exclamation-circle";
+      timerBoxEl.classList.add('otp-timer-expired');
+      messageEl.textContent = 'Verification code has expired.';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = 0.5;
+        submitBtn.style.pointerEvents = 'none';
+      }
+    }
 
+    // ── Resend Cooldown Timer ──
+    function setResendDisabled(seconds) {
+      resendBtn.style.pointerEvents = 'none';
+      resendBtn.style.opacity = 0.5;
+      resendBtn.querySelector('.btn-label').textContent = 'Resend in ' + seconds + 's';
+      resendBtn.querySelector('.btn-icon').style.animation = 'spin 1.5s linear infinite';
+    }
 
-<script>
+    function setResendEnabled() {
+      resendBtn.style.pointerEvents = 'all';
+      resendBtn.style.opacity = 1;
+      resendBtn.querySelector('.btn-label').textContent = 'Resend Code';
+      resendBtn.querySelector('.btn-icon').style.animation = 'none';
+    }
 
-		var timeLeft =  300;
-        var timer = setInterval(function() {
-            timeLeft--;
-            var minutes = Math.floor(timeLeft /  60);
-            var seconds = timeLeft - (minutes *  60);
-            document.getElementById('otp-timer').textContent ="Time Left: "+ minutes + ":" + (seconds <  10 ? "0" : "") + seconds;
-            if (timeLeft <=  0) {
-                clearInterval(timer);
-                document.getElementById('timer-message').textContent = 'OTP is invalid. Expired.';
-            }
-        },  1000);
+    if (resendCooldown > 0) {
+      setResendDisabled(resendCooldown);
 
+      var cooldownTimer = setInterval(function() {
+        resendCooldown--;
+        if (resendCooldown <= 0) {
+          clearInterval(cooldownTimer);
+          setResendEnabled();
+        } else {
+          resendBtn.querySelector('.btn-label').textContent = 'Resend in ' + resendCooldown + 's';
+        }
+      }, 1000);
+    } else {
+      setResendEnabled();
+    }
+  </script>
 
-</script>
-		
+  <!-- ─── Auto-focus and Paste Handling Script ──────────────── -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('.inp');
 
+      // Autofocus first input if not disabled
+      if (inputs[0] && !inputs[0].disabled) {
+        inputs[0].focus();
+      }
 
-<script>
-	document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.inp');
-
-    inputs.forEach((input, index) => {
+      inputs.forEach((input, index) => {
+        // Handle input events
         input.addEventListener('input', function(event) {
-            if (this.value && this.value.length >= parseInt(this.getAttribute('maxlength'))) {
-                const nextInput = inputs[index + 1];
-                if (nextInput) {
-                    nextInput.focus();
-                }
+          // Keep only numeric values
+          this.value = this.value.replace(/[^0-9]/g, '');
+
+          if (this.value && this.value.length >= 1) {
+            // Take only last character
+            this.value = this.value.substring(this.value.length - 1);
+            
+            const nextInput = inputs[index + 1];
+            if (nextInput) {
+              nextInput.focus();
             }
+          }
         });
 
+        // Handle key navigation (Backspace)
         input.addEventListener('keydown', function(event) {
-            if (event.key === 'Backspace' && !this.value) {
-                // If the backspace key is pressed and the current input field is empty, move to the previous input field
-                const previousInput = inputs[index - 1];
-                if (previousInput) {
-                    previousInput.focus();
-                }
+          if (event.key === 'Backspace' && !this.value) {
+            const previousInput = inputs[index - 1];
+            if (previousInput) {
+              previousInput.focus();
             }
+          }
         });
+
+        // Paste 4-digit code directly
+        input.addEventListener('paste', function(event) {
+          const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+          
+          if (/^\d{4}$/.test(pasteData.trim())) {
+            event.preventDefault();
+            const digits = pasteData.trim().split('');
+            
+            inputs.forEach((inp, idx) => {
+              inp.value = digits[idx] || '';
+            });
+
+            // Focus the last input element
+            inputs[inputs.length - 1].focus();
+          }
+        });
+      });
     });
-});
+  </script>
 
-</script>
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 
-			<style>
-				*::-webkit-scrollbar {
-					width: 0;
-				}
-
-				input[type="number"]::-webkit-inner-spin-button,
-				input[type="number"]::-webkit-outer-spin-button {
-					-webkit-appearance: none !important;
-				}
-			</style>
-			<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
-			<script src="js/demos/demo-6.js"></script>
-			<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
-			<%- include('../layout/footer.ejs') -%>
-				<script src="js/base.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+  <script src="/js/demos/demo-6.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+  <%- include('../layout/footer.ejs') -%>
+  <script src="/js/base.js"></script>
+</body>

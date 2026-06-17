@@ -26,9 +26,15 @@ router.post("/forget-password", passwordController.forgetPassword);
  */
 router.get("/reset-password", passwordController.renderNewPasswordPage);
 
+/**
+ * @route   POST /reset-password
+ * @desc    Reset Password 
+ */
+router.post("/reset-password", passwordController.resetForgotPassword);
+
 /** 
  * @route   POST /newPass
- * @desc    Update User Password
+ * @desc    Update User Password 
  */
 router.post("/newPass", passwordController.updatePassword);
 

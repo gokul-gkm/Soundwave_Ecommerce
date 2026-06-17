@@ -1,192 +1,511 @@
 <%- include('../layout/header.ejs') -%>
-    <link rel="stylesheet" href="css/mycss/otp.css">
-    </head>
+<link rel="stylesheet" href="/css/mycss/login.css">
 
-    <body>
-        <div class="page-wrapper">
-            <header class="header">
+<style>
+  .auth-icon-badge {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #fdf3e8 0%, #fae8d0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    animation: badgePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  }
+  @keyframes badgePop {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .auth-icon-badge i {
+    font-size: 2.8rem;
+    color: #c96;
+  }
+  .auth-page {
+    min-height: 100vh;
+    background: #f7f5f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 1.5rem;
+  }
+</style>
+</head>
 
+<body>
+  <div class="page-wrapper">
+    <header class="header">
+      <div class="header-middle sticky-header">
+        <div class="container">
+          <div class="header-left">
+            <button class="mobile-menu-toggler">
+              <span class="sr-only">Toggle mobile menu</span>
+              <i class="icon-bars"></i>
+            </button>
 
-                <div class="header-middle sticky-header">
-                    <div class="container">
-                        <div class="header-left">
-                            <button class="mobile-menu-toggler">
-                                <span class="sr-only">Toggle mobile menu</span>
-                                <i class="icon-bars"></i>
-                            </button>
+            <a href="/" class="logo">
+              <img src="/images/soundwave/logoblack.png" alt="Soundwave Logo" width="105" height="25">
+            </a>
 
-                            <a href="/" class="logo">
-                                <img src="images/logo.png" alt="Molla Logo" width="105" height="25">
-                            </a>
+            <nav class="main-nav">
+              <ul class="menu">
+                <li class="megamenu-container active">
+                  <a href="/">Home</a>
+                </li>
+                <li>
+                  <a href="/products">Products</a>
+                </li>
+                <li>
+                  <a class="sf-with-ul">Category</a>
+                  <ul>
+                    <li><a href="/products">Headphones</a></li>
+                    <li><a href="/products">Earbuds</a></li>
+                    <li><a href="/products">Speakers</a></li>
+                    <li><a href="/products">Soundbars</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="/about">About</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
 
-                            <nav class="main-nav">
-                                <ul class="menu ">
-                                    <li class="megamenu-container active">
-                                        <a href="/" class="">Home</a>
+    <!-- ─── Breadcrumb ───────────────────────────────────── -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+      <div class="container">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/login">Login</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Reset Password</li>
+        </ol>
+      </div>
+    </nav>
 
-                                        <!-- End .megamenu -->
-                                    </li>
-                                    <li>
-                                        <a href="/products" class="">Products</a>
+    <!-- ─── Main Auth Section ─────────────────────────────── -->
+    <main class="main">
+      <section class="auth-page">
+        <div class="auth-card">
 
-                                        <!-- End .megamenu megamenu-md -->
-                                    </li>
-                                    <li>
-                                        <a class="sf-with-ul">Category</a>
-                                        <ul>
-                                            <li><a href="login.html">Men</a></li>
-                                            <li><a href="faq.html">Woman</a></li>
-                                        </ul>
+          <!-- ── Brand / Header Strip ──────────────────────── -->
+          <div class="auth-brand" style="border-bottom: 1px solid #f0ede8; position: relative;">
+            <form action="/resubmit" method="post" id="resubmit-form" style="display: none;"></form>
+            <a href="javascript:void(0);" onclick="document.getElementById('resubmit-form').submit();" class="auth-back-link" aria-label="Back to login" style="position: absolute; left: 2rem; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; color: #aaa; text-decoration: none; font-weight: 400; transition: color 0.2s ease, gap 0.2s ease;">
+              <i class="fas fa-arrow-left"></i>
+              <span>Back</span>
+            </a>
 
-                                    </li>
+            <div class="auth-icon-badge">
+              <i class="fas fa-unlock-alt"></i>
+            </div>
 
-                                    <li>
-                                        <a href="/about">About</a>
+            <h1 class="auth-title" style="text-align: center; margin-bottom: 0.5rem;">New Password</h1>
+            <p class="auth-subtitle" style="text-align: center; margin-bottom: 0;">
+              Please enter your secure new password details below.
+            </p>
+          </div>
 
+          <!-- ── Form Body ──────────────────────────────────── -->
+          <div class="auth-tab-content">
+            <div class="auth-panel active">
+              
+              <% if (typeof flow !== 'undefined' && flow === 'forget') { %>
+                <!-- Forget-password flow: only new + confirm password -->
+                <form action="/reset-password" method="post" id="password-form" novalidate>
+                  
+                  <!-- New Password -->
+                  <div class="auth-form-group">
+                    <label class="auth-label" for="password">New Password *</label>
+                    <div class="auth-input-wrap">
+                      <input 
+                        type="password" 
+                        class="auth-input" 
+                        id="password" 
+                        name="newPassword" 
+                        placeholder="Min. 8 characters" 
+                        required
+                      >
+                      <button type="button" class="auth-eye-toggle" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
+                    <!-- Password Strength Bar -->
+                    <div class="password-strength-bar">
+                      <div class="password-strength-fill" id="strength-fill"></div>
+                    </div>
+                    <span id="strength-label" class="auth-email-status" style="font-size: 1.15rem; margin-top: 0.4rem;"></span>
+                    <span id="password-error" class="auth-field-error" style="display:none; margin-top: 0.5rem;"></span>
+                  </div>
 
-                                    </li>
+                  <!-- Confirm Password -->
+                  <div class="auth-form-group">
+                    <label class="auth-label" for="confirmPassword">Confirm Password *</label>
+                    <div class="auth-input-wrap">
+                      <input 
+                        type="password" 
+                        class="auth-input" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Re-enter new password" 
+                        required
+                      >
+                      <button type="button" class="auth-eye-toggle" onclick="togglePasswordVisibility('confirmPassword', this)" tabindex="-1">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
+                    <span id="match-message" class="auth-email-status"></span>
+                    <span id="confirm-error" class="auth-field-error" style="display:none; margin-top: 0.5rem;"></span>
+                  </div>
 
-                                </ul><!-- End .menu -->
-                            </nav>
-                        </div>
+                  <button type="submit" class="auth-btn submit" id="submit-btn">
+                    <span class="btn-label">Reset Password</span>
+                    <i class="icon-long-arrow-right btn-icon"></i>
+                  </button>
 
-                        <!-- End .header-right -->
-                    </div><!-- End .container -->
-                </div><!-- End .header-middle -->
-            </header><!-- End .header -->
+                </form>
+              <% } else { %>
+                <!-- Logged-in user changing password -->
+                <form action="/newPass" method="post" id="password-form" novalidate>
+                  
+                  <!-- Current Password -->
+                  <div class="auth-form-group">
+                    <label class="auth-label" for="currentPassword">Current Password *</label>
+                    <div class="auth-input-wrap">
+                      <input 
+                        type="password" 
+                        class="auth-input" 
+                        id="currentPassword" 
+                        name="currentPassword" 
+                        placeholder="Current password" 
+                        required
+                      >
+                      <button type="button" class="auth-eye-toggle" onclick="togglePasswordVisibility('currentPassword', this)" tabindex="-1">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
+                    <span id="current-password-error" class="auth-field-error" style="display:none; margin-top: 0.5rem;"></span>
+                  </div>
 
-            <main class="main">
-                <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                    <div class="container">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item"><a href="">login</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">otp</li>
-                        </ol>
-                    </div><!-- End .container -->
-                </nav><!-- End .breadcrumb-nav -->
+                  <!-- New Password -->
+                  <div class="auth-form-group">
+                    <label class="auth-label" for="password">New Password *</label>
+                    <div class="auth-input-wrap">
+                      <input 
+                        type="password" 
+                        class="auth-input" 
+                        id="password" 
+                        name="newPassword" 
+                        placeholder="Min. 8 characters" 
+                        required
+                      >
+                      <button type="button" class="auth-eye-toggle" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
+                    <!-- Password Strength Bar -->
+                    <div class="password-strength-bar">
+                      <div class="password-strength-fill" id="strength-fill"></div>
+                    </div>
+                    <span id="strength-label" class="auth-email-status" style="font-size: 1.15rem; margin-top: 0.4rem;"></span>
+                    <span id="password-error" class="auth-field-error" style="display:none; margin-top: 0.5rem;"></span>
+                  </div>
 
-                <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
-                    style="background-image: url('images/backgrounds/login-bg.jpg')">
-                    <div class="container">
-                        <div class="form-box">
-                            <div class="form-tab">
+                  <!-- Confirm Password -->
+                  <div class="auth-form-group">
+                    <label class="auth-label" for="confirmPassword">Confirm Password *</label>
+                    <div class="auth-input-wrap">
+                      <input 
+                        type="password" 
+                        class="auth-input" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Re-enter new password" 
+                        required
+                      >
+                      <button type="button" class="auth-eye-toggle" onclick="togglePasswordVisibility('confirmPassword', this)" tabindex="-1">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
+                    <span id="match-message" class="auth-email-status"></span>
+                    <span id="confirm-error" class="auth-field-error" style="display:none; margin-top: 0.5rem;"></span>
+                  </div>
 
-                                <ul class="nav nav-pills nav-fill" role="tablist">
+                  <button type="submit" class="auth-btn submit" id="submit-btn">
+                    <span class="btn-label">Update Password</span>
+                    <i class="icon-long-arrow-right btn-icon"></i>
+                  </button>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="register-tab-2" data-toggle="tab"
-                                            href="#register-2" role="tab" aria-controls="register-2"
-                                            aria-selected="true">New Password</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content">
+                </form>
+              <% } %>
 
-                                    <!-- sign-up part -->
+              <div class="auth-footer" style="margin-top: 2.4rem; text-align: center;">
+                <form action="/resubmit" method="post" style="display: inline;">
+                  <button type="submit" class="auth-link-btn" style="background: none; border: none; padding: 0; color: #c96; font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 500; text-decoration: underline; cursor: pointer; transition: color 0.2s ease;">
+                    Go back to Login
+                  </button>
+                </form>
+              </div>
 
-                                    <div class="tab-pane  show active" id="signin-2" role="tabpanel"
-                                        aria-labelledby="signin-tab-2">
-                                        <form action="/newPass" method="post">
+            </div>
+          </div>
 
+        </div>
+      </section>
+    </main>
 
-                                            <div class="form-group">
-                                                <label for="register-password-2">New Password *</label>
-                                                <input type="password" class="form-control" id="password"
-                                                    name="password" placeholder="enter your new password" required>
+    <%- include('../layout/lyfooter.ejs') -%>
+  </div>
 
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="register-password-2">Confirm Password *</label>
-                                                <input type="password" class="form-control" id="confirmPassword"
-                                                    placeholder="Confirm Password:" required>
-                                                <p id="message"></p>
-                                            </div>
-                                            <div class="form-footer ">
-                                                <button type="submit" class="btn submit btn-outline-primary-2">
-                                                    <span>Submit</span>
-                                                    <i class="icon-long-arrow-right"></i>
-                                                </button>
+  <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+  <%- include('../layout/mobMenu.ejs') -%>
 
-
-                                            </div><!-- End .form-footer -->
-                                        </form>
-
-                                        <div class="form-choice">
-                                            <p class="text-black text-center text-black ">
-                                            <form action="/resubmit" method="post">
-                                                <button type="submit" class="btn resubmit">resubmit your Email</button>
-                                            </form>
-                                            </p>
-                                            <!-- End .row -->
-                                        </div><!-- End .form-choice -->
-                                    </div><!-- .End .tab-pane -->
-                                </div><!-- End .tab-content -->
-                            </div><!-- End .form-tab -->
-                        </div><!-- End .form-box -->
-                    </div><!-- End .container -->
-                </div><!-- End .login-page section-bg -->
-            </main><!-- End .main -->
-            <%- include('../layout/lyfooter.ejs') -%>
-
-        </div><!-- End .page-wrapper -->
-        <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
-
-        <%- include('../layout/mobMenu.ejs') -%>
-            <script>
-
-                const passwordField = document.getElementById('password');
-                const confirmPasswordField = document.getElementById('confirmPassword');
-                const submit = document.querySelector('.submit');
-
-                // Get reference to the message div
-                const messageDiv = document.getElementById('message');
-
-                // Function to check if passwords match
-                function checkPassword() {
-    const password = passwordField.value.trim();
-    const confirmPassword = confirmPasswordField.value.trim();
-
-    // Check if password is not empty and has at least 4 characters
-    if (password.length >= 4 && confirmPassword.length >= 4) {
-        if (password === confirmPassword) {
-            messageDiv.textContent = 'Passwords match!';
-            messageDiv.style.color = 'green';
-            submit.style.pointerEvents = 'all';
-            submit.style.opacity = 1;
-        } else {
-            messageDiv.textContent = 'Passwords do not match.';
-            messageDiv.style.color = 'red';
-            submit.style.pointerEvents = 'none';
-            submit.style.opacity = 0.5;
-        }
-    } else {
-        messageDiv.textContent = 'Password must be at least 4 characters long.';
-        messageDiv.style.color = 'red';
-        submit.style.pointerEvents = 'none';
-        submit.style.opacity = 0.5;
+  <!-- ─── Interactive Visibility / Validation Script ────── -->
+  <script>
+    // Toggle password eye visibility
+    function togglePasswordVisibility(fieldId, button) {
+      const field = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'far fa-eye-slash';
+      } else {
+        field.type = 'password';
+        icon.className = 'far fa-eye';
+      }
     }
-}
 
+    // Debounce Utility
+    function debounce(func, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
 
-                // Add event listeners to both password fields to check on input
-                // passwordField.addEventListener('input', checkPassword);
-                confirmPasswordField.addEventListener('input', checkPassword);			
-            </script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('password-form');
+      if (!form) return;
 
+      const currentInput = document.getElementById('currentPassword');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirmPassword');
+      
+      const currentError = document.getElementById('current-password-error');
+      const passwordError = document.getElementById('password-error');
+      const confirmError = document.getElementById('confirm-error');
+      
+      const strengthFill = document.getElementById('strength-fill');
+      const strengthLabel = document.getElementById('strength-label');
+      const matchMessage = document.getElementById('match-message');
 
+      function showError(input, errorEl, msg) {
+        input.classList.add('input-error');
+        input.classList.remove('input-success');
+        if (errorEl) {
+          errorEl.textContent = msg;
+          errorEl.style.display = 'block';
+        }
+      }
 
-            <style>
-                *::-webkit-scrollbar {
-                    width: 0;
-                }
+      function showSuccess(input, errorEl) {
+        input.classList.remove('input-error');
+        input.classList.add('input-success');
+        if (errorEl) {
+          errorEl.textContent = '';
+          errorEl.style.display = 'none';
+        }
+      }
 
-                input[type="number"]::-webkit-inner-spin-button,
-                input[type="number"]::-webkit-outer-spin-button {
-                    -webkit-appearance: none !important;
-                }
-            </style>
-            <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
-            <script src="js/demos/demo-6.js"></script>
-            <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
-            <%- include('../layout/footer.ejs') -%>
-                <script src="js/base.js"></script>
+      function validateCurrentPassword() {
+        if (!currentInput) return true;
+        const val = currentInput.value;
+        if (!val) {
+          showError(currentInput, currentError, 'Current password is required');
+          return false;
+        }
+        showSuccess(currentInput, currentError);
+        return true;
+      }
+
+      function validatePassword() {
+        const val = passwordInput.value;
+        updateStrengthMeter(val);
+
+        if (!val.trim()) {
+          showError(passwordInput, passwordError, 'Password is required');
+          return false;
+        }
+        if (val.length < 8) {
+          showError(passwordInput, passwordError, 'Password must be at least 8 characters long');
+          return false;
+        }
+        if (!/[a-z]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one lowercase letter');
+          return false;
+        }
+        if (!/[A-Z]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one uppercase letter');
+          return false;
+        }
+        if (!/[0-9]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one number');
+          return false;
+        }
+        if (!/[@$!%*?&#^]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one special character');
+          return false;
+        }
+
+        showSuccess(passwordInput, passwordError);
+        return true;
+      }
+
+      function updateStrengthMeter(val) {
+        strengthFill.className = 'password-strength-fill';
+        if (!val) {
+          strengthLabel.textContent = '';
+          strengthLabel.className = 'auth-email-status';
+          return;
+        }
+
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+        if (/\d/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        if (val.length < 4) {
+          strengthFill.classList.add('weak');
+          strengthLabel.textContent = 'Too short (min 8 chars)';
+          strengthLabel.className = 'auth-email-status err';
+          return;
+        }
+
+        if (score <= 1) {
+          strengthFill.classList.add('weak');
+          strengthLabel.textContent = 'Weak password';
+          strengthLabel.className = 'auth-email-status err';
+        } else if (score <= 3) {
+          strengthFill.classList.add('medium');
+          strengthLabel.textContent = 'Medium password';
+          strengthLabel.className = 'auth-email-status';
+          strengthLabel.style.color = '#f39c12';
+        } else {
+          strengthFill.classList.add('strong');
+          strengthLabel.textContent = 'Strong password';
+          strengthLabel.className = 'auth-email-status ok';
+          strengthLabel.style.color = '';
+        }
+      }
+
+      function validateConfirm() {
+        const val = confirmInput.value;
+        const pwVal = passwordInput.value;
+
+        if (val.length < 8) {
+          showError(confirmInput, confirmError, 'Confirm Password must be at least 8 characters long');
+          if (matchMessage) {
+            matchMessage.textContent = '✕ Too short';
+            matchMessage.className = 'auth-email-status err';
+          }
+          return false;
+        }
+        if (val !== pwVal) {
+          showError(confirmInput, confirmError, 'Passwords do not match');
+          if (matchMessage) {
+            matchMessage.textContent = '✕ Passwords do not match';
+            matchMessage.className = 'auth-email-status err';
+          }
+          return false;
+        }
+
+        showSuccess(confirmInput, confirmError);
+        if (matchMessage) {
+          matchMessage.textContent = '✓ Passwords match';
+          matchMessage.className = 'auth-email-status ok';
+        }
+        return true;
+      }
+
+      const debouncedValidateCurrent = debounce(validateCurrentPassword, 500);
+      const debouncedValidatePassword = debounce(() => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      }, 500);
+      const debouncedValidateConfirm = debounce(validateConfirm, 500);
+
+      if (currentInput) {
+        currentInput.addEventListener('input', debouncedValidateCurrent);
+        currentInput.addEventListener('blur', validateCurrentPassword);
+        currentInput.addEventListener('change', validateCurrentPassword);
+      }
+
+      passwordInput.addEventListener('input', () => {
+        updateStrengthMeter(passwordInput.value);
+        debouncedValidatePassword();
+      });
+      passwordInput.addEventListener('blur', () => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      });
+      passwordInput.addEventListener('change', () => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      });
+
+      confirmInput.addEventListener('input', debouncedValidateConfirm);
+      confirmInput.addEventListener('blur', validateConfirm);
+      confirmInput.addEventListener('change', validateConfirm);
+
+      form.addEventListener('submit', function(e) {
+        const isCurrentValid = validateCurrentPassword();
+        const isPasswordValid = validatePassword();
+        const isConfirmValid = validateConfirm();
+
+        const isFormValid = isCurrentValid && isPasswordValid && isConfirmValid;
+
+        if (!isFormValid) {
+          e.preventDefault();
+
+          if (!isCurrentValid) currentInput.focus();
+          else if (!isPasswordValid) passwordInput.focus();
+          else if (!isConfirmValid) confirmInput.focus();
+
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'Please fix validation errors before submitting.',
+            showConfirmButton: false,
+            timer: 3500
+          });
+        }
+      });
+    });
+
+    // Alert server-side errors on load
+    const serverError = "<%= locals.resetError || '' %>";
+    if (serverError) {
+      document.addEventListener('DOMContentLoaded', () => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: serverError,
+          showConfirmButton: false,
+          timer: 3500
+        });
+      });
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+  <script src="/js/demos/demo-6.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+  <%- include('../layout/footer.ejs') -%>
+  <script src="/js/base.js"></script>
+</body>

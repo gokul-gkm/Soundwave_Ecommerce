@@ -144,18 +144,21 @@
          </div>
          <div class="modal-body px-4 pb-4 m-4">
            <form action="/changePassword" method="post" id="changePasswordForm">
-             <div class="mb-3">
-               <label for="currentPassword" class="form-label font-weight-semibold">Current Password</label>
-               <input type="password" class="form-control custom-input" name="currentPassword" id="currentPassword" placeholder="••••••••" required>
-             </div>
-             <div class="mb-3">
-               <label for="newPassword" class="form-label font-weight-semibold">New Password</label>
-               <input type="password" class="form-control custom-input" name="newPassword" id="newPassword" placeholder="••••••••" required>
-             </div>
-             <div class="mb-4">
-               <label for="confirmPassword" class="form-label font-weight-semibold">Confirm New Password</label>
-               <input type="password" class="form-control custom-input" name="confirmPassword" id="confirmPassword" placeholder="••••••••" required>
-             </div>
+              <div class="mb-3">
+                <label for="modalCurrentPassword" class="form-label font-weight-semibold">Current Password</label>
+                <input type="password" class="form-control custom-input" name="currentPassword" id="modalCurrentPassword" placeholder="••••••••" required>
+                <div class="error text-danger small mt-1" id="modalCurrentPasswordError" style="display:none;"></div>
+              </div>
+              <div class="mb-3">
+                <label for="modalNewPassword" class="form-label font-weight-semibold">New Password</label>
+                <input type="password" class="form-control custom-input" name="newPassword" id="modalNewPassword" placeholder="••••••••" required>
+                <div class="error text-danger small mt-1" id="modalNewPasswordError" style="display:none;"></div>
+              </div>
+              <div class="mb-4">
+                <label for="modalConfirmPassword" class="form-label font-weight-semibold">Confirm New Password</label>
+                <input type="password" class="form-control custom-input" name="confirmPassword" id="modalConfirmPassword" placeholder="••••••••" required>
+                <div class="error text-danger small mt-1" id="modalConfirmPasswordError" style="display:none;"></div>
+              </div>
              <div class="d-flex gap-2 mt-2">
                <button type="button" class="amz-btn amz-btn-secondary flex-grow-1" data-bs-dismiss="modal">Cancel</button>
                <button type="submit" class="amz-btn amz-btn-primary flex-grow-1">Update Password</button>
@@ -211,8 +214,9 @@ function showLogoutConfirmation(event, formId) {
 
 </script>
 
-<!-- logout confirmation -->
-<!-- <script>
+<!-- logout confirmation (backup helper) -->
+<!--
+<script>
   document.getElementById('logoutButton').addEventListener('click', function(e) {
     e.preventDefault(); 
       Swal.fire({
@@ -228,133 +232,276 @@ function showLogoutConfirmation(event, formId) {
           }
       });
   });
-</script> -->
+</script>
+-->
 
 <script>
-
-function submitEditProfileForm(id) {
-
-  event.preventDefault();
-
-  const name = document.getElementById('userName').value;
-  const phone = document.getElementById('userPhone').value;
-
-
-    // Send a POST request to the server
-    fetch(`/profile?userId=${id}`, {
-        method: 'POST',
-        // body: formData
-        headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ name, phone })
-    })
-    .then(response => {
-      console.log(response);
-        if (response.ok) {            
-            sweetProfile();
-            console.log('Profile updated successfully');
-        } else {        
-            console.error('Failed to update profile');
-        }
-    })
-    .catch(error => {
-        console.error('Error updating profile:', error);
-    });
+// ── Debounce Utility ───────────────────────────────────
+function debounce(func, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
 }
 
-function sweetProfile() {    
-Swal.fire({
-    icon: 'success',
-    title: 'Profile Edit',
-    text: 'Profile updated successfully',
-    confirmButtonText: 'Okay'
-}).then(() => {
-    location.reload();
-  });
-}
-
-
-document.addEventListener('DOMContentLoaded', function () {
-
+// ── Edit Profile Modal Validation ──────────────────────
 const nameInput = document.getElementById('userName');
 const phoneInput = document.getElementById('userPhone');
 const nameError = document.getElementById('nameError');
 const phoneError = document.getElementById('phoneError');
 const saveButton = document.getElementById('saveButton');
 
-function validateInputs() {
-
-    const nameValue = nameInput.value.trim();
-    const phoneValue = phoneInput.value.trim();
-
-    let nameValid = true;
-    let phoneValid = true;
-
-    if (nameValue === '') {
-
-          nameValid = false;
-          nameError.textContent = 'Name cannot be empty';
-
-      } else if(nameValue.length < 4){
-        nameValid = false;
-        nameError.textContent = 'Name must contain 4+ characters';
-      }
-        else if (/[^a-zA-Z\s]/.test(nameValue)) {
-
-          nameValid = false;
-          nameError.textContent = 'This is can not be validate , eg : joseph ';
-
-      } else {
-
-        nameError.textContent = '';
-
-      }
-
-    if (!/^\d{10}$/.test(phoneValue)) {
-
-        phoneValid = false;
-        phoneError.textContent = 'Phone number must be 10 digits';
-        
-    } else {
-
-        phoneError.textContent = '';
-
-    }
-
-    saveButton.disabled = !(nameValid && phoneValid);
+function showError(input, errorEl, msg) {
+  input.classList.add('is-invalid');
+  input.classList.remove('is-valid');
+  if (errorEl) {
+    errorEl.textContent = msg;
+    errorEl.style.display = 'block';
+  }
 }
 
-nameInput.addEventListener('input', validateInputs);
-phoneInput.addEventListener('input', validateInputs);
+function showSuccess(input, errorEl) {
+  input.classList.remove('is-invalid');
+  input.classList.add('is-valid');
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.style.display = 'none';
+  }
+}
 
-});
+function validateName() {
+  const val = nameInput.value.trim();
+  if (!val) {
+    showError(nameInput, nameError, 'Name cannot be empty');
+    return false;
+  }
+  if (val.length < 3 || val.length > 40) {
+    showError(nameInput, nameError, 'Name must be between 3 and 40 characters');
+    return false;
+  }
+  if (!/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/.test(val)) {
+    showError(nameInput, nameError, 'Name can contain letters, numbers, and single spaces only');
+    return false;
+  }
+  const letterCount = (val.match(/[a-zA-Z]/g) || []).length;
+  if (letterCount < 3) {
+    showError(nameInput, nameError, 'Name must contain at least 3 letters');
+    return false;
+  }
+  showSuccess(nameInput, nameError);
+  return true;
+}
 
-</script>
+function validatePhone() {
+  const val = phoneInput.value.trim();
+  if (!val) {
+    showError(phoneInput, phoneError, 'Phone number is required');
+    return false;
+  }
+  const cleanPhone = val.replace(/[\s\-\(\)]/g, '');
+  if (!/^\+?[0-9]{10,15}$/.test(cleanPhone)) {
+    showError(phoneInput, phoneError, 'enter a valid phone number');
+    return false;
+  }
+  showSuccess(phoneInput, phoneError);
+  return true;
+}
 
-<script>
+// Attach debounced/immediate listeners to Edit Profile Modal
+if (nameInput && phoneInput) {
+  const debouncedValidateName = debounce(validateName, 500);
+  const debouncedValidatePhone = debounce(validatePhone, 500);
 
-  function submitChangePasswordForm(event) {
- event.preventDefault();
+  nameInput.addEventListener('input', debouncedValidateName);
+  nameInput.addEventListener('blur', validateName);
+  nameInput.addEventListener('change', validateName);
 
- const formData = new FormData(document.getElementById('changePasswordForm'));
- const currentPassword = formData.get('currentPassword');
- const newPassword = formData.get('newPassword');
- const confirmPassword = formData.get('confirmPassword');
-  console.log(currentPassword, newPassword,confirmPassword);
- // Validate passwords match
- if (newPassword !== confirmPassword) {
+  phoneInput.addEventListener('input', debouncedValidatePhone);
+  phoneInput.addEventListener('blur', validatePhone);
+  phoneInput.addEventListener('change', validatePhone);
+}
+
+function submitEditProfileForm(id) {
+  const isNameValid = validateName();
+  const isPhoneValid = validatePhone();
+
+  if (!isNameValid || !isPhoneValid) {
     Swal.fire({
-        icon: 'error',
-        title: 'Password Change Failed',
-        text: 'New password and confirm password do not match.',
-        confirmButtonText: 'Try Again'
-      });
+      icon: 'error',
+      title: 'Validation Failed',
+      text: 'Please check the input details and correct errors.',
+      confirmButtonText: 'Okay'
+    });
     return;
- }
+  }
 
- // Send a POST request to the server
- fetch('/newPass', {
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  fetch(`/profile?userId=${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name, phone })
+  })
+  .then(response => {
+    if (response.ok) {            
+      sweetProfile();
+      console.log('Profile updated successfully');
+    } else {        
+      return response.json().then(data => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: data.message || 'Failed to update profile',
+          confirmButtonText: 'Try Again'
+        });
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error updating profile:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating profile.',
+      confirmButtonText: 'Try Again'
+    });
+  });
+}
+
+function sweetProfile() {    
+  Swal.fire({
+    icon: 'success',
+    title: 'Profile Edit',
+    text: 'Profile updated successfully',
+    confirmButtonText: 'Okay'
+  }).then(() => {
+    location.reload();
+  });
+}
+
+// ── Change Password Modal Validation ───────────────────
+const modalCurrentInput = document.getElementById('modalCurrentPassword');
+const modalNewInput = document.getElementById('modalNewPassword');
+const modalConfirmInput = document.getElementById('modalConfirmPassword');
+
+const modalCurrentError = document.getElementById('modalCurrentPasswordError');
+const modalNewError = document.getElementById('modalNewPasswordError');
+const modalConfirmError = document.getElementById('modalConfirmPasswordError');
+
+function validateModalCurrent() {
+  if (!modalCurrentInput) return true;
+  const val = modalCurrentInput.value;
+  if (!val) {
+    showError(modalCurrentInput, modalCurrentError, 'Current password is required');
+    return false;
+  }
+  showSuccess(modalCurrentInput, modalCurrentError);
+  return true;
+}
+
+function validateModalNew() {
+  const val = modalNewInput.value;
+  if (!val.trim()) {
+    showError(modalNewInput, modalNewError, 'New password is required');
+    return false;
+  }
+  if (val.length < 8) {
+    showError(modalNewInput, modalNewError, 'Password must be at least 8 characters long');
+    return false;
+  }
+  if (!/[a-z]/.test(val)) {
+    showError(modalNewInput, modalNewError, 'Password must contain at least one lowercase letter');
+    return false;
+  }
+  if (!/[A-Z]/.test(val)) {
+    showError(modalNewInput, modalNewError, 'Password must contain at least one uppercase letter');
+    return false;
+  }
+  if (!/[0-9]/.test(val)) {
+    showError(modalNewInput, modalNewError, 'Password must contain at least one number');
+    return false;
+  }
+  if (!/[@$!%*?&#^]/.test(val)) {
+    showError(modalNewInput, modalNewError, 'Password must contain at least one special character');
+    return false;
+  }
+  showSuccess(modalNewInput, modalNewError);
+  return true;
+}
+
+function validateModalConfirm() {
+  const val = modalConfirmInput.value;
+  const pwVal = modalNewInput.value;
+
+  if (val.length < 8) {
+    showError(modalConfirmInput, modalConfirmError, 'Confirm Password must be at least 8 characters long');
+    return false;
+  }
+  if (val !== pwVal) {
+    showError(modalConfirmInput, modalConfirmError, 'Passwords do not match');
+    return false;
+  }
+  showSuccess(modalConfirmInput, modalConfirmError);
+  return true;
+}
+
+// Attach debounced/immediate listeners to Change Password modal
+if (modalCurrentInput && modalNewInput && modalConfirmInput) {
+  const debouncedValidateModalCurrent = debounce(validateModalCurrent, 500);
+  const debouncedValidateModalNew = debounce(() => {
+    validateModalNew();
+    if (modalConfirmInput.value) validateModalConfirm();
+  }, 500);
+  const debouncedValidateModalConfirm = debounce(validateConfirmPassword, 500);
+
+  function validateConfirmPassword() {
+    validateModalConfirm();
+  }
+
+  modalCurrentInput.addEventListener('input', debouncedValidateModalCurrent);
+  modalCurrentInput.addEventListener('blur', validateModalCurrent);
+  modalCurrentInput.addEventListener('change', validateModalCurrent);
+
+  modalNewInput.addEventListener('input', debouncedValidateModalNew);
+  modalNewInput.addEventListener('blur', () => {
+    validateModalNew();
+    if (modalConfirmInput.value) validateModalConfirm();
+  });
+  modalNewInput.addEventListener('change', () => {
+    validateModalNew();
+    if (modalConfirmInput.value) validateModalConfirm();
+  });
+
+  modalConfirmInput.addEventListener('input', debouncedValidateModalConfirm);
+  modalConfirmInput.addEventListener('blur', validateModalConfirm);
+  modalConfirmInput.addEventListener('change', validateModalConfirm);
+}
+
+function submitChangePasswordForm(event) {
+  event.preventDefault();
+
+  const isCurrentValid = validateModalCurrent();
+  const isNewValid = validateModalNew();
+  const isConfirmValid = validateModalConfirm();
+
+  if (!isCurrentValid || !isNewValid || !isConfirmValid) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Failed',
+      text: 'Please resolve errors in the password fields.',
+      confirmButtonText: 'Okay'
+    });
+    return;
+  }
+
+  const currentPassword = modalCurrentInput.value;
+  const newPassword = modalNewInput.value;
+
+  fetch('/newPass', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -363,27 +510,28 @@ phoneInput.addEventListener('input', validateInputs);
       currentPassword: currentPassword,
       newPassword: newPassword,
     }),
- })
- .then(response => response.json())
- .then(data => {
-    if (data.success) {
+  })
+  .then(response => response.json().then(data => ({ ok: response.ok, data })))
+  .then(({ ok, data }) => {
+    if (ok && data.success) {
       Swal.fire({
         icon: 'success',
         title: 'Password Change',
         text: 'Password updated successfully',
         confirmButtonText: 'Okay'
+      }).then(() => {
+        location.reload();
       });
-      // Optionally, redirect or refresh the page
     } else {
       Swal.fire({
         icon: 'error',
         title: 'Password Change Failed',
-        text: 'Current password is incorrect or new passwords do not match.',
+        text: data.message || 'Current password is incorrect or new password does not match complexity guidelines.',
         confirmButtonText: 'Try Again'
       });
     }
- })
- .catch(error => {
+  })
+  .catch(error => {
     console.error('Error changing password:', error);
     Swal.fire({
       icon: 'error',
@@ -391,10 +539,9 @@ phoneInput.addEventListener('input', validateInputs);
       text: 'An error occurred while changing your password.',
       confirmButtonText: 'Try Again'
     });
- });
+  });
 }
 
-// Attach event listener to the form submit event
 document.getElementById('changePasswordForm').addEventListener('submit', submitChangePasswordForm);
 </script>
 

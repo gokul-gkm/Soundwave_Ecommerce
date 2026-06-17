@@ -1,318 +1,704 @@
 <%- include('../layout/header.ejs') -%>
-	</head>
+<link rel="stylesheet" href="/css/mycss/login.css">
+</head>
 
-	<body>
-		<div class="page-wrapper">
-			<header class="header">
+<body>
+  <div class="page-wrapper">
 
+    <!-- ─── Minimal Header ───────────────────────────────── -->
+    <header class="header">
+      <div class="header-middle sticky-header">
+        <div class="container">
+          <div class="header-left">
+            <button class="mobile-menu-toggler">
+              <span class="sr-only">Toggle mobile menu</span>
+              <i class="icon-bars"></i>
+            </button>
+            <a href="/" class="logo">
+              <img src="/images/soundwave/logoblack.png" alt="Soundwave Logo" width="105" height="25">
+            </a>
+            <nav class="main-nav">
+              <ul class="menu">
+                <li class="megamenu-container active"><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li>
+                  <a class="sf-with-ul">Category</a>
+                  <ul>
+                    <li><a href="/products">Headphones</a></li>
+                    <li><a href="/products">Earbuds</a></li>
+                    <li><a href="/products">Speakers</a></li>
+                    <li><a href="/products">Soundbars</a></li>
+                  </ul>
+                </li>
+                <li><a href="/about">About</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
 
-				<div class="header-middle sticky-header">
-					<div class="container">
-						<div class="header-left">
-							<button class="mobile-menu-toggler">
-								<span class="sr-only">Toggle mobile menu</span>
-								<i class="icon-bars"></i>
-							</button>
+    <!-- ─── Breadcrumb ───────────────────────────────────── -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+      <div class="container">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Login</li>
+        </ol>
+      </div>
+    </nav>
 
-							<a href="/" class="logo">
-								<img src="images/soundwave/logoblack.png" alt="Soundwave Logo" width="105" height="25">
-							</a>
+    <!-- ─── Main Auth Section ───────────────────────────── -->
+    <main class="main">
+      <section class="auth-page">
+        <div class="auth-card">
 
-							<nav class="main-nav">
-								<ul class="menu ">
-									<li class="megamenu-container active">
-										<a href="/" class="">Home</a>
+          <!-- Brand strip -->
+          <div class="auth-brand">
+            <a href="/" class="brand-logo">
+              <img src="/images/soundwave/logoblack.png" alt="Soundwave" height="30">
+            </a>
+            <p class="auth-brand-tagline">Premium Audio Experience</p>
+          </div>
 
-										<!-- End .megamenu -->
-									</li>
-									<li>
-										<a href="/products" class="">Products</a>
+          <!-- Tab navigation -->
+          <div class="auth-tabs" role="tablist">
+            <button
+              id="tab-signin"
+              class="auth-tab-btn <% if (activeTab === 'signin') { %>active<% } %>"
+              role="tab"
+              aria-controls="panel-signin"
+              aria-selected="<%= activeTab === 'signin' %>"
+              onclick="switchTab('signin')"
+            >
+              Sign In
+            </button>
+            <button
+              id="tab-signup"
+              class="auth-tab-btn <% if (activeTab === 'signup') { %>active<% } %>"
+              role="tab"
+              aria-controls="panel-signup"
+              aria-selected="<%= activeTab === 'signup' %>"
+              onclick="switchTab('signup')"
+            >
+              Register
+            </button>
+          </div>
 
-										<!-- End .megamenu megamenu-md -->
-									</li>
-									<li>
-										<a class="sf-with-ul">Category</a>
-										<ul>
-											<li><a href="/products">Headphones</a></li>
-											<li><a href="/products">Earbuds</a></li>
-											<li><a href="/products">Speakers</a></li>
-											<li><a href="/products">Soundbars</a></li>
-										</ul>
+          <!-- ─── Sign In Panel ─────────────────────────── -->
+          <div
+            id="panel-signin"
+            class="auth-tab-content"
+            role="tabpanel"
+            aria-labelledby="tab-signin"
+            <% if (activeTab !== 'signin') { %>style="display: none;"<% } %>
+          >
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-subtitle">Sign in to your Soundwave account</p>
 
-									</li>
+            <form action="/sign-in" method="post" id="signin-form" novalidate>
 
-									<li>
-										<a href="/about">About</a>
+              <div class="auth-form-group">
+                <label class="auth-label" for="singin-email">Email Address</label>
+                <input
+                  type="email"
+                  class="auth-input"
+                  id="singin-email"
+                  name="email"
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                  required
+                >
+              </div>
 
+              <div class="auth-form-group">
+                <label class="auth-label" for="singin-password">Password</label>
+                <div class="auth-input-wrap">
+                  <input
+                    type="password"
+                    class="auth-input"
+                    id="singin-password"
+                    name="password"
+                    placeholder="Your password"
+                    autocomplete="current-password"
+                    required
+                  >
+                  <button type="button" class="auth-eye-toggle" onclick="toggleEye('singin-password', this)" aria-label="Toggle password visibility">
+                    <i class="far fa-eye"></i>
+                  </button>
+                </div>
+                <a href="/forget-password" class="auth-forgot-link">Forgot your password?</a>
+              </div>
 
-									</li>
+              <button type="submit" class="auth-btn" id="signin-submit-btn">
+                <span class="auth-btn-text">Log In</span>
+                <i class="icon-long-arrow-right"></i>
+              </button>
 
-								</ul><!-- End .menu -->
-							</nav>
-						</div>
+            </form>
 
-						<!-- End .header-right -->
-					</div><!-- End .container -->
-				</div><!-- End .header-middle -->
-			</header><!-- End .header -->
+            <p class="auth-footer-link">
+              Don't have an account?
+              <a href="javascript:void(0)" onclick="switchTab('signup')" style="color:#c96; font-weight:500;">Create one</a>
+            </p>
+          </div>
 
-			<main class="main">
-				<nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-					<div class="container">
-						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="/">Home</a></li>
-							<li class="breadcrumb-item active" aria-current="page">Login</li>
-						</ol>
-					</div><!-- End .container -->
-				</nav><!-- End .breadcrumb-nav -->
+          <!-- ─── Sign Up Panel ─────────────────────────── -->
+          <div
+            id="panel-signup"
+            class="auth-tab-content"
+            role="tabpanel"
+            aria-labelledby="tab-signup"
+            <% if (activeTab !== 'signup') { %>style="display: none;"<% } %>
+          >
+            <h2 class="auth-title">Create account</h2>
+            <p class="auth-subtitle">Join Soundwave today — it's free</p>
 
-				<div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
-					style="background-image: url('images/soundwave-img/login-bg.jpg')">
-					<div class="container">
-						<div class="form-box">
-							<div class="form-tab">
-								
+            <form id="signup-form" action="/sign-up" method="post" novalidate>
 
-								<ul class="nav nav-pills nav-fill" role="tablist">
-									<li class="nav-item">
-										<a class="nav-link <% if (activeTab === 'signup') { %>active<% } %>" id="signin-tab-2" data-toggle="tab" href="#register-2"
-											role="tab" aria-controls="signin-2" aria-selected="<%= activeTab === 'signup' %>">Register</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link <% if (activeTab === 'signin') { %>active<% } %>" id="register-tab-2" data-toggle="tab"
-											href="#signin-2" role="tab" aria-controls="register-2"
-											aria-selected="<%= activeTab === 'signin' %>">Login</a>
-									</li>
-								</ul>
-								
+              <div class="auth-form-group">
+                <label class="auth-label" for="register-name">Full Name</label>
+                <input
+                  type="text"
+                  class="auth-input"
+                  id="register-name"
+                  name="registerName"
+                  placeholder="John Doe"
+                  autocomplete="name"
+                  required
+                >
+                <span id="name-error" class="auth-field-error" style="display:none;"></span>
+              </div>
 
-								<div class="tab-content">
-									<div class="tab-pane  <% if (activeTab === 'signin') { %>show active<% } %>" id="signin-2" role="tabpanel"
-										aria-labelledby="signin-tab-2">
-										<form action="/sign-in" method="post">
-											<div class="form-group">
-												<label for="singin-email-2">Your email address *</label>
-												<input type="text" class="form-control" id="singin-email-2" name="email"
-													required>
-											</div>
-											
-													<!-- End .form-group -->
+              <div class="auth-form-group">
+                <label class="auth-label" for="register-email">Email Address</label>
+                <input
+                  type="email"
+                  class="auth-input"
+                  id="register-email"
+                  name="registerEmail"
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                  required
+                >
+                <span id="email-status" class="auth-email-status" aria-live="polite"></span>
+                <% if (locals.emailError) { %>
+                  <span class="auth-field-error" id="backend-email-error"><%= emailError %></span>
+                <% } %>
+              </div>
 
-													<div class="form-group">
-														<label for="singin-password-2">Password *</label>
-														<input type="password" class="form-control"
-															id="singin-password-2" name="password" required>
-														
-													</div>
-												
+              <div class="auth-form-group">
+                <label class="auth-label" for="register-phone">Phone Number</label>
+                <input
+                  type="tel"
+                  class="auth-input"
+                  id="register-phone"
+                  name="signupPhone"
+                  placeholder="+91 98765 43210"
+                  autocomplete="tel"
+                  required
+                >
+                <span id="phone-error" class="auth-field-error" style="display:none;"></span>
+              </div>
 
-													<div class="form-footer">
-														<button type="submit" class="btn btn-outline-primary-2">
-															<span>LOG IN</span>
-															<i class="icon-long-arrow-right"></i>
-														</button>
-														<!-- End .custom-checkbox -->
+              <div class="auth-form-group">
+                <label class="auth-label" for="register-password">Password</label>
+                <div class="auth-input-wrap">
+                  <input
+                    type="password"
+                    class="auth-input"
+                    id="register-password"
+                    name="registerPassword"
+                    placeholder="Min. 3 characters"
+                    autocomplete="new-password"
+                    required
+                  >
+                  <button type="button" class="auth-eye-toggle" onclick="toggleEye('register-password', this)" aria-label="Toggle password visibility">
+                    <i class="far fa-eye"></i>
+                  </button>
+                </div>
+                <div class="password-strength-bar">
+                  <div class="password-strength-fill" id="strength-fill"></div>
+                </div>
+                <span id="password-error" class="auth-field-error" style="display:none;"></span>
+              </div>
 
-														<a href="/forget-password" class="forgot-link">Forgot Your Password?</a>
-													</div><!-- End .form-footer -->
-										</form>
+              <div class="auth-form-group">
+                <label class="auth-label" for="register-confirm">Confirm Password</label>
+                <div class="auth-input-wrap">
+                  <input
+                    type="password"
+                    class="auth-input"
+                    id="register-confirm"
+                    name="registerConfirmPassword"
+                    placeholder="Repeat your password"
+                    autocomplete="new-password"
+                    required
+                  >
+                  <button type="button" class="auth-eye-toggle" onclick="toggleEye('register-confirm', this)" aria-label="Toggle password visibility">
+                    <i class="far fa-eye"></i>
+                  </button>
+                </div>
+                <span id="confirm-error" class="auth-field-error" style="display:none;"></span>
+              </div>
 
-									</div><!-- .End .tab-pane -->
+              <button type="submit" class="auth-btn" id="signup-submit-btn">
+                <span class="auth-btn-text">Create Account</span>
+                <i class="icon-long-arrow-right"></i>
+              </button>
 
-									
-									<!-- sign-up part -->
-									<div class="tab-pane <% if (activeTab === 'signup') { %>show active<% } %>" id="register-2" role="tabpanel"
-										aria-labelledby="register-tab-2">
+            </form>
 
-										<form id="myForm" action="/sign-up" method="post">
-											<div class="form-group">
-												<label for="register-name">Your Name *</label>
-												<input type="text" class="form-control" id="register-name"
-													name="registerName" required>
-											</div><!-- End .form-group -->
+            <p class="auth-footer-link">
+              Already have an account?
+              <a href="javascript:void(0)" onclick="switchTab('signin')" style="color:#c96; font-weight:500;">Sign in</a>
+            </p>
+          </div>
 
+        </div><!-- /.auth-card -->
+      </section>
+    </main>
 
+    <%- include('../layout/lyfooter.ejs') -%>
+  </div><!-- /.page-wrapper -->
 
-											<div class="form-group">
-												<label for="register-email">Your Email Address *</label>
-												<input type="text" class="form-control" oninput="emailChecking(this)"
-													id="register-email" name="registerEmail" required>
-												<!-- <p class="err text-danger "></p> -->
-												<% if(locals.emailError) { %>
-														<p class="err text-danger ">
-															<%= emailError %>
-														</p>
-														<% } %>
-											</div>
+  <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+  <%- include('../layout/mobMenu.ejs') -%>
 
-											<div class="form-group">
-												<label for="register-phone">Contact No *</label>
-												<input type="text" class="form-control" id="register-phone"
-													name="signupPhone" required>
-											</div><!-- End .form-group -->
+  <!-- ─── Scripts ────────────────────────────────────────── -->
+  <script>
+    // ── Tab Switching ──────────────────────────────────────
+    function switchTab(tab) {
+      const panels = { signin: document.getElementById('panel-signin'), signup: document.getElementById('panel-signup') };
+      const btns   = { signin: document.getElementById('tab-signin'),   signup: document.getElementById('tab-signup') };
 
+      Object.keys(panels).forEach(key => {
+        const isActive = key === tab;
+        panels[key].style.display = isActive ? 'block' : 'none';
+        btns[key].classList.toggle('active', isActive);
+        btns[key].setAttribute('aria-selected', isActive);
+      });
 
-											<div class="form-group">
-												<label for="register-password-2">Password *</label>
-												<input type="password" class="form-control" id="register-password-2"
-													name="registerPassword" required>
-											</div><!-- End .form-group -->
+      // Trigger re-animation
+      panels[tab].style.animation = 'none';
+      panels[tab].offsetHeight; // reflow
+      panels[tab].style.animation = '';
+    }
 
-											<div class="form-group">
-												<label for="register-password-3">Confirm Password *</label>
-												<input type="password" class="form-control" id="register-password-3"
-													name="registerConfirmPassword" required>
-											</div><!-- End .form-group -->
-
-											<div class="form-footer">
-												<button type="submit" class="btn submit btn-outline-primary-2">
-													<span>SIGN UP</span>
-													<i class="icon-long-arrow-right"></i>
-												</button>
-
-
-											</div><!-- End .form-footer -->
-										</form>
-									</div>
-								</div>
-							</div><!-- End .form-tab -->
-						</div><!-- End .form-box -->
-					</div><!-- End .container -->
-				</div><!-- End .login-page section-bg -->
-			</main><!-- End .main -->
-			<%- include('../layout/lyfooter.ejs') -%>
-
-		</div><!-- End .page-wrapper -->
-		<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
-
-		<%- include('../layout/mobMenu.ejs') -%>
-
-			<script>
-			// email checking
-			document.getElementById('myForm').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
+    // ── Eye Toggle ─────────────────────────────────────────
+    function toggleEye(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon  = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
       }
+    }
+
+    // ── Debounce Utility ───────────────────────────────────
+    function debounce(func, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+
+    // ── Signup Real-time Validation ────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signup-form');
+      if (!form) return;
+
+      const nameInput = document.getElementById('register-name');
+      const emailInput = document.getElementById('register-email');
+      const phoneInput = document.getElementById('register-phone');
+      const passwordInput = document.getElementById('register-password');
+      const confirmInput = document.getElementById('register-confirm');
+      const submitBtn = document.getElementById('signup-submit-btn');
+
+      const nameError = document.getElementById('name-error');
+      const emailStatus = document.getElementById('email-status');
+      const phoneError = document.getElementById('phone-error');
+      const passwordError = document.getElementById('password-error');
+      const confirmError = document.getElementById('confirm-error');
+
+      const strengthFill = document.getElementById('strength-fill');
+
+      let emailValidationPending = false;
+      let emailExists = false;
+
+      function showError(input, errorEl, message) {
+        input.classList.add('input-error');
+        input.classList.remove('input-success');
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.style.display = 'block';
+          if (errorEl.classList.contains('auth-email-status')) {
+            errorEl.className = 'auth-email-status err';
+            errorEl.innerHTML = '✕ &nbsp;' + message;
+          }
+        }
+      }
+
+      function showSuccess(input, errorEl, successMessage = '') {
+        input.classList.remove('input-error');
+        input.classList.add('input-success');
+        if (errorEl) {
+          if (successMessage) {
+            errorEl.textContent = successMessage;
+            errorEl.style.display = 'block';
+            if (errorEl.classList.contains('auth-email-status')) {
+              errorEl.className = 'auth-email-status ok';
+              errorEl.innerHTML = '✓ &nbsp;' + successMessage;
+            }
+          } else {
+            errorEl.textContent = '';
+            errorEl.style.display = 'none';
+            if (errorEl.classList.contains('auth-email-status')) {
+              errorEl.className = 'auth-email-status';
+            }
+          }
+        }
+      }
+
+      function clearError(input, errorEl) {
+        input.classList.remove('input-error');
+        input.classList.remove('input-success');
+        if (errorEl) {
+          errorEl.textContent = '';
+          errorEl.style.display = 'none';
+          if (errorEl.classList.contains('auth-email-status')) {
+            errorEl.className = 'auth-email-status';
+          }
+        }
+      }
+
+      // Hide backend-email-error if user modifies email
+      const backendEmailErr = document.getElementById('backend-email-error');
+      if (backendEmailErr) {
+        emailInput.addEventListener('input', () => {
+          backendEmailErr.style.display = 'none';
+        });
+      }
+
+      // 1. Name Validation
+      function validateName() {
+        const val = nameInput.value.trim();
+        if (!val) {
+          showError(nameInput, nameError, 'Name is required');
+          return false;
+        }
+        if (val.length < 3 || val.length > 40) {
+          showError(nameInput, nameError, 'Name must be between 3 and 40 characters');
+          return false;
+        }
+        if (!/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/.test(val)) {
+          showError(nameInput, nameError, 'Name can contain letters, numbers, and single spaces only');
+          return false;
+        }
+        const letterCount = (val.match(/[a-zA-Z]/g) || []).length;
+        if (letterCount < 3) {
+          showError(nameInput, nameError, 'Name must contain at least 3 letters');
+          return false;
+        }
+        showSuccess(nameInput, nameError);
+        return true;
+      }
+
+      // 2. Email Validation
+      function validateEmail(isImmediate = false) {
+        const val = emailInput.value.trim();
+        if (!val) {
+          showError(emailInput, emailStatus, 'Email is required');
+          emailExists = false;
+          return false;
+        }
+        if (val.length < 5) {
+          showError(emailInput, emailStatus, 'Email is too short');
+          emailExists = false;
+          return false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+          showError(emailInput, emailStatus, 'Invalid email format');
+          emailExists = false;
+          return false;
+        }
+        if (!/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val)) {
+          showError(emailInput, emailStatus, 'Email must have at least 3 characters before @');
+          emailExists = false;
+          return false;
+        }
+
+        if (isImmediate) {
+          if (emailExists) {
+            showError(emailInput, emailStatus, 'Email already registered');
+            return false;
+          }
+          showSuccess(emailInput, emailStatus, 'Email available');
+          return true;
+        } else {
+          checkEmailAvailabilityDebounced();
+          return !emailExists;
+        }
+      }
+
+      const checkEmailAvailabilityDebounced = debounce(() => {
+        const val = emailInput.value.trim();
+        if (!val || val.length < 5 || !/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val)) {
+          return;
+        }
+
+        emailStatus.textContent = '...';
+        emailStatus.className = 'auth-email-status';
+        emailStatus.style.display = 'block';
+        emailValidationPending = true;
+
+        fetch('/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payload: val })
+        })
+        .then(r => r.json())
+        .then(data => {
+          emailValidationPending = false;
+          if (data.emailExist) {
+            emailExists = true;
+            showError(emailInput, emailStatus, 'Email already registered');
+          } else {
+            emailExists = false;
+            showSuccess(emailInput, emailStatus, 'Email available');
+          }
+        })
+        .catch(err => {
+          emailValidationPending = false;
+          console.error('Email verification error:', err);
+        });
+      }, 500);
+
+      // 3. Phone Validation
+      function validatePhone() {
+        const val = phoneInput.value.trim();
+        if (!val) {
+          showError(phoneInput, phoneError, 'Phone number is required');
+          return false;
+        }
+        
+        const cleanPhone = val.replace(/[\s\-\(\)]/g, '');
+        const phoneRegex = /^\+?[0-9]{10,15}$/;
+        
+        if (!phoneRegex.test(cleanPhone)) {
+          showError(phoneInput, phoneError, 'enter a valid phone number');
+          return false;
+        }
+        showSuccess(phoneInput, phoneError);
+        return true;
+      }
+
+      // 4. Password Validation
+      function validatePassword() {
+        const val = passwordInput.value;
+        updateStrengthMeter(val);
+
+        if (!val.trim()) {
+          showError(passwordInput, passwordError, 'Password is required');
+          return false;
+        }
+        if (val.length < 8) {
+          showError(passwordInput, passwordError, 'Password must be at least 8 characters long');
+          return false;
+        }
+        if (!/[a-z]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one lowercase letter');
+          return false;
+        }
+        if (!/[A-Z]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one uppercase letter');
+          return false;
+        }
+        if (!/[0-9]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one number');
+          return false;
+        }
+        if (!/[@$!%*?&#^]/.test(val)) {
+          showError(passwordInput, passwordError, 'Password must contain at least one special character');
+          return false;
+        }
+
+        showSuccess(passwordInput, passwordError);
+        return true;
+      }
+
+      function updateStrengthMeter(val) {
+        strengthFill.className = 'password-strength-fill';
+        if (val.length === 0) return;
+
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+        if (/\d/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        if (score <= 1) strengthFill.classList.add('weak');
+        else if (score <= 3) strengthFill.classList.add('medium');
+        else strengthFill.classList.add('strong');
+      }
+
+      // 5. Confirm Password Validation
+      function validateConfirm() {
+        const val = confirmInput.value;
+        const pwVal = passwordInput.value;
+
+        if (val.length < 8) {
+          showError(confirmInput, confirmError, 'Confirm Password must be at least 8 characters long');
+          return false;
+        }
+        if (val !== pwVal) {
+          showError(confirmInput, confirmError, 'Passwords do not match');
+          return false;
+        }
+
+        showSuccess(confirmInput, confirmError);
+        return true;
+      }
+
+      const debouncedValidateName = debounce(validateName, 500);
+      const debouncedValidateEmail = debounce(() => validateEmail(false), 500);
+      const debouncedValidatePhone = debounce(validatePhone, 500);
+      const debouncedValidatePassword = debounce(() => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      }, 500);
+      const debouncedValidateConfirm = debounce(validateConfirm, 500);
+
+      // Event Listeners
+      nameInput.addEventListener('input', debouncedValidateName);
+      nameInput.addEventListener('blur', validateName);
+      nameInput.addEventListener('change', validateName);
+
+      emailInput.addEventListener('input', debouncedValidateEmail);
+      emailInput.addEventListener('blur', () => validateEmail(false));
+      emailInput.addEventListener('change', () => validateEmail(false));
+
+      phoneInput.addEventListener('input', debouncedValidatePhone);
+      phoneInput.addEventListener('blur', validatePhone);
+      phoneInput.addEventListener('change', validatePhone);
+
+      passwordInput.addEventListener('input', () => {
+        updateStrengthMeter(passwordInput.value);
+        debouncedValidatePassword();
+      });
+      passwordInput.addEventListener('blur', () => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      });
+      passwordInput.addEventListener('change', () => {
+        validatePassword();
+        if (confirmInput.value) validateConfirm();
+      });
+
+      confirmInput.addEventListener('input', debouncedValidateConfirm);
+      confirmInput.addEventListener('blur', validateConfirm);
+      confirmInput.addEventListener('change', validateConfirm);
+
+      form.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitBtn.click();
+        }
+      });
+
+      form.addEventListener('submit', (e) => {
+        const isNameValid = validateName();
+        const isEmailValid = validateEmail(true);
+        const isPhoneValid = validatePhone();
+        const isPasswordValid = validatePassword();
+        const isConfirmValid = validateConfirm();
+
+        const isFormValid = isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isConfirmValid;
+
+        if (!isFormValid || emailValidationPending || emailExists) {
+          e.preventDefault();
+          
+          if (!isNameValid) nameInput.focus();
+          else if (!isEmailValid || emailExists) emailInput.focus();
+          else if (!isPhoneValid) phoneInput.focus();
+          else if (!isPasswordValid) passwordInput.focus();
+          else if (!isConfirmValid) confirmInput.focus();
+
+          if (emailValidationPending) {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'info',
+              title: 'Checking email availability...',
+              showConfirmButton: false,
+              timer: 2000
+            });
+          } else {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'error',
+              title: 'Please fix validation errors before submitting.',
+              showConfirmButton: false,
+              timer: 3500
+            });
+          }
+        }
+      });
     });
-			const err = document.querySelector('.err');
-			const input = document.querySelector('#register-email');
-			const submit = document.querySelector('.submit');
-				function emailChecking(e) {
-					fetch('/check-email', {
-						method: 'POST',
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ payload: e.value })
-					}).then(res => res.json()).then(data => {
-						if (data.emailExist) {
-							console.log('it exits' + data.emailExist);
-							err.innerHTML = `email already exist`;
-							input.style.borderColor = "red";
-							submit.style.pointerEvents = 'none',
-								submit.style.opacity = 0.5;
-								input.addEventListener("focus", () => {
-								input.style.borderColor = "red"; 
-							});
-							input.addEventListener("blur", () => {
-								input.style.borderColor = "red";
-							});
-						}
-						else if (data.note) {
-							console.log(data);
-							err.innerHTML = ' ';
-							input.style.borderColor = "#ebebeb";
-							submit.style.pointerEvents = 'all',
-								submit.style.opacity = 1
-							input.addEventListener("focus", () => {
-								input.style.borderColor = "#c96"; 
-							});
+  </script>
 
-							input.addEventListener("blur", () => {
-								input.style.borderColor = "#ebebeb";
-							});
-						}
-					}
-					)
-				}
+  <!-- ─── SweetAlert toasts for flash messages ─────────── -->
+  <% if (locals.err1) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Swal.fire({ toast: true, position: 'top-end', icon: 'error',
+        title: '<%= err1 %>', showConfirmButton: false, timer: 3500 });
+    });
+  </script>
+  <% } %>
 
-			</script>
+  <% if (locals.err2) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Swal.fire({ toast: true, position: 'top-end', icon: 'success',
+        title: '<%= err2 %>', showConfirmButton: false, timer: 3500 });
+    });
+  </script>
+  <% } %>
 
-			
+  <% if (locals.emailError) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Swal.fire({ toast: true, position: 'top-end', icon: 'error',
+        title: '<%= emailError %>', showConfirmButton: false, timer: 3500 });
+    });
+  </script>
+  <% } %>
 
-			<style>
-				*::-webkit-scrollbar {
-					width: 0;
-				}
+  <% if (typeof error !== 'undefined') { %>
+    <% error.forEach(function(e) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Swal.fire({ toast: true, position: 'top-end', icon: 'error',
+        title: '<%= e.msg %>', showConfirmButton: false, timer: 3500 });
+    });
+  </script>
+    <% }); %>
+  <% } %>
 
-				input[type="number"]::-webkit-inner-spin-button,
-				input[type="number"]::-webkit-outer-spin-button {
-					-webkit-appearance: none !important;
-					
-				}
-			</style>
-			<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
-			<script src="js/demos/demo-6.js"></script>
-			<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
-			<%- include('../layout/footer.ejs') -%>
-				<script src="js/base.js"></script>
+  <style>
+    *::-webkit-scrollbar { width: 0; }
+  </style>
 
-<% if (locals.err1) { %>
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			Swal.fire({
-				toast: true,
-				position: 'top-end',
-				icon: 'error',
-				title: '<%= err1 %>',
-				showConfirmButton: false,
-				timer: 3000
-			});
-		});
-	</script>
-<% } %>
-
-<% if (locals.err2) { %>
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			Swal.fire({
-				toast: true,
-				position: 'top-end',
-				icon: 'error',
-				title: '<%= err2 %>',
-				showConfirmButton: false,
-				timer: 3000
-			});
-		});
-	</script>
-<% } %>
-
-<% if (locals.emailError) { %>
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			Swal.fire({
-				toast: true,
-				position: 'top-end',
-				icon: 'error',
-				title: '<%= emailError %>',
-				showConfirmButton: false,
-				timer: 3000
-			});
-		});
-	</script>
-<% } %>
-
-<% if (typeof error !== 'undefined') { %>
-  <% error.forEach(function(e){ %>
-	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-				Swal.fire({
-				toast: true,
-				position: 'top-end',
-				icon: 'error',
-				title: '<%= e.msg %>',
-				showConfirmButton: false,
-				timer: 3000
-				});
-		});
-</script>
-	  <% }) %>
-	<% } %>
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js" defer></script>
+  <script src="/js/demos/demo-6.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
+  <%- include('../layout/footer.ejs') -%>
+  <script src="/js/base.js"></script>
+</body>
+</html>

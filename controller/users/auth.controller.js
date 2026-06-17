@@ -6,6 +6,8 @@ const sendEmail = require("../../config/sendEmail");
 const userSchema = require("../../models/userSchema");
 const matchPassword = require("../../utils/matchPassword");
 
+const OTP_DURATION_MS = 5 * 60 * 1000;
+
 /**
  * @desc    Render Login / Signup Page
  * @route   GET /login
@@ -17,6 +19,10 @@ const renderAuthPage = (req, res) => {
     const error = req.session.error;
     req.session.error = undefined;
     res.render("user/login", { error: error, activeTab: "signup" });
+  } else if (req.session.emailError) {
+    const emailError = req.session.emailError;
+    req.session.emailError = undefined;
+    res.render("user/login", { emailError: emailError, activeTab: "signup" });
   } else if (req.session.err1) {
     const err = req.session.err1;
     req.session.err1 = undefined;
@@ -40,22 +46,58 @@ const renderAuthPage = (req, res) => {
 const registerUser = async (req, res, next) => {
   try {
     const validationRules = [
-      check("registerName", "name must be greater than 3+ characters")
+      check("registerName")
         .trim()
-        .isLength({ min: 3 }),
-      check("registerEmail", "enter a valid email").trim().isEmail(),
+        .notEmpty()
+        .withMessage("Name is required")
+        .isLength({ min: 3, max: 40 })
+        .withMessage("Name must be between 3 and 40 characters")
+        .matches(/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/)
+        .withMessage(
+          "Name can contain letters, numbers, and single spaces only"
+        )
+        .custom((value) => {
+          const letterCount = (value.match(/[a-zA-Z]/g) || []).length;
+
+          if (letterCount < 3) {
+            throw new Error("Name must contain at least 3 letters");
+          }
+
+          return true;
+        }),
+      check("registerEmail")
+        .trim()
+        .notEmpty()
+        .withMessage("Email is required")
+        .isLength({ min: 5 })
+        .withMessage("Email is too short")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .matches(/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+        .withMessage("Email must have at least 3 characters before @"),
       check("signupPhone", "enter a valid phone number").trim().isMobilePhone(),
-      check("registerPassword", "password must be 3+ characters")
+      check("registerPassword")
         .trim()
-        .isLength({ min: 3 }),
-      check("registerConfirmPassword", "passwords do not match").custom(
-        (value, { req }) => {
+        .isLength({ min: 8 })
+        .withMessage("Password must be at least 8 characters long")
+        .matches(/[a-z]/)
+        .withMessage("Password must contain at least one lowercase letter")
+        .matches(/[A-Z]/)
+        .withMessage("Password must contain at least one uppercase letter")
+        .matches(/[0-9]/)
+        .withMessage("Password must contain at least one number")
+        .matches(/[@$!%*?&#^]/)
+        .withMessage("Password must contain at least one special character"),
+      check("registerConfirmPassword")
+        .trim()
+        .isLength({ min: 8 })
+        .withMessage("Confirm Password must be at least 8 characters long")
+        .custom((value, { req }) => {
           if (value !== req.body.registerPassword) {
             throw new Error("Passwords do not match");
           }
           return true;
-        }
-      ),
+        }),
     ];
 
 
@@ -68,38 +110,37 @@ const registerUser = async (req, res, next) => {
       return res.redirect("/login");
     }
 
+    const existingUser = await userSchema.findOne({ email: req.body.registerEmail });
+
+    if (existingUser) {
+      req.session.emailError = "There is already a user with this email";
+      return res.redirect("/login");
+    }
+
     const hashedPassword = await hashPassword(req.body.registerPassword);
 
-    const userData = new userSchema({
+    req.session.userData = {
       name: req.body.registerName,
       email: req.body.registerEmail,
       password: hashedPassword,
       phone: req.body.signupPhone,
-    });
+    };
 
-    const existingUser = await userSchema.findOne({ email: req.body.registerEmail });
+    req.session.otpPurpose = "signup";
 
-    if (existingUser) {
-      req.session.emailError= "There is already a user with this email"
-      console.log("There is already a user with this email");
-    } else {
-      req.session.userData = userData;
-      req.session.otp = generateOTP();
-      console.log(req.session.otp);
+    req.session.otp = generateOTP();
+    req.session.otpExpiresAt = Date.now() + OTP_DURATION_MS;
+    req.session.otpAttempts = 0;
+    req.session.otpResendAt = 0;
+    console.log("Signup OTP:", req.session.otp);
 
-      sendEmail(
-        req.body.registerName,
-        req.body.registerEmail,
-        req.session.otp
-      );
+    sendEmail(
+      req.body.registerName,
+      req.body.registerEmail,
+      req.session.otp
+    );
 
-      setTimeout(() => {
-        req.session.otp = undefined;
-        console.log("OTP has been cleared after 5 minutes.");
-      }, 5 * 60 * 1000);
-
-      return res.redirect("/otp");
-    }
+    return res.redirect("/otp");
   } catch (error) {
     next(error);
   }
