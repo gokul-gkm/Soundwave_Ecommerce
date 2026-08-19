@@ -359,7 +359,7 @@
     const codTimeEl= document.getElementById('cod_time');
 
     fetch('/admin/payments/summary', {
-      method: 'put',
+      method: 'PATCH',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({})
     })
@@ -418,7 +418,7 @@
     const yearLabels  = Array.from({ length: 6 }, (_, i) => (currentYear + 3) - i).reverse();
     var yearData = new Array(6).fill(0);
 
-    fetch('/admin/year', { method: 'put', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
+    fetch('/admin/year', { method: 'PATCH', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
       .then(r => r.json())
       .then(data => {
         yearLabels.forEach((yr, i) => {
@@ -453,7 +453,7 @@
 
     // Monthly
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    fetch('/admin/monthly', { method: 'put', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
+    fetch('/admin/monthly', { method: 'PATCH', headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) })
       .then(r => r.json())
       .then(data => {
         if ($("#monthlyChart").length) {

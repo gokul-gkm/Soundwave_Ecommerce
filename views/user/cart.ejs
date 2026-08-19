@@ -195,7 +195,7 @@
                     const sub= document.getElementById(`sub-total`)
                   
                    fetch('/cart-update',{
-                    method: 'PUT',
+                    method: 'PATCH',
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ quantity: e.value,id,productId })
                    }).then(res=>res.json()).then(data=>{

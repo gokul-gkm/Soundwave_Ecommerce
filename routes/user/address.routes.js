@@ -15,10 +15,10 @@ router.get("/address", userMiddleware.userbloack, userMiddleware.user, addressCo
 router.post("/address", addressController.addAddress);
 
 /**
- * @route   PUT /address
+ * @route   PATCH /address
  * @desc    Check Address Exists
  */
-router.put("/address", addressController.checkAddressExists);
+router.patch("/address", addressController.checkAddressExists);
 
 /**
  * @route   DELETE /address
@@ -27,9 +27,9 @@ router.put("/address", addressController.checkAddressExists);
 router.delete("/address", addressController.deleteAddress);
 
 /**
- * @route   PUT /address/default
+ * @route   PATCH /address/default
  * @desc    Set Default Address
  */
-router.put("/address/default", addressController.setDefaultAddress);
+router.patch("/address/default", addressController.setDefaultAddress);
 
 module.exports = router;

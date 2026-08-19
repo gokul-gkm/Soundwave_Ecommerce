@@ -2,15 +2,15 @@ const router = require("express").Router();
 const chartController = require("../../controller/admin/chart.controller");
 
 /**
- * @route   PUT /year
+ * @route   PATCH /year
  * @desc    Get Yearly Chart Data
  */
-router.put("/year", chartController.year);
+router.patch("/year", chartController.year);
 
 /**
- * @route   PUT /monthly
+ * @route   PATCH /monthly
  * @desc    Get Monthly Chart Data
  */
-router.put("/monthly", chartController.monthlySales);
+router.patch("/monthly", chartController.monthlySales);
 
 module.exports = router;

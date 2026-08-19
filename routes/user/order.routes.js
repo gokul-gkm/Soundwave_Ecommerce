@@ -18,16 +18,16 @@ router.get("/checkout", userMiddleware.userbloack, userMiddleware.user, orderCon
 router.get("/orders", userMiddleware.userbloack, userMiddleware.user, orderController.getOrders);
 
 /**
- * @route   PUT /orders/cancel
+ * @route   PATCH /orders/cancel
  * @desc    Cancel Order
  */
-router.put("/orders/cancel", orderController.cancelOrderItem);
+router.patch("/orders/cancel", orderController.cancelOrderItem);
 
 /**
- * @route   PUT /orders/return
+ * @route   PATCH /orders/return
  * @desc    Return Order
  */
-router.put("/orders/return", orderController.returnOrderItem);
+router.patch("/orders/return", orderController.returnOrderItem);
 
 /**
  * @route   GET /orders/success

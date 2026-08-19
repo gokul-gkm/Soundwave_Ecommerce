@@ -21,10 +21,10 @@ router.put("/cart", cartController.addToCart);
 router.post("/cart", cartController.addToCartFromForm);
 
 /**
- * @route   PUT /cart-update
+ * @route   PATCH /cart-update
  * @desc    Update Cart Item Quantity
  */
-router.put("/cart-update", cartController.updateCartItem);
+router.patch("/cart-update", cartController.updateCartItem);
 
 /**
  * @route   DELETE /cart

@@ -342,8 +342,8 @@ margin: 0.5rem 0;
   function edit(id,orderId, user, price,cancelReason) {
     const status = document.getElementById(`st${id}`);
     const btn = document.getElementById(`bt${id}`);
-    fetch('/order/cancel', {
-      method: 'put',
+    fetch('/orders/cancel', {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id,orderId, user,price,cancelReason})
     }).then(res => res.json()).then(data => {
@@ -408,7 +408,7 @@ if(cancelReason){
 
 function editReturnOrd(proId , ordId , price , reason){
 
-fetch('/orders/return' , {method : 'put' , headers : {'Content-Type': 'application/json'} , body : JSON.stringify({proId , ordId , price , reason})})
+fetch('/orders/return' , {method : 'PATCH' , headers : {'Content-Type': 'application/json'} , body : JSON.stringify({proId , ordId , price , reason})})
 
 .then(res => res.json())
 

@@ -9,9 +9,9 @@ const adminMiddleware = require("../../middleware/adminMiddleware");
 router.get("/", adminMiddleware.adminRoute, adminController.getDashboard);
 
 /**
- * @route   PUT /payments/summary
+ * @route   PATCH /payments/summary
  * @desc    Fetch Payment Data
  */
-router.put("/payments/summary", adminController.getPaymentSummary);
+router.patch("/payments/summary", adminController.getPaymentSummary);
 
 module.exports = router;

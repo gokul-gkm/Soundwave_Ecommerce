@@ -63,7 +63,7 @@
   function offerCheck(e, id, offerId, offer) {
     const add = e.checked;
     fetch(`/admin/offers/${offerId}/categories`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, add, offer })
     })

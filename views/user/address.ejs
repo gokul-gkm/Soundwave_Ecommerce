@@ -181,7 +181,7 @@
       if(!currentUserId) return;
       
       fetch('/address', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ val: this.value, id: currentUserId })
       })
@@ -308,7 +308,7 @@
     // Set Default Address
     function change(id, uid) {
       fetch('/address/default', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, uid })
       })

@@ -21,16 +21,16 @@ router.get("/offers/new", adminMiddleware.adminRoute, offerController.getCreateO
 router.post("/offers", offerController.createOffer);
 
 /**
- * @route   PUT /offer/:id
+ * @route   PATCH /offer/:id
  * @desc    Add Product to Offer
  */
-router.put("/offers/:id/products", offerController.toggleProductOffer);
+router.patch("/offers/:id/products", offerController.toggleProductOffer);
 
 /**
- * @route   PUT /offers/:catId/categories
+ * @route   PATCH /offers/:catId/categories
  * @desc    Add Category to Offer
  */
-router.put("/offers/:catId/categories", offerController.toggleCategoryOffer);
+router.patch("/offers/:catId/categories", offerController.toggleCategoryOffer);
 
 /**
  * @route   GET /offers/:id/products
