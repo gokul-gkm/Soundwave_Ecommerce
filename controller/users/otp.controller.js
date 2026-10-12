@@ -115,7 +115,9 @@ const verifyOtp = async (req, res) => {
         req.session.wrong = undefined;
         req.session.userData = undefined;
         req.session.otpPurpose = undefined;
-        res.redirect("/profile");
+        const returnTo = req.session.returnTo || "/profile";
+        delete req.session.returnTo;
+        res.redirect(returnTo);
       } else {
         res.send("Something went wrong while saving user");
       }

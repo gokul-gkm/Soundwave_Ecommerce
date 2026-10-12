@@ -166,9 +166,11 @@ const loginUser = async (req, res, next) => {
         req.session.admin = user;
         res.redirect("/admin");
       } else {
-          console.log("user")
-        res.redirect("/");
-    }   
+        console.log("user");
+        const returnTo = req.session.returnTo || "/";
+        delete req.session.returnTo;
+        res.redirect(returnTo);
+      }   
 
   } catch (error) {
     next(error);

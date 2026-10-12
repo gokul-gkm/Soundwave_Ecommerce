@@ -166,7 +166,6 @@
                 const modal = document.getElementById('exampleModal')
                 function addCart(id, user, q) {
                     if (user === "false") {
-                        console.log('hello');
                         window.location.href = '/login'
                     } else {
 
@@ -175,10 +174,11 @@
                             headers: { 'Content-type': 'application/json' },
                             body: JSON.stringify({ id, user, q })
                         }).then(res => res.json()).then(data => {
-                            if (data.success) {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            } else if (data.success) {
                                 toast("success","cart added")
-                            }
-                            if(data.exist){
+                            } else if(data.exist){
                                 toast('warning','product alredy there')
                             }
                         })

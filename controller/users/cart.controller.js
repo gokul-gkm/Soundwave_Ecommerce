@@ -62,6 +62,13 @@ const renderCartPage = async (req, res) => {
 const addToCart = async (req, res) => {
   try {
     const userId = req.session.login;
+
+    if (!userId) {
+      const returnTo = req.get('Referer') || '/';
+      req.session.returnTo = returnTo;
+      return res.send({ redirect: '/login' });
+    }
+
     const { id, q } = req.body;
     const product = await Product.findOne({ _id: id });
     const result = await Cart
@@ -175,6 +182,7 @@ const addToCartFromForm  = async (req, res) => {
         }
       }
     } else {
+      req.session.returnTo = req.get('Referer') || '/';
       res.redirect("/login");
     }
   } catch (err) {
