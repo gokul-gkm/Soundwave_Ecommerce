@@ -86,17 +86,17 @@
 
                                         <div class="cart-bottom">
                                             <div class="cart-discount">
-                                                <form action="/coupons/apply" method="post">
+                                                <form id="couponForm" onsubmit="applyCoupon(event)">
                                                     <div class="input-group">
-                                                        <input type="text" name="id"  class="form-control" required
-                                                            placeholder="coupon code" oninput="check(this)">
-                                                          
-                                                        <div  id="codeSubmit" class="input-group-append">
-                                                            <button class="btn btn-outline-primary-2" type="submit"><i
-                                                                    class="icon-long-arrow-right"></i></button>
+                                                        <input type="text" id="couponInput" name="id" class="form-control" required
+                                                            placeholder="Coupon code" oninput="check(this)">
+                                                        <div id="codeSubmit" class="input-group-append" style="opacity:.6;pointer-events:none">
+                                                            <button class="btn btn-outline-primary-2" type="submit" id="couponBtn">
+                                                                <i class="icon-long-arrow-right" id="couponBtnIcon"></i>
+                                                            </button>
                                                         </div><!-- .End .input-group-append -->
                                                     </div>
-                                                    <p id="msg" class="text-danger "><%=locals.msg || ''  %></p><!-- End .input-group -->
+                                                    <p id="msg" class="mt-1"></p><!-- End .input-group -->
                                                 </form>
                                             </div>
 
@@ -178,14 +178,59 @@
         <%- include('../layout/mobMenu.ejs') -%>
 
             <script>
-                const codeSubmit=document.getElementById('codeSubmit')
-                function check(e){
-                    if(e.value.trim()==''){
-                        codeSubmit.style.opacity=.6;
-                        codeSubmit.style.pointerEvents='none'
-                    }else{
-                        codeSubmit.style.opacity=1;
-                        codeSubmit.style.pointerEvents='all'
+                const codeSubmit = document.getElementById('codeSubmit');
+                const msgEl = document.getElementById('msg');
+
+                function check(e) {
+                    if (e.value.trim() == '') {
+                        codeSubmit.style.opacity = .6;
+                        codeSubmit.style.pointerEvents = 'none';
+                    } else {
+                        codeSubmit.style.opacity = 1;
+                        codeSubmit.style.pointerEvents = 'all';
+                    }
+                }
+
+                async function applyCoupon(e) {
+                    e.preventDefault();
+                    const code = document.getElementById('couponInput').value.trim();
+                    const btn = document.getElementById('couponBtn');
+                    const icon = document.getElementById('couponBtnIcon');
+
+                    // Show loading state
+                    btn.disabled = true;
+                    icon.className = '';
+                    icon.textContent = '...';
+                    msgEl.textContent = '';
+                    msgEl.className = 'mt-1';
+
+                    try {
+                        const res = await fetch('/coupons/apply', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: code })
+                        });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            msgEl.textContent = '✓ ' + data.message;
+                            msgEl.className = 'mt-1 text-success fw-bold';
+                            toast('success', data.message);
+                            // Redirect to checkout since coupon is now in session
+                            setTimeout(() => window.location.href = '/checkout', 1200);
+                        } else {
+                            msgEl.textContent = data.error || 'Invalid coupon code';
+                            msgEl.className = 'mt-1 text-danger';
+                            toast('error', data.error || 'Invalid coupon code');
+                        }
+                    } catch (err) {
+                        msgEl.textContent = 'Something went wrong. Please try again.';
+                        msgEl.className = 'mt-1 text-danger';
+                        toast('error', 'Something went wrong. Please try again.');
+                    } finally {
+                        btn.disabled = false;
+                        icon.className = 'icon-long-arrow-right';
+                        icon.textContent = '';
                     }
                 }
 
@@ -224,6 +269,7 @@
                         cartDet.remove();
                         Total.textContent=tot
                         sub.textContent=tot
+                        if (data.newCount !== undefined) updateCartCount(data.newCount);
                     }
                    })
                    
@@ -235,6 +281,19 @@
                     width: 0;
                 }
             </style>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                function toast(icon, title) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                    Toast.fire({ icon, title });
+                }
+            </script>
             <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js" defer></script>
             <script src="js/base.js"></script>
             <%- include('../layout/footer.ejs') -%>

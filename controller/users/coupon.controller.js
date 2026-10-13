@@ -18,37 +18,58 @@ const getCouponsPage = async (req, res) => {
     } catch (err) {
         console.log(err.message + '     coupenView')
     }
-  }
-  
-  /**
+}
+
+/**
  * @desc    Apply Coupon Code
  * @route   POST /coupons/apply
  */
-  const applyCoupon = async (req, res) => {
+const applyCoupon = async (req, res) => {
     try {
         const userId = req.session.login;
-        const hh = req.body.id.trim()
-        const id = String(hh)
-        const dataExist = await User.findOne({ _id: userId, 'coupens.ID': id }).populate("coupens.coupenId");
-        req.session.coupenId = id
-        let offer;
-        dataExist.coupens.forEach((e) => {
-            if (e.ID == id) {
-                offer = e.coupenId.offer
-            }
-        })
-        req.session.offer = offer
-        if (dataExist) {
-            res.redirect('/checkout')
-        } else {
-            req.flash('msg', "coupen didn't exist")
-            res.redirect('/cart')
+
+        if (!userId) {
+            return res.status(401).json({ error: 'Please login to apply a coupon' });
         }
+
+        const couponCode = String(req.body.id || '').trim();
+
+        if (!couponCode) {
+            return res.status(400).json({ error: 'Please enter a coupon code' });
+        }
+
+        // Find the user and check if they own this coupon code
+        const userWithCoupon = await User
+            .findOne({ _id: userId, 'coupens.ID': couponCode })
+            .populate('coupens.coupenId');
+
+        if (!userWithCoupon) {
+            return res.status(404).json({ error: 'Invalid coupon code or coupon not assigned to your account' });
+        }
+
+        // Find the matching coupon entry
+        const matchedCoupon = userWithCoupon.coupens.find(c => c.ID === couponCode);
+
+        if (!matchedCoupon || !matchedCoupon.coupenId) {
+            return res.status(404).json({ error: 'Coupon details not found' });
+        }
+
+        // Save coupon to session for use at checkout
+        req.session.coupenId = couponCode;
+        req.session.offer = matchedCoupon.coupenId.offer;
+
+        return res.json({
+            success: true,
+            offer: matchedCoupon.coupenId.offer,
+            message: `Coupon applied! You get ${matchedCoupon.coupenId.offer}% off`
+        });
+
     } catch (err) {
-        console.log(err.message + ' coupenCode')
+        console.log(err.message + ' coupenCode');
+        return res.status(500).json({ error: 'Something went wrong. Please try again.' });
     }
 }
-  
+
 module.exports = {
     getCouponsPage,
     applyCoupon 

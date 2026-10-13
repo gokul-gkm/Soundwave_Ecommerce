@@ -431,11 +431,10 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log(data);
             if (data.success) {
+              if (data.newCount !== undefined) updateWishlistCount(data.newCount);
               toast("success", "Added to wishlist");
-            }
-            if (data.exist) {
+            } else if (data.exist) {
               toast("warning", "product already there");
             }
           });
@@ -473,6 +472,7 @@
             if (data.redirect) {
               window.location.href = data.redirect;
             } else if (data.success) {
+              if (data.newCount !== undefined) updateCartCount(data.newCount);
               toast("success", "Added to cart");
             } else if (data.exist) {
               toast("warning", "Product already in cart");

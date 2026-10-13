@@ -67,7 +67,8 @@ const addToWishlist = async (req, res) => {
         .exec();
 
       if (wishlistSuccess) {
-        res.send({ success: "success" });
+        const newCount = await getWishlistCount(userId);
+        res.send({ success: "success", newCount });
       }
     } else {
       res.send({ exist: "it is already exist" });
@@ -92,8 +93,10 @@ const removeFromWishlist  = async (req, res) => {
     if (remove.modifiedCount === 0) {
       res.send({ failure: "can't remove" });
     } else {
+      const userId = req.session.login;
       const rdata = await Wishlist.findOne({ _id: req.body.id });
-      res.send({ rdata, success: "success" });
+      const newCount = await getWishlistCount(userId);
+      res.send({ rdata, success: "success", newCount });
     }
   } catch (err) {
     console.log(err.message + "   wishlistremove");

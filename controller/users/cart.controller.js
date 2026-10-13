@@ -1,7 +1,7 @@
 const Category = require("../../models/catagory");
 const Cart = require("../../models/cart");
 const Product = require("../../models/products");
-const { getWishlistCount ,getCartCount} = require('../../utils/count'); 
+const { getWishlistCount, getCartCount } = require('../../utils/count');
 
 /**
  * @desc    Render Cart Page
@@ -103,7 +103,8 @@ const addToCart = async (req, res) => {
         .exec();
 
       if (cartSuccess) {
-        res.send({ success: "succes" });
+        const newCount = await getCartCount(userId);
+        res.send({ success: "succes", newCount });
       }
     } else {
       res.send({ exist: "it is already exist" });
@@ -247,8 +248,8 @@ const removeCartItem  = async (req, res) => {
     if (remove.modifiedCount === 0) {
     } else {
       const rdata = await Cart.findOne({ _id: id });
-      console.log(rdata);
-      res.send({ rdata });
+      const newCount = await getCartCount(rdata.userId);
+      res.send({ rdata, newCount });
     }
   } catch (err) {
     console.log(err.message + "   catrreeee");

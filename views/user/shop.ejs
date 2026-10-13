@@ -413,6 +413,7 @@ document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(elemen
             if (data.redirect) {
               window.location.href = data.redirect;
             } else if (data.success) {
+              if (data.newCount !== undefined) updateCartCount(data.newCount);
               toast("success", "cart added");
             } else if (data.exist) {
               toast("warning", "product already there");
@@ -433,9 +434,9 @@ document.querySelectorAll('.category-checkbox, .filter-colors a').forEach(elemen
           .then((res) => res.json())
           .then((data) => {
             if (data.success) {
+              if (data.newCount !== undefined) updateWishlistCount(data.newCount);
               toast("success", "wishlist added");
-            }
-            if (data.exist) {
+            } else if (data.exist) {
               toast("warning", "product already there");
             }
           });

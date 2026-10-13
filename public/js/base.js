@@ -94,5 +94,20 @@ requestAnimationFrame(raf)
   });
 })(jQuery);
 
+/**
+ * Update the navbar cart badge count instantly (no page reload needed).
+ * @param {number} count - The new cart item count returned from the server.
+ */
+function updateCartCount(count) {
+  var badge = document.getElementById('navbar-cart-count');
+  if (badge) badge.textContent = count;
+}
 
-
+/**
+ * Update the navbar wishlist badge count instantly (no page reload needed).
+ * @param {number} count - The new wishlist item count returned from the server.
+ */
+function updateWishlistCount(count) {
+  var badge = document.getElementById('navbar-wishlist-count');
+  if (badge) badge.textContent = count;
+}
